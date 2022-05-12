@@ -1,0 +1,26 @@
+#!/bin/bash
+
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+root_dir="$( cd -P "$( dirname "$SOURCE" )"/.. >/dev/null 2>&1 && pwd )"
+
+set -e
+
+notice() {
+    echo -e "\033[36m $1 \033[0m "
+}
+
+electron_version="17.4.0"
+download_url="https://npmmirror.com/mirrors/electron/${electron_version}/electron-v${electron_version}-linux-x64.zip"
+
+if [[ ! -f "$root_dir/cache/electron-v${electron_version}-linux-x64.zip" ]];then
+    wget -c "$download_url" -O "$root_dir/cache/electron-v${electron_version}-linux-x64.zip.tmp"
+    mv "$root_dir/cache/electron-v${electron_version}-linux-x64.zip.tmp" "$root_dir/cache/electron-v${electron_version}-linux-x64.zip"
+fi
+rm -rf "$root_dir/electron"
+mkdir -p "$root_dir/electron"
+unzip -o -d "$root_dir/electron" "$root_dir/cache/electron-v${electron_version}-linux-x64.zip"

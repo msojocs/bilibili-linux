@@ -1,0 +1,37 @@
+#!/bin/bash
+
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+root_dir="$( cd -P "$( dirname "$SOURCE" )"/.. >/dev/null 2>&1 && pwd )"
+
+set -e
+
+notice() {
+    echo -e "\033[36m $1 \033[0m "
+}
+
+download_url="https://dl.hdslb.com/mobile/fixed/bili_win/bili_win-install.exe"
+
+if [[ ! -f "$root_dir/cache/bili_win-install.exe" ]];then
+    wget -c "$download_url" -O "$root_dir/cache/bili_win-install.exe.tmp"
+    mv "$root_dir/cache/bili_win-install.exe.tmp" "$root_dir/cache/bili_win-install.exe"
+fi
+tmp_dir="$root_dir/tmp"
+mkdir -p "$tmp_dir/bili"
+
+7z x "$root_dir/cache/bili_win-install.exe" -o"$tmp_dir/bili" "\$PLUGINSDIR/app-64.7z"
+7z x "$tmp_dir/bili/\$PLUGINSDIR/app-64.7z" -o"$tmp_dir/bili" "resources"
+rm -rf "$tmp_dir/bili/\$PLUGINSDIR/app-64.7z" "$tmp_dir/bili/resources/elevate.exe"
+
+mkdir -p "$root_dir/app"
+mv "$tmp_dir/bili/resources/"* "$root_dir/app"
+
+rm -rf "$tmp_dir/bili"
+
+if [[ -d "$root_dir/electron/resources" ]];then
+  cd "$root_dir/electron/resources" && ln -s "$root_dir/app/app-update.yml" app-update.yml
+fi
