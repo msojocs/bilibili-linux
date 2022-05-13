@@ -36,3 +36,5 @@
 ![直播](res/screenshots/live.png)
 
 ![检查更新](res/screenshots/update.png)
+
+![退出](res/screenshots/exit.png)
