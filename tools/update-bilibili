@@ -51,6 +51,6 @@ mv "$tmp_dir/bili/resources/"* "$root_dir/app"
 
 rm -rf "$tmp_dir/bili"
 
-if [[ -d "$root_dir/electron/resources" && ! -f "$root_dir/app/app-update.yml" ]];then
-  cd "$root_dir/electron/resources" && ln -s "$root_dir/app/app-update.yml" app-update.yml
+if [[ -d "$root_dir/electron/resources" && ! -f "$root_dir/electron/resources/app-update.yml" ]];then
+  cd "$root_dir/electron/resources" && ln -s "../../app/app-update.yml" app-update.yml
 fi
