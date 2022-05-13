@@ -41,7 +41,8 @@ sed -i "s#\\\x42\\\x72\\\x6f\\\x77\\\x73\\\x65\\\x72\\\x57\\\x69\\\x6e\\\x64\\\x
 sed -i "s#\\\x57\\\x69\\\x64\\\x74\\\x68':0x[0-9a-z]\+#\\\x57\\\x69\\\x64\\\x74\\\x68':500#g" app/main/index.js
 # Height
 sed -i "s#\\\x48\\\x65\\\x69\\\x67\\\x68\\\x74':0x[0-9a-z]\+#\\\x48\\\x65\\\x69\\\x67\\\x68\\\x74':400#g" app/main/index.js
-
+# 检查更新
+sed -i 's#// noinspection SuspiciousTypeOfGuard#runtimeOptions.platform="win32";// noinspection SuspiciousTypeOfGuard#' app/node_modules/electron-updater/out/providerFactory.js
 asar p app app.asar
 rm -rf app
 
