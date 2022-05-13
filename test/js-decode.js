@@ -32,5 +32,23 @@ resultCode = resultCode.replace(
     }
 );
 resultCode = encodeUnicode(resultCode)
+fs.writeFileSync(path.resolve(__dirname, '../app/app/main/index1.js'), resultCode)
+resultCode = resultCode.replace(
+    /[\{\}\.]?\['([a-zA-Z]*?)'\]\(?/g,
+    function ($0, $1, $2) {
+        console.log("---", $0, $1, $2)
+        let end = '', start=''
+        if($0.endsWith('('))end = '('
+        if(!$0.startsWith('['))start = $0[0]
+
+        let result = $0
+        if($0.startsWith('.'))
+            result =  `.${$1}${end}`
+        else if($0.startsWith('{') || $0.startsWith('}'))
+            result =  `${start}${$1}${end}`
+        console.log('--- result:', result)
+        return result
+    }
+);
 fs.writeFileSync(path.resolve(__dirname, '../app/app/main/index2.js'), resultCode)
 // console.log()
