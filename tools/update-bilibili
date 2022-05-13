@@ -27,11 +27,18 @@ mkdir -p "$tmp_dir/bili"
 7z x "$tmp_dir/bili/\$PLUGINSDIR/app-64.7z" -o"$tmp_dir/bili" "resources"
 rm -rf "$tmp_dir/bili/\$PLUGINSDIR/app-64.7z" "$tmp_dir/bili/resources/elevate.exe"
 
+cd "$tmp_dir/bili/resources"
+asar e app.asar app
+# 
+sed -i 's#\\x77\\x69\\x6e\\x33\\x32#linux#' app/main/index.js
+asar p app app.asar
+rm -rf app
+
 mkdir -p "$root_dir/app"
 mv "$tmp_dir/bili/resources/"* "$root_dir/app"
 
 rm -rf "$tmp_dir/bili"
 
-if [[ -d "$root_dir/electron/resources" ]];then
+if [[ -d "$root_dir/electron/resources" && ! -f "$root_dir/app/app-update.yml" ]];then
   cd "$root_dir/electron/resources" && ln -s "$root_dir/app/app-update.yml" app-update.yml
 fi
