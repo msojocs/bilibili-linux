@@ -29,6 +29,8 @@ rm -rf "$tmp_dir/bili/\$PLUGINSDIR/app-64.7z" "$tmp_dir/bili/resources/elevate.e
 
 cd "$tmp_dir/bili/resources"
 asar e app.asar app
+# 修复新版不能启动的问题
+sed -i 's#||b4&&dV!==e7(0x8b1)##' app/main/index.js
 # 任务栏菜单
 sed -i 's#\\x77\\x69\\x6e\\x33\\x32#linux#' app/main/index.js
 # 去除标题栏

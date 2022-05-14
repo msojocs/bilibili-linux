@@ -17,7 +17,7 @@ function encodeUnicode(s) {
         }
     );
 }
-const sourceCode = fs.readFileSync(path.resolve(__dirname, '../app/app/main/index.js'))
+const sourceCode = fs.readFileSync(path.resolve(__dirname, '../app/app/main/index.orgi.js'))
 
 let resultCode = sourceCode.toString()
 // let i = 0;
@@ -38,19 +38,21 @@ resultCode = resultCode.replace(
         // }
 
         let result = eval('"' + $1 + '"')
-        if(result.includes("'") || result.includes("*")){
+        if(result.includes("*")){
             // 不做处理
             return $0
         }
+        if(result.includes("'"))
+            return `'${result.replace(/'/g, "\\'")}'`
         return `'${result}'`;
     }
 );
 resultCode = encodeUnicode(resultCode)
-fs.writeFileSync(path.resolve(__dirname, '../app/app/main/index1.js'), resultCode)
+fs.writeFileSync(path.resolve(__dirname, '../app/app/main/index.js'), resultCode)
 resultCode = resultCode.replace(
     /[\{\}\.]?\['([a-zA-Z]*?)'\]\(?/g,
     function ($0, $1, $2) {
-        console.log("---", $0, $1, $2)
+        // console.log("---", $0, $1, $2)
         let end = '', start=''
         if($0.endsWith('('))end = '('
         if(!$0.startsWith('['))start = $0[0]
@@ -60,7 +62,7 @@ resultCode = resultCode.replace(
             result =  `.${$1}${end}`
         else if($0.startsWith('{') || $0.startsWith('}'))
             result =  `${start}${$1}${end}`
-        console.log('--- result:', result)
+        // console.log('--- result:', result)
         return result
     }
 );
