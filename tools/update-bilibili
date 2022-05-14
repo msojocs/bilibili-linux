@@ -32,10 +32,9 @@ asar e app.asar app
 # 任务栏菜单
 sed -i 's#\\x77\\x69\\x6e\\x33\\x32#linux#' app/main/index.js
 # 去除标题栏
-# sed -i "s#\\\x6e\\\x63\\\x65']}}#\\\x6e\\\x63\\\x65']},frame:false}#g" app/main/index.js
-# ]}});this['\x63\x6f\x6e\x66\x69\x6
-sed -i "s#]}});this\\['\\\x63#]},frame:false});this['\\\x63#g" app/main/index.js
-sed -i "s#\\\x42\\\x72\\\x6f\\\x77\\\x73\\\x65\\\x72\\\x57\\\x69\\\x6e\\\x64\\\x6f\\\x77']({'#\\\x42\\\x72\\\x6f\\\x77\\\x73\\\x65\\\x72\\\x57\\\x69\\\x6e\\\x64\\\x6f\\\x77']({frame:false,'#g" app/main/index.js
+# ]}});this[
+sed -i "s#]}});this\\[#]},frame:false});this[#g" app/main/index.js
+sed -i "s#]}}),this\\[#]},frame:false}),this[#g" app/main/index.js
 # 降低窗口大小限制，处理小分辨率屏幕无法全屏的问题
 # Width
 sed -i "s#\\\x57\\\x69\\\x64\\\x74\\\x68':0x[0-9a-z]\+#\\\x57\\\x69\\\x64\\\x74\\\x68':500#g" app/main/index.js

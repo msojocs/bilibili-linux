@@ -5,15 +5,21 @@
 1. 没有讨厌的标题栏
 2. 支持小分辨率屏幕全屏
 3. 检查更新支持
-
-## 支持情况
-
-- [x] 退出功能
-- [x] 直播页全屏
-- [x] 去除顶部边框
-- [x] 检查更新
+4. 有能够关闭程序的菜单
 
 ## 使用方法
+
+### 自动化构建
+
+请到 Release 页面下载：
+
+https://github.com/msojocs/bilibili-linux/releases
+
+即时构建版本：
+
+https://github.com/msojocs/bilibili-linux/releases/tag/continuous
+
+### 手动构建
 
 1. 拉取代码
    ```

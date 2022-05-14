@@ -20,14 +20,28 @@ function encodeUnicode(s) {
 const sourceCode = fs.readFileSync(path.resolve(__dirname, '../app/app/main/index.js'))
 
 let resultCode = sourceCode.toString()
+// let i = 0;
 resultCode = resultCode.replace(
-    /'(\\x.*?)'/g,
+    /'(([\\xa-z0-9]{2,2})+)'/g,
     function ($0, $1, $2) {
+        // i++;
+        // 二分法查找异常点
+        // 763 ok
+        // 764 error
+        // if(i >= 763){
+        //     if(i === 763){
+        //         console.log("---", $0, $1, $2)
+        //         let result = eval('"' + $1 + '"')
+        //         console.log("---", result)
+        //     }
+        //     return $0
+        // }
+
         let result = eval('"' + $1 + '"')
-        // console.log("---", result)
-        if(result.includes("'"))
-        return `'${result.replace(/'/g, "\\'")}'`
-        else
+        if(result.includes("'") || result.includes("*")){
+            // 不做处理
+            return $0
+        }
         return `'${result}'`;
     }
 );
@@ -51,4 +65,4 @@ resultCode = resultCode.replace(
     }
 );
 fs.writeFileSync(path.resolve(__dirname, '../app/app/main/index2.js'), resultCode)
-// console.log()
+
