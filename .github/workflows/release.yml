@@ -71,67 +71,57 @@ jobs:
         uses: actions/upload-artifact@v2.3.1
         with:
           # Artifact name
-          name: wechat-devtools-${{ matrix.ARCH }}.src
+          name: bilibili-${{ matrix.ARCH }}.src
           path: tmp/src
 
-  # build-appimage:
-  #   name: Build tar.gz AppImage
-  #   needs:
-  #     - build-src
-  #   runs-on: ubuntu-latest
+  build-appimage:
+    name: Build tar.gz AppImage
+    needs:
+      - build-src
+    runs-on: ubuntu-latest
 
-  #   strategy:
-  #     matrix:
-  #       node-version: [16.x]
-  #       ARCH: ['x86_64']
-  #       # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    strategy:
+      matrix:
+        node-version: [16.x]
+        ARCH: ['x86_64']
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: Download artifacts
-  #       uses: actions/download-artifact@v2
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
 
-  #     - name: Prepare
-  #       run: |
-  #         cd compiler && npm install
-  #         echo "$UID, $GID"
+      - name: Prepare
+        run: |
+          echo "$UID, $GID"
 
-  #     - name: Generate TAG
-  #       id: Tag
-  #       run: |
-  #         tag='continuous'
-  #         name='Continuous Build'
-  #         if [ 'true' == ${{ startsWith(github.ref, 'refs/tags/') }} ];then
-  #           tag='${{ github.ref_name }}'
-  #           name='${{ github.ref_name }}'
-  #         fi
-  #         echo "tag result: $tag - $name"
-  #         echo "::set-output name=tag::$tag"
-  #         echo "::set-output name=name::$name"
+      - name: Generate TAG
+        id: Tag
+        run: |
+          tag='continuous'
+          name='Continuous Build'
+          if [ 'true' == ${{ startsWith(github.ref, 'refs/tags/') }} ];then
+            tag='${{ github.ref_name }}'
+            name='${{ github.ref_name }}'
+          fi
+          echo "tag result: $tag - $name"
+          echo "::set-output name=tag::$tag"
+          echo "::set-output name=name::$name"
          
-  #     - name: Build
-  #       run: |
-  #         export NO_WINE=false
-  #         export ACTION_MODE=true
-  #         # tar.gz AppImage
-  #         ls -l
-  #         mkdir -p tmp/build
-  #         tools/build-prepare.sh
-  #         tools/build-release.sh ${{ matrix.ARCH }} ${{ steps.tag.outputs.tag }}
-  #         export NO_WINE=true
-  #         tools/build-prepare.sh
-  #         tools/build-release.sh ${{ matrix.ARCH }} ${{ steps.tag.outputs.tag }}
+      - name: Build
+        run: |
+          export ACTION_MODE=true
+          ls -l
+          mkdir -p tmp/build
+          tools/build-prepare.sh
+          tools/build-appimage.sh ${{ matrix.ARCH }} ${{ steps.tag.outputs.tag }}
 
-  #     - name: View Directory
-  #       run: |
-  #         ls -l
-
-  #     - name: Upload artifact
-  #       uses: actions/upload-artifact@v2.3.1
-  #       with:
-  #         # Artifact name
-  #         name: wechat-devtools-${{ matrix.ARCH }}.build
-  #         path: tmp/build
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2.3.1
+        with:
+          # Artifact name
+          name: bilibili-${{ matrix.ARCH }}.build
+          path: tmp/build
 
   # build-deb:
   #   name: Build DEB Package
@@ -187,7 +177,7 @@ jobs:
   #       uses: actions/upload-artifact@v2.3.1
   #       with:
   #         # Artifact name
-  #         name: wechat-devtools-${{ matrix.ARCH }}.build
+  #         name: bilibili-${{ matrix.ARCH }}.build
   #         path: tmp/build
 
   # build-arch:
@@ -264,7 +254,7 @@ jobs:
   #       uses: actions/upload-artifact@v2.3.1
   #       with:
   #         # Artifact name
-  #         name: wechat-devtools-${{ matrix.ARCH }}.build
+  #         name: bilibili-${{ matrix.ARCH }}.build
   #         path: tmp/build
 
   # build-snap:
@@ -304,13 +294,14 @@ jobs:
   #       uses: actions/upload-artifact@v2.3.1
   #       with:
   #         # Artifact name
-  #         name: wechat-devtools-${{ matrix.ARCH }}.build
+  #         name: bilibili-${{ matrix.ARCH }}.build
   #         path: tmp/build
 
   upload:
     name: Create release and upload artifacts
     needs:
       - build-src
+      - build-appimage
     runs-on: ubuntu-latest
     steps:
       - name: Download artifacts
@@ -338,7 +329,7 @@ jobs:
         run: |
           wget -q https://github.com/TheAssassin/pyuploadtool/releases/download/continuous/pyuploadtool-x86_64.AppImage
           chmod +x pyuploadtool-x86_64.AppImage
-          ./pyuploadtool-x86_64.AppImage **src/*.tar.gz # **build/*.AppImage **build/*.deb
+          ./pyuploadtool-x86_64.AppImage **src/*.tar.gz **build/*.AppImage # **build/*.deb
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -350,5 +341,5 @@ jobs:
           tag_name: ${{ steps.tag.outputs.tag }}
           files: |
             **src/*.tar.gz
-            # **build/*.AppImage
+            **build/*.AppImage
             # **build/*.deb
