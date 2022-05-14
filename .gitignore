@@ -1,5 +1,6 @@
 cache
 tmp
+node_modules
 
 electron
 
