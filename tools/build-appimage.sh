@@ -72,6 +72,6 @@ cd "$app_dir"
 
 # appimagetool $app_dir
 notice "MAKE APPIMAGE"
-"$tmp_dir/appimagetool-x86_64.AppImage" "$app_dir" "$build_dir/bilibili_${VERSION}_${ARCH}.AppImage"
+"$tmp_dir/appimagetool-x86_64.AppImage" "$app_dir" "$build_dir/bilibili-${VERSION}-${ARCH}.AppImage"
 
 rm -rf $app_dir

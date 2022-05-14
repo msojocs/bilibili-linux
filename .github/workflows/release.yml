@@ -114,7 +114,7 @@ jobs:
           ls -l
           mkdir -p tmp/build
           tools/build-prepare.sh
-          tools/build-appimage.sh ${{ matrix.ARCH }} ${{ steps.tag.outputs.tag }}
+          tools/build-appimage.sh ${{ steps.tag.outputs.tag }} ${{ matrix.ARCH }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2.3.1
