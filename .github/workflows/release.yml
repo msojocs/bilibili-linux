@@ -61,7 +61,7 @@ jobs:
         run: |
           ls -l
           mkdir -p tmp/src
-          tar -zcf tmp/src/bilibili-${{ matrix.ARCH }}-${{ steps.tag.outputs.tag }}.tar.gz bin app electron
+          tar -zcf tmp/src/bilibili-${{ steps.tag.outputs.tag }}-${{ matrix.ARCH }}.tar.gz bin app electron
 
       - name: View Directory
         run: |
