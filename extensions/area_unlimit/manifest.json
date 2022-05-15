@@ -10,13 +10,19 @@
       ],
       "js": [
         "hook.js"
-      ]
+      ],
+      "css": [
+        "hook/common.css"
+      ],
+      "run_at": "document_end"
     }
   ],
   "web_accessible_resources": [
     {
       "resources": [
-        "script.js"
+        "hook/player.js",
+        "hook/index.js",
+        "hook/common.css"
       ],
       "matches": [
         "<all_urls>"
