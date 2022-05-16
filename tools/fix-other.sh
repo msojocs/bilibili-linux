@@ -16,8 +16,17 @@ notice() {
 
 cd "$root_dir/app"
 asar e app.asar app
+notice "路由"
+# 路由
+sed -i 's#case"SettingsPage":return r.push({name:"Settings"})}}#case"SettingsPage":return r.push({name:"Settings"});default:if(a)return r.push({name:a.page})}}#' app/render/assets/index.*.js
+notice "添加主页菜单"
+# 添加主页菜单
+sed -i "s#\\[eQ(0x34d)](\\[{'\\\x6c\\\x61\\\x62\\\x65\\\x6c':'\\\u8bbe\\\u7f6e'#[eQ(0x34d)]([{'label':'首页','click':()=>this[eQ(0x47e)][eQ(0x228)]({'page':'Root'})},{'\\\x6c\\\x61\\\x62\\\x65\\\x6c':'\\\u8bbe\\\u7f6e'#" app/main/index.js
+
 # 修复新版不能启动的问题
+notice "修复新版不能启动的问题"
 sed -i 's#||b4&&dV!==e7(0x8b1)##' app/main/index.js
+
 # 任务栏菜单
 sed -i 's#\\x77\\x69\\x6e\\x33\\x32#linux#' app/main/index.js
 # 去除标题栏
