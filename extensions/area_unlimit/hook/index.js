@@ -75,7 +75,7 @@ function addAreaLimit() {
   areaLimitPage.prepend(vue)
   let ele = document.createElement('script');
   ele.src = "https://unpkg.com/element-plus";
-  areaLimitPage.prepend(ele)
+  vue.onload = ()=>{areaLimitPage.prepend(ele)}
 
   document.addEventListener('ROAMING_sendURL', async function (e) {
     // e.detail contains the transferred data (can be anything, ranging
@@ -86,7 +86,7 @@ function addAreaLimit() {
     // console.log(roamingHTML)
     areaLimitPage.innerHTML = roamingHTML.currentTarget.responseText
     let a = 0
-    vue.onload = ()=>{createRoamingPage(++a)}
+    // vue.onload = ()=>{createRoamingPage(++a)}
     ele.onload = ()=>{createRoamingPage(++a)}
   });
   document.dispatchEvent(new CustomEvent('ROAMING_getURL', {
@@ -96,7 +96,7 @@ function addAreaLimit() {
 
 // vue
 function createRoamingPage(e){
-  if(e < 2)return;
+  // if(e < 2)return;
   console.log('RoamingPage HTML')
   const App = {
     data() {
@@ -134,22 +134,88 @@ function createRoamingPage(e){
         ],
         uposKey: localStorage.upos || 'none',
         serverList: {
-          default: ''
+          default: '',
+          mainLand: '',
+          hk: '',
+          tw: '',
+          th: ''
+        },
+        serverRule: {
+          default: [
+            {
+              validator: this.checkDomain,
+              trigger: 'blur',
+            },
+          ],
+          mainLand: [
+            {
+              validator: this.checkDomain,
+            },
+          ],
+          hk: [
+            {
+              validator: this.checkDomain,
+              trigger: 'blur',
+            },
+          ],
+          tw: [
+            {
+              validator: this.checkDomain,
+              trigger: 'blur',
+            },
+          ],
+          th: [
+            {
+              validator: this.checkDomain,
+              trigger: 'blur',
+            },
+          ]
         }
       };
     },
     created(){
       console.log('vue created')
-      this.serverList = JSON.parse(localStorage.serverList || "{}")
+      const serverList = JSON.parse(localStorage.serverList || "{}")
+      for(let area in serverList){
+        this.serverList[area] = serverList[area]
+      }
     },
     methods:{
       changeUPOS: function(upos){
         console.log('upos change: ', upos)
         localStorage.upos = upos
       },
-      changeServer: function(){
-        console.log(this.serverList)
-        localStorage.serverList = JSON.stringify(this.serverList)
+      saveServer: function(formEl){
+        if (!formEl) return
+        console.log('saveServer: ', formEl, this.$refs)
+        this.$refs.serverFormRef.validate((valid) => {
+          if (valid) {
+            console.log(this.serverList)
+            this.$notify({
+              title: 'Success',
+              message: "成功",
+              type:'success'
+            })
+            localStorage.serverList = JSON.stringify(this.serverList)
+          } else {
+            console.log('error submit!')
+            return false
+          }
+        })
+      },
+      checkDomain: (rule, value, callback)=>{
+        console.log(rule, value)
+        if((value || "") === "")
+          callback()
+        else if(!/^(?=^.{3,255}$)[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+$/.test(value)){
+          callback(new Error("域名校验失败"))
+        }
+        callback()
+      },
+      resetForm: function(formEl) {
+        console.log('resetForm: ', formEl)
+        if (!formEl) return
+        formEl.resetFields()
       }
     }
   };

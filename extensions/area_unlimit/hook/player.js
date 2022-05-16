@@ -19,6 +19,9 @@ class BiliBiliApi {
       this.server = server;
       this.request = request;
   }
+  setServer(server){
+    this.server = server
+  }
   getSeasonInfoByEpId(ep_id) {
       return this.request.get(`${this.server}/pgc/view/web/season?ep_id=${ep_id}`);
   }
@@ -46,17 +49,32 @@ window.__HOOK__ = {}
 window.__HOOK__["pgc/view/pc/season"] = async (obj)=>{
   const {request, params, config, resultHandle} = obj
   try{
-    console.log('upos: ', localStorage.upos)
-    const api = new BiliBiliApi(request, "//api.qiu.moe")
+    const api = new BiliBiliApi(request)
     window.access_key = window.access_key || await api.getAccessToken()
+    console.log('upos: ', localStorage.upos)
+    const serverList = JSON.parse(localStorage.serverList || "{}")
+    console.log('serverList: ', serverList)
+    let seasonInfo = null;
+    for(let area in serverList){
+      console.log("for ")
+      const server = serverList[area] || ""
+      if(server.length === 0)continue
 
-    const seasonInfo = await api.getSeasonInfoByEpSsIdOnBangumi(params.ep_id || "", params.season_id || "")
-    console.log('seasonInfo: ', seasonInfo)
-    // title id
-    seasonInfo.result.episodes.forEach(ep=>{
-      ep.title = ep.title || `第${ep.index}话 ${ep.index_title}`
-      ep.id = ep.id || ep.ep_id
-    })
+      api.setServer(server)
+
+      seasonInfo = await api.getSeasonInfoByEpSsIdOnBangumi(params.ep_id || "", params.season_id || "")
+      console.log('area: ', area, ', seasonInfo: ', seasonInfo)
+      if(seasonInfo.code !== 0)continue;
+      // title id
+      seasonInfo.result.episodes.forEach(ep=>{
+        ep.title = ep.title || `第${ep.index}话 ${ep.index_title}`
+        ep.id = ep.id || ep.ep_id
+      })
+      break;
+    }
+
+    if(seasonInfo?.code??-1 !== 0)return Promise.reject(obj.error)
+    
     return resultHandle(seasonInfo.result)
   }catch(err){
     console.error('HOOK ERROR: ', err)

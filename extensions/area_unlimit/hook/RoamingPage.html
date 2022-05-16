@@ -12,7 +12,7 @@
       <div class="settings_content--item upos-item">
         <h4 class="b_text mt_0">upos服务器设置</h4>
         <div class="mt_md">
-          <p class="b_text text2"><strong>替换upos视频服务器：</strong>（描述）</p>
+          <p class="b_text text2"><strong>替换upos视频服务器：</strong>（暂时无效）</p>
           <el-select v-model="uposKey" class="m-2" placeholder="Select" @change="changeUPOS">
             <el-option
               v-for="item in uposList"
@@ -27,11 +27,65 @@
       <div class="settings_content--item server-item">
         <h4 class="b_text mt_0">自定义服务器设置</h4>
         <div class="server-list">
-          <div><span>首选：</span><el-input v-model="serverList.default" placeholder="Please input" class=" server-input" @change="changeServer" /></div>
-          <div><span>大陆：</span><el-input v-model="serverList.mainLand" placeholder="Please input" class="server-input" @change="changeServer" /></div>
-          <div><span>香港：</span><el-input v-model="serverList.hk" placeholder="Please input" class="server-input" @change="changeServer" /></div>
-          <div><span>台湾：</span><el-input v-model="serverList.tw" placeholder="Please input" class="server-input" @change="changeServer" /></div>
-          <div><span>泰国/东南亚：</span><el-input v-model="serverList.th" placeholder="Please input" class="server-input" @change="changeServer" /></div>
+          <el-form ref="serverFormRef" :rules="serverRule" :model="serverList">
+            <el-form-item
+              label="首选"
+              prop="default"
+            >
+              <el-input
+                v-model="serverList.default"
+                type="text"
+                autocomplete="off"
+              />
+            </el-form-item>
+            <el-form-item
+              label="大陆"
+              prop="mainLand"
+              :rules="serverRule.mainLand"
+            >
+              <el-input
+                v-model="serverList.mainLand"
+                type="text"
+                autocomplete="off"
+              />
+            </el-form-item>
+            <el-form-item
+              label="香港"
+              prop="hk"
+            >
+              <el-input
+                v-model="serverList.hk"
+                type="text"
+                autocomplete="off"
+              />
+            </el-form-item>
+            <el-form-item
+              label="台湾"
+              prop="tw"
+            >
+              <el-input
+                v-model="serverList.tw"
+                type="text"
+                autocomplete="off"
+              />
+            </el-form-item>
+            <el-form-item
+              label="泰国/东南亚"
+              prop="th"
+            >
+              <el-input
+                v-model="serverList.th"
+                type="text"
+                autocomplete="off"
+              />
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="saveServer($refs.serverFormRef)"
+                >保存</el-button
+              >
+              <el-button @click="resetForm($refs.serverFormRef)">重置</el-button>
+            </el-form-item>
+          </el-form>
         </div>
 
       </div>
