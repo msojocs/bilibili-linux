@@ -40,5 +40,9 @@ sed -i 's#NA(t.result):null);func#NA(t.result):null).catch(err=>{if(window.__HOO
 notice "播放链接"
 sed -i 's#then((function(t){var e=performance\.now(#then(((t)=>{var e=performance.now(#' $tmp_dir/render/assets/lib/core.js
 sed -i 's#var e=performance.now()-r,o=i.parse(t.data,i.config,n);return #var e=performance.now()-r,o=i.parse(t.data,i.config,n);if(t.data.message==="抱歉您所在地区不可观看！"){const API="api.qiu.moe";this.fragmentUrl=`\${API}/pgc/player/web/playurl`;this.params.access_key=window.access_key||"";this.params.area=window.area||"hk";return i.track.o(j.b.API_PlayUrl_Fail_Time,{val:e.toFixed()}),(t||"http:"===location.protocol)?(i.retried++,i.log.i(i.tag,"Retry: "+i.retried+"/"+i.config.retryCount),t?i.getRemoteResponse(--t,e):i.getRemoteResponse(0,!0)):Promise.reject({code:0,message:o.response\&\&o.response.status\&\&o.response.status.toString()||"",url:n})}return #' $tmp_dir/render/assets/lib/core.js
+
+notice "拦截用户信息请求"
+sed -i 's#acc/info",{params:e}).then(resToObj)}#acc/info",{params:e}).then(resToObj).catch(err=>{if(window.__HOOK__["x/space/acc/info"]){return window.__HOOK__["x/space/acc/info"](resToObj,e,err)}return Promise.reject(err)})}#' $tmp_dir/render/assets/index.*.js
+
 asar p $tmp_dir app.asar
 rm -rf $tmp_dir

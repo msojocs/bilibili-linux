@@ -1,4 +1,20 @@
 console.log("index")
+var space_account_info_map = {
+  "11783021": { "code": 0, "message": "0", "ttl": 1, "data": { "mid": 11783021, "name": "哔哩哔哩番剧出差", "sex": "保密", "face": "http://i0.hdslb.com/bfs/face/9f10323503739e676857f06f5e4f5eb323e9f3f2.jpg", "sign": "", "rank": 10000, "level": 6, "jointime": 0, "moral": 0, "silence": 0, "coins": 0, "fans_badge": false, "fans_medal": { "show": false, "wear": false, "medal": null }, "official": { "role": 3, "title": "哔哩哔哩番剧出差 官方账号", "desc": "", "type": 1 }, "vip": { "type": 0, "status": 0, "due_date": 0, "vip_pay_type": 0, "theme_type": 0, "label": { "path": "", "text": "", "label_theme": "", "text_color": "", "bg_style": 0, "bg_color": "", "border_color": "" }, "avatar_subscript": 0, "nickname_color": "", "role": 0, "avatar_subscript_url": "" }, "pendant": { "pid": 0, "name": "", "image": "", "expire": 0, "image_enhance": "", "image_enhance_frame": "" }, "nameplate": { "nid": 0, "name": "", "image": "", "image_small": "", "level": "", "condition": "" }, "user_honour_info": { "mid": 0, "colour": null, "tags": [] }, "is_followed": true, "top_photo": "http://i2.hdslb.com/bfs/space/cb1c3ef50e22b6096fde67febe863494caefebad.png", "theme": {}, "sys_notice": {}, "live_room": { "roomStatus": 1, "liveStatus": 0, "url": "https://live.bilibili.com/931774", "title": "「梦之祭！部」 社团活动最终回", "cover": "http://i0.hdslb.com/bfs/live/c89c499096fa6527765de1fcaa021c9e2db7fbf8.jpg", "online": 0, "roomid": 931774, "roundStatus": 0, "broadcast_type": 0 }, "birthday": "", "school": { "name": "" }, "profession": { "name": "" }, "tags": null, "series": { "user_upgrade_status": 3, "show_upgrade_window": false } } },
+  "1988098633": { "code": 0, "message": "0", "ttl": 1, "data": { "mid": 1988098633, "name": "b站_戲劇咖", "sex": "保密", "face": "http://i0.hdslb.com/bfs/face/member/noface.jpg", "sign": "提供bilibili港澳台地區專屬戲劇節目。", "rank": 10000, "level": 2, "jointime": 0, "moral": 0, "silence": 0, "coins": 0, "fans_badge": false, "fans_medal": { "show": false, "wear": false, "medal": null }, "official": { "role": 0, "title": "", "desc": "", "type": -1 }, "vip": { "type": 0, "status": 0, "due_date": 0, "vip_pay_type": 0, "theme_type": 0, "label": { "path": "", "text": "", "label_theme": "", "text_color": "", "bg_style": 0, "bg_color": "", "border_color": "" }, "avatar_subscript": 0, "nickname_color": "", "role": 0, "avatar_subscript_url": "" }, "pendant": { "pid": 0, "name": "", "image": "", "expire": 0, "image_enhance": "", "image_enhance_frame": "" }, "nameplate": { "nid": 0, "name": "", "image": "", "image_small": "", "level": "", "condition": "" }, "user_honour_info": { "mid": 0, "colour": null, "tags": [] }, "is_followed": true, "top_photo": "http://i0.hdslb.com/bfs/space/cb1c3ef50e22b6096fde67febe863494caefebad.png", "theme": {}, "sys_notice": {}, "live_room": { "roomStatus": 0, "liveStatus": 0, "url": "", "title": "", "cover": "", "online": 0, "roomid": 0, "roundStatus": 0, "broadcast_type": 0 }, "birthday": "01-01", "school": { "name": "" }, "profession": { "name": "" }, "tags": null, "series": { "user_upgrade_status": 3, "show_upgrade_window": false } } },
+  "2042149112": { "code": 0, "message": "0", "ttl": 1, "data": { "mid": 2042149112, "name": "b站_綜藝咖", "sex": "保密", "face": "http://i0.hdslb.com/bfs/face/member/noface.jpg", "sign": "提供bilibili港澳台地區專屬綜藝節目。", "rank": 10000, "level": 3, "jointime": 0, "moral": 0, "silence": 0, "coins": 0, "fans_badge": false, "fans_medal": { "show": false, "wear": false, "medal": null }, "official": { "role": 0, "title": "", "desc": "", "type": -1 }, "vip": { "type": 0, "status": 0, "due_date": 0, "vip_pay_type": 0, "theme_type": 0, "label": { "path": "", "text": "", "label_theme": "", "text_color": "", "bg_style": 0, "bg_color": "", "border_color": "" }, "avatar_subscript": 0, "nickname_color": "", "role": 0, "avatar_subscript_url": "" }, "pendant": { "pid": 0, "name": "", "image": "", "expire": 0, "image_enhance": "", "image_enhance_frame": "" }, "nameplate": { "nid": 0, "name": "", "image": "", "image_small": "", "level": "", "condition": "" }, "user_honour_info": { "mid": 0, "colour": null, "tags": [] }, "is_followed": true, "top_photo": "http://i0.hdslb.com/bfs/space/cb1c3ef50e22b6096fde67febe863494caefebad.png", "theme": {}, "sys_notice": {}, "live_room": { "roomStatus": 0, "liveStatus": 0, "url": "", "title": "", "cover": "", "online": 0, "roomid": 0, "roundStatus": 0, "broadcast_type": 0 }, "birthday": "", "school": { "name": "" }, "profession": { "name": "" }, "tags": null, "series": { "user_upgrade_status": 3, "show_upgrade_window": false } } },
+};
+window.__HOOK__ = {}
+window.__HOOK__["x/space/acc/info"] = async (resToObj, params, err)=>{
+  const mid = params.mid
+  console.log('mid: ', mid)
+  if(space_account_info_map[mid])
+  return resToObj(space_account_info_map[mid])
+  else
+  return Promise.reject(err)
+}
+
+
 const HTTP = {
   get(url) {
     return new Promise((resolve, reject) => {
@@ -70,12 +86,22 @@ function addAreaLimit() {
   areaLimitPage.dataset.hash = "#/page/areaLimit"
   areaLimitPage.classList.add(...appSettingDiv.children[1].classList)
   appSettingDiv.appendChild(areaLimitPage);
+  const loadStatus = document.createElement('span')
+  loadStatus.style.color = "red"
+  loadStatus.style.fontSize = "xxx-large"
+  areaLimitPage.appendChild(loadStatus)
+
   let vue = document.createElement('script');
   vue.src = "https://unpkg.com/vue@next";
-  areaLimitPage.prepend(vue)
+  loadStatus.textContent="[1/2]加载vue"
+  appSettingDiv.prepend(vue)
+  
   let ele = document.createElement('script');
   ele.src = "https://unpkg.com/element-plus";
-  vue.onload = ()=>{areaLimitPage.prepend(ele)}
+  vue.onload = ()=>{
+    loadStatus.textContent="[2/2]加载element-plus"
+    appSettingDiv.prepend(ele)
+  }
 
   document.addEventListener('ROAMING_sendURL', async function (e) {
     // e.detail contains the transferred data (can be anything, ranging
@@ -83,11 +109,15 @@ function addAreaLimit() {
     // Do something, for example:
     console.log(e.detail);
     const roamingHTML = await HTTP.get(e.detail)
-    // console.log(roamingHTML)
-    areaLimitPage.innerHTML = roamingHTML.currentTarget.responseText
-    let a = 0
-    // vue.onload = ()=>{createRoamingPage(++a)}
-    ele.onload = ()=>{createRoamingPage(++a)}
+    const container = document.createElement('div')
+    
+    container.innerHTML = roamingHTML.currentTarget.responseText
+    areaLimitPage.appendChild(container)
+
+    ele.onload = ()=>{
+      loadStatus.textContent = ""
+      createRoamingPage()
+    }
   });
   document.dispatchEvent(new CustomEvent('ROAMING_getURL', {
     detail: 'RoamingPage' // Some variable from Gmail.
@@ -96,7 +126,6 @@ function addAreaLimit() {
 
 // vue
 function createRoamingPage(e){
-  // if(e < 2)return;
   console.log('RoamingPage HTML')
   const App = {
     data() {
@@ -246,3 +275,4 @@ const url = new URL(location.href)
 if (url.hash === "#/page/settings") {
   addAreaLimit()
 }
+
