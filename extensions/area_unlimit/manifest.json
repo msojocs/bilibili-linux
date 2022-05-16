@@ -22,7 +22,8 @@
       "resources": [
         "hook/player.js",
         "hook/index.js",
-        "hook/common.css"
+        "hook/common.css",
+        "hook/RoamingPage.html"
       ],
       "matches": [
         "<all_urls>"

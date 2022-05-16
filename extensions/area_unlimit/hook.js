@@ -13,7 +13,15 @@ var css = document.createElement('link');
 css.rel = "stylesheet"
 css.href = chrome.extension.getURL(`hook/common.css`);
 (document.head || document.documentElement).appendChild(css);
-css.onload = function () {
-  css.remove();
-};
-console.log("=====", css)
+
+// Event listener
+document.addEventListener('ROAMING_getURL', function(e) {
+  // e.detail contains the transferred data (can be anything, ranging
+  // from JavaScript objects to strings).
+  // Do something, for example:
+  console.log(e.detail);
+  const roamingPageURL = chrome.extension.getURL(`hook/RoamingPage.html`);
+  document.dispatchEvent(new CustomEvent('ROAMING_sendURL', {
+    detail: roamingPageURL // Some variable from Gmail.
+}));
+});

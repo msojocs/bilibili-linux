@@ -1,3 +1,21 @@
 .area_limit{
   cursor: pointer;
 }
+
+.server-item .server-list{
+  display: flex;
+  flex-wrap:wrap;
+}
+.server-item .server-list > div{
+  display: flex;
+  width: 37%;
+  justify-content: flex-end;
+  margin: 5px;
+}
+.server-item .server-input {
+  width: 70%;
+}
+.server-list span {
+  align-items: center;
+  display: flex;
+}
