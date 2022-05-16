@@ -46,6 +46,7 @@ window.__HOOK__ = {}
 window.__HOOK__["pgc/view/pc/season"] = async (obj)=>{
   const {request, params, config, resultHandle} = obj
   try{
+    console.log('upos: ', localStorage.upos)
     const api = new BiliBiliApi(request, "//api.qiu.moe")
     window.access_key = window.access_key || await api.getAccessToken()
 

@@ -70,6 +70,12 @@ function addAreaLimit() {
   areaLimitPage.dataset.hash = "#/page/areaLimit"
   areaLimitPage.classList.add(...appSettingDiv.children[1].classList)
   appSettingDiv.appendChild(areaLimitPage);
+  let vue = document.createElement('script');
+  vue.src = "https://unpkg.com/vue@next";
+  areaLimitPage.prepend(vue)
+  let ele = document.createElement('script');
+  ele.src = "https://unpkg.com/element-plus";
+  areaLimitPage.prepend(ele)
 
   document.addEventListener('ROAMING_sendURL', async function (e) {
     // e.detail contains the transferred data (can be anything, ranging
@@ -79,12 +85,78 @@ function addAreaLimit() {
     const roamingHTML = await HTTP.get(e.detail)
     // console.log(roamingHTML)
     areaLimitPage.innerHTML = roamingHTML.currentTarget.responseText
+    let a = 0
+    vue.onload = ()=>{createRoamingPage(++a)}
+    ele.onload = ()=>{createRoamingPage(++a)}
   });
   document.dispatchEvent(new CustomEvent('ROAMING_getURL', {
     detail: 'RoamingPage' // Some variable from Gmail.
   }));
 }
 
+// vue
+function createRoamingPage(e){
+  if(e < 2)return;
+  console.log('RoamingPage HTML')
+  const App = {
+    data() {
+      return {
+        message: "Hello Element Plus",
+        uposList: [
+          {
+            value: 'none',
+            label: '不替换'
+          },
+          {
+            value: 'k3s',
+            label: 'k3s(金山)'
+          },
+          {
+            value: 'kodo',
+            label: 'kodo（七牛）'
+          },
+          {
+            value: 'cos',
+            label: 'cos（腾讯）'
+          },
+          {
+            value: 'bos',
+            label: 'bos（百度）'
+          },
+          {
+            value: 'wcs',
+            label: 'wcs（网宿）'
+          },
+          {
+            value: 'hw',
+            label: 'hw（251）'
+          },
+        ],
+        uposKey: localStorage.upos || 'none',
+        serverList: {
+          default: ''
+        }
+      };
+    },
+    created(){
+      console.log('vue created')
+      this.serverList = JSON.parse(localStorage.serverList || "{}")
+    },
+    methods:{
+      changeUPOS: function(upos){
+        console.log('upos change: ', upos)
+        localStorage.upos = upos
+      },
+      changeServer: function(){
+        console.log(this.serverList)
+        localStorage.serverList = JSON.stringify(this.serverList)
+      }
+    }
+  };
+  const app = Vue.createApp(App);
+  app.use(ElementPlus);
+  app.mount("#roamingApp");
+}
 /**
  * 前提：默认页面为「推荐」
  * 操作：切换到设置

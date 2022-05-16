@@ -15,7 +15,7 @@ css.href = chrome.extension.getURL(`hook/common.css`);
 (document.head || document.documentElement).appendChild(css);
 
 // Event listener
-document.addEventListener('ROAMING_getURL', function(e) {
+document.addEventListener('ROAMING_getURL', function (e) {
   // e.detail contains the transferred data (can be anything, ranging
   // from JavaScript objects to strings).
   // Do something, for example:
@@ -23,5 +23,5 @@ document.addEventListener('ROAMING_getURL', function(e) {
   const roamingPageURL = chrome.extension.getURL(`hook/RoamingPage.html`);
   document.dispatchEvent(new CustomEvent('ROAMING_sendURL', {
     detail: roamingPageURL // Some variable from Gmail.
-}));
+  }));
 });
