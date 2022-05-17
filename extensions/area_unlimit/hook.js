@@ -9,6 +9,13 @@ s.onload = function () {
   s.remove();
 };
 
+var commonJS = document.createElement('script');
+commonJS.src = chrome.extension.getURL(`hook/common.js`);
+(document.head || document.documentElement).appendChild(commonJS);
+commonJS.onload = function () {
+  commonJS.remove();
+};
+
 var css = document.createElement('link');
 css.rel = "stylesheet"
 css.href = chrome.extension.getURL(`hook/common.css`);

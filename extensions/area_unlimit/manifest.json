@@ -23,6 +23,7 @@
         "hook/player.js",
         "hook/index.js",
         "hook/common.css",
+        "hook/common.js",
         "hook/RoamingPage.html"
       ],
       "matches": [
