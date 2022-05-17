@@ -70,7 +70,30 @@ var space_account_info_map = {
   "1988098633": { "code": 0, "message": "0", "ttl": 1, "data": { "mid": 1988098633, "name": "b站_戲劇咖", "sex": "保密", "face": "http://i0.hdslb.com/bfs/face/member/noface.jpg", "sign": "提供bilibili港澳台地區專屬戲劇節目。", "rank": 10000, "level": 2, "jointime": 0, "moral": 0, "silence": 0, "coins": 0, "fans_badge": false, "fans_medal": { "show": false, "wear": false, "medal": null }, "official": { "role": 0, "title": "", "desc": "", "type": -1 }, "vip": { "type": 0, "status": 0, "due_date": 0, "vip_pay_type": 0, "theme_type": 0, "label": { "path": "", "text": "", "label_theme": "", "text_color": "", "bg_style": 0, "bg_color": "", "border_color": "" }, "avatar_subscript": 0, "nickname_color": "", "role": 0, "avatar_subscript_url": "" }, "pendant": { "pid": 0, "name": "", "image": "", "expire": 0, "image_enhance": "", "image_enhance_frame": "" }, "nameplate": { "nid": 0, "name": "", "image": "", "image_small": "", "level": "", "condition": "" }, "user_honour_info": { "mid": 0, "colour": null, "tags": [] }, "is_followed": true, "top_photo": "http://i0.hdslb.com/bfs/space/cb1c3ef50e22b6096fde67febe863494caefebad.png", "theme": {}, "sys_notice": {}, "live_room": { "roomStatus": 0, "liveStatus": 0, "url": "", "title": "", "cover": "", "online": 0, "roomid": 0, "roundStatus": 0, "broadcast_type": 0 }, "birthday": "01-01", "school": { "name": "" }, "profession": { "name": "" }, "tags": null, "series": { "user_upgrade_status": 3, "show_upgrade_window": false } } },
   "2042149112": { "code": 0, "message": "0", "ttl": 1, "data": { "mid": 2042149112, "name": "b站_綜藝咖", "sex": "保密", "face": "http://i0.hdslb.com/bfs/face/member/noface.jpg", "sign": "提供bilibili港澳台地區專屬綜藝節目。", "rank": 10000, "level": 3, "jointime": 0, "moral": 0, "silence": 0, "coins": 0, "fans_badge": false, "fans_medal": { "show": false, "wear": false, "medal": null }, "official": { "role": 0, "title": "", "desc": "", "type": -1 }, "vip": { "type": 0, "status": 0, "due_date": 0, "vip_pay_type": 0, "theme_type": 0, "label": { "path": "", "text": "", "label_theme": "", "text_color": "", "bg_style": 0, "bg_color": "", "border_color": "" }, "avatar_subscript": 0, "nickname_color": "", "role": 0, "avatar_subscript_url": "" }, "pendant": { "pid": 0, "name": "", "image": "", "expire": 0, "image_enhance": "", "image_enhance_frame": "" }, "nameplate": { "nid": 0, "name": "", "image": "", "image_small": "", "level": "", "condition": "" }, "user_honour_info": { "mid": 0, "colour": null, "tags": [] }, "is_followed": true, "top_photo": "http://i0.hdslb.com/bfs/space/cb1c3ef50e22b6096fde67febe863494caefebad.png", "theme": {}, "sys_notice": {}, "live_room": { "roomStatus": 0, "liveStatus": 0, "url": "", "title": "", "cover": "", "online": 0, "roomid": 0, "roundStatus": 0, "broadcast_type": 0 }, "birthday": "", "school": { "name": "" }, "profession": { "name": "" }, "tags": null, "series": { "user_upgrade_status": 3, "show_upgrade_window": false } } },
 };
-
+const uposMap = {
+  ks3: 'upos-sz-mirrorks3.bilivideo.com',
+  ks3b: 'upos-sz-mirrorks3b.bilivideo.com',
+  ks3c: 'upos-sz-mirrorks3c.bilivideo.com',
+  ks32: 'upos-sz-mirrorks32.bilivideo.com',
+  kodo: 'upos-sz-mirrorkodo.bilivideo.com',
+  kodob: 'upos-sz-mirrorkodob.bilivideo.com',
+  cos: 'upos-sz-mirrorcos.bilivideo.com',
+  cosb: 'upos-sz-mirrorcosb.bilivideo.com',
+  bos: 'upos-sz-mirrorbos.bilivideo.com',
+  wcs: 'upos-sz-mirrorwcs.bilivideo.com',
+  wcsb: 'upos-sz-mirrorwcsb.bilivideo.com',
+  /** 不限CROS, 限制UA */
+  hw: 'upos-sz-mirrorhw.bilivideo.com',
+  hwb: 'upos-sz-mirrorhwb.bilivideo.com',
+  upbda2: 'upos-sz-upcdnbda2.bilivideo.com',
+  upws: 'upos-sz-upcdnws.bilivideo.com',
+  uptx: 'upos-sz-upcdntx.bilivideo.com',
+  uphw: 'upos-sz-upcdnhw.bilivideo.com',
+  js: 'upos-tf-all-js.bilivideo.com',
+  hk: 'cn-hk-eq-bcache-01.bilivideo.com',
+  akamai: 'upos-hz-mirrorakam.akamaized.net',
+};
+const AREA_MARK_CACHE = {}
 const URL_HOOK = {
   "https://api.bilibili.com/pgc/view/pc/season": async (req)=>{
     console.log('HOOK', req)
@@ -87,6 +110,17 @@ const URL_HOOK = {
       let seasonInfo = null;
       const params = _params2obj(req._params)
       console.log('params: ', params)
+      seasonInfo = await api.getSeasonInfoByEpSsIdOnBangumi(params.ep_id || "", params.season_id || "")
+      if (seasonInfo.code === 0) {
+        // title id
+        seasonInfo.result.episodes.forEach(ep => {
+          ep.title = ep.title || `第${ep.index}话 ${ep.index_title}`
+          ep.id = ep.id || ep.ep_id
+        })
+        req.responseText = JSON.stringify(seasonInfo)
+        return;
+      }
+      // TODO: 下面似乎没用了
       for (let area in serverList) {
         console.log("for ")
         const server = serverList[area] || ""
@@ -95,17 +129,14 @@ const URL_HOOK = {
         api.setServer(server)
 
         seasonInfo = await api.getSeasonInfoByEpSsIdOnBangumi(params.ep_id || "", params.season_id || "")
-        console.log('area: ', area, ', seasonInfo: ', seasonInfo)
         if (seasonInfo.code !== 0) continue;
         // title id
         seasonInfo.result.episodes.forEach(ep => {
           ep.title = ep.title || `第${ep.index}话 ${ep.index_title}`
           ep.id = ep.id || ep.ep_id
         })
-        break;
-      }
-      if ((seasonInfo?.code??-1) === 0){
         req.responseText = JSON.stringify(seasonInfo)
+        break;
       }
 
     }
@@ -119,8 +150,20 @@ const URL_HOOK = {
   "//api.bilibili.com/pgc/player/web/playurl": async (req)=>{
     const resp = JSON.parse(req.responseText)
     if(resp.code !== 0 && resp.message === "抱歉您所在地区不可观看！"){
+      const params = _params2obj(req._params)
       const serverList = JSON.parse(localStorage.serverList||"{}")
+      const upos = localStorage.upos||""
+      const isReplaceAkamai = localStorage.replaceAkamai === "true"
+
       const api = new BiliBiliApi()
+      if(serverList[AREA_MARK_CACHE[params.ep_id]] && serverList[AREA_MARK_CACHE[params.ep_id]].length > 0){
+        api.setServer(serverList[AREA_MARK_CACHE[params.ep_id]])
+        const playURL = await api.getPlayURL(req, sessionStorage.access_key || "", AREA_MARK_CACHE[params.ep_id])
+        if(playURL.code === 0){
+          req.responseText = UTILS.replaceUpos(JSON.stringify(playURL), uposMap[upos], isReplaceAkamai)
+          return;
+        }
+      }
       for(let area in serverList){
         const server = serverList[area] || ""
         console.log('getPlayURL from ', area, ' - ', server)
@@ -129,7 +172,10 @@ const URL_HOOK = {
         
         const playURL = await api.getPlayURL(req, sessionStorage.access_key || "", area)
         if(playURL.code !== 0)continue
-        req.responseText = JSON.stringify(playURL)
+        // 解析成功
+        AREA_MARK_CACHE[params.ep_id] = area
+
+        req.responseText = UTILS.replaceUpos(JSON.stringify(playURL), uposMap[upos], isReplaceAkamai)
         break
       }
     }
@@ -302,3 +348,13 @@ function _params2obj(params){
   return result
 }
 window.XMLHttpRequest = HttpRequest;
+
+const UTILS = {
+  replaceUpos(playURL, host, replaceAkamai = false){
+    console.log('replaceUpos:', host, replaceAkamai)
+    if (host && (!playURL.includes("akamaized.net") || replaceAkamai)) {
+      playURL = playURL.replace(/:\\?\/\\?\/[^\/]+\\?\//g, `://${host}/`);
+    }
+    return playURL
+  }
+}

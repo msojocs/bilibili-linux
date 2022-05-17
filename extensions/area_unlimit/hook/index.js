@@ -122,8 +122,8 @@ function createRoamingPage(e){
             label: '不替换'
           },
           {
-            value: 'k3s',
-            label: 'k3s(金山)'
+            value: 'ks3',
+            label: 'ks3(金山)'
           },
           {
             value: 'kodo',
@@ -147,6 +147,7 @@ function createRoamingPage(e){
           },
         ],
         uposKey: localStorage.upos || 'none',
+        replaceAkamai: localStorage.replaceAkamai === "true",
         serverList: {
           default: '',
           mainLand: '',
@@ -198,6 +199,19 @@ function createRoamingPage(e){
       changeUPOS: function(upos){
         console.log('upos change: ', upos)
         localStorage.upos = upos
+        this.$notify({
+          title: 'Success',
+          message: "成功",
+          type:'success'
+        })
+      },
+      changeReplaceAkamai: function(){
+        this.$notify({
+          title: 'Success',
+          message: "成功",
+          type:'success'
+        })
+        localStorage.replaceAkamai = this.replaceAkamai?'true':'false'
       },
       saveServer: function(formEl){
         if (!formEl) return
