@@ -63,6 +63,19 @@ class BiliBiliApi {
       return Promise.resolve(access_key)
     })
   }
+  searchBangumi(params, area) {
+    let path = "x/web-interface/search/type"
+    if(area === "th")path = "intl/gateway/v2/app/search/type"
+    const url = `https://${this.server}/${path}?${params}&area=${area}`
+    return HTTP.get(url).then(res => {
+      const resp = JSON.parse(res.responseText)
+      console.log("searchBangumi: ", resp)
+      if(area === "th")
+      return Promise.resolve(resp.data.items || [])
+      else
+      return Promise.resolve(resp.data.result || [])
+    })
+  }
 }
 
 var space_account_info_map = {
@@ -116,7 +129,9 @@ const URL_HOOK = {
         seasonInfo.result.episodes.forEach(ep => {
           ep.title = ep.title || `第${ep.index}话 ${ep.index_title}`
           ep.id = ep.id || ep.ep_id
+          ep.rights && (ep.rights.area_limit = 0)
         })
+        console.log('seasonInfo: ', seasonInfo)
         req.responseText = JSON.stringify(seasonInfo)
         return;
       }
@@ -139,11 +154,19 @@ const URL_HOOK = {
         break;
       }
 
+    }else{
+      // 一些番剧可以获取到信息，但是内部有限制区域
+      resp.result.episodes.forEach(ep => {
+        ep.rights && (ep.rights.area_limit = 0,ep.rights.allow_dm = 0)
+      })
+      req.responseText = JSON.stringify(resp)
     }
   },
   "https://api.bilibili.com/pgc/view/web/season/user/status": async (req)=>{
+    // console.log("解除区域限制")
     const resp = JSON.parse(req.responseText)
     resp.result.area_limit = 0;
+    console.log(resp)
     req.responseText = JSON.stringify(resp)
   },
   // 获取播放链接
@@ -188,6 +211,35 @@ const URL_HOOK = {
       const userInfo = space_account_info_map[params.mid]
       if(userInfo)req.responseText = JSON.stringify(userInfo)
     }
+  },
+  // 搜索
+  "https://api.bilibili.com/x/web-interface/search/type": async (req)=>{
+    // console.log('===搜索 HOOK: ', req)
+    const params = _params2obj(req._params)
+    if(params.search_type === 'media_bangumi'){
+      try{
+        // 搜索番剧
+        const searchResult = JSON.parse(req.responseText)
+        searchResult.data.result = searchResult.data.result || []
+        const api = new BiliBiliApi()
+        const serverList = JSON.parse(localStorage.serverList||"{}")
+        for(let area in serverList){
+          const server = serverList[area] || ""
+          if(server.length === 0)continue
+
+          api.setServer(server)
+          const result = await api.searchBangumi(req._params, area)
+          console.log('searchResult:', result)
+          result.forEach(s=>{
+            s.title = `[${area}]${s.title}`
+          })
+          searchResult.data.result.push(...result)
+          req.responseText = JSON.stringify(searchResult)
+        }
+      }catch(err){
+        console.error(err)
+      }
+    }
   }
 }
 
@@ -231,6 +283,7 @@ class HttpRequest extends window.XMLHttpRequest {
   open() {
     const arr = [...arguments];
     const url = arr[1];
+    // console.log('request for: ', url)
     if (url) {
       const [path, params] = url.split(/\?/);
       this._url = path;

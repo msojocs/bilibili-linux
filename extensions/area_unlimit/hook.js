@@ -9,6 +9,20 @@ s.onload = function () {
   s.remove();
 };
 
+// 首页搜索iframe
+window.onload = ()=>{
+  const searchIframe = document.querySelector("#app > div > div > div.app_layout--content.flex_col > div > div.app_search.i_page_wrapper.app_container--search.p_cover > div > iframe")
+  if(searchIframe){
+    const searchDocument = searchIframe.contentWindow.document
+    var commonJS = document.createElement('script');
+    commonJS.src = chrome.extension.getURL(`hook/common.js`);
+    (searchDocument.head || searchDocument.documentElement).appendChild(commonJS);
+    commonJS.onload = function () {
+      commonJS.remove();
+    };
+  }
+}
+
 var commonJS = document.createElement('script');
 commonJS.src = chrome.extension.getURL(`hook/common.js`);
 (document.head || document.documentElement).appendChild(commonJS);

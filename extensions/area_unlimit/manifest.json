@@ -9,7 +9,8 @@
         "<all_urls>"
       ],
       "js": [
-        "hook.js"
+        "hook.js",
+        "hook/common.js"
       ],
       "css": [
         "hook/common.css"

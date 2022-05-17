@@ -197,7 +197,7 @@ function createRoamingPage(e){
     },
     methods:{
       changeUPOS: function(upos){
-        console.log('upos change: ', upos)
+        // console.log('upos change: ', upos)
         localStorage.upos = upos
         this.$notify({
           title: 'Success',
@@ -218,7 +218,7 @@ function createRoamingPage(e){
         console.log('saveServer: ', formEl, this.$refs)
         this.$refs.serverFormRef.validate((valid) => {
           if (valid) {
-            console.log(this.serverList)
+            // console.log(this.serverList)
             this.$notify({
               title: 'Success',
               message: "成功",
@@ -232,7 +232,7 @@ function createRoamingPage(e){
         })
       },
       checkDomain: (rule, value, callback)=>{
-        console.log(rule, value)
+        // console.log(rule, value)
         if((value || "") === "")
           callback()
         else if(!/^(?=^.{3,255}$)[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+$/.test(value)){
@@ -241,7 +241,7 @@ function createRoamingPage(e){
         callback()
       },
       resetForm: function(formEl) {
-        console.log('resetForm: ', formEl)
+        // console.log('resetForm: ', formEl)
         if (!formEl) return
         formEl.resetFields()
       }
