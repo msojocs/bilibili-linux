@@ -298,4 +298,3 @@ const url = new URL(location.href)
 if (url.hash === "#/page/settings") {
   setTimeout(addAreaLimit, 500)
 }
-
