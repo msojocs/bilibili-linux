@@ -1,5 +1,5 @@
 <div>
-  <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
+  <link rel="stylesheet" href="https://lib.baomitu.com/element-plus/2.1.4/index.min.css">
 </div>
 <div id="roamingApp">
   <div class="v_scroller i_page_content min_h_100 settings_content page_scroller pt_lg">
@@ -25,7 +25,7 @@
           <el-checkbox v-model="replaceAkamai" @change="changeReplaceAkamai">替换Akamai</el-checkbox>
           <!---->
           <br>
-          PAC代理(例如：https://bili.api.jysafe.cn/pac.js)：
+          PAC代理(例如：https://bili.api.jysafe.cn/pac.php?proxy=127.0.0.1:7890)：
           <el-input v-model="pacLink" @change="changePACLink"></el-input>
         </div>
       </div>

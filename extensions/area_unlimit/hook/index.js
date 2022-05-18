@@ -77,12 +77,12 @@ function addAreaLimit() {
   areaLimitPage.appendChild(loadStatus)
 
   let vue = document.createElement('script');
-  vue.src = "https://unpkg.com/vue@next";
+  vue.src = "https://lib.baomitu.com/vue/3.2.31/vue.global.prod.min.js";
   loadStatus.textContent="[1/2]加载vue"
   appSettingDiv.prepend(vue)
   
   let ele = document.createElement('script');
-  ele.src = "https://unpkg.com/element-plus";
+  ele.src = "https://lib.baomitu.com/element-plus/2.1.4/index.full.min.js";
   vue.onload = ()=>{
     loadStatus.textContent="[2/2]加载element-plus"
     appSettingDiv.prepend(ele)
