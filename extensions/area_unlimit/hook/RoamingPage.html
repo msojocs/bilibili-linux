@@ -24,6 +24,9 @@
           <br>
           <el-checkbox v-model="replaceAkamai" @change="changeReplaceAkamai">替换Akamai</el-checkbox>
           <!---->
+          <br>
+          PAC代理(例如：https://bili.api.jysafe.cn/pac.js)：
+          <el-input v-model="pacLink" @change="changePACLink"></el-input>
         </div>
       </div>
       <div class="settings_content--item server-item">

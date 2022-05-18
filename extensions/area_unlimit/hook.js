@@ -29,6 +29,12 @@ commonJS.src = chrome.extension.getURL(`hook/common.js`);
 commonJS.onload = function () {
   commonJS.remove();
 };
+var md5JS = document.createElement('script');
+md5JS.src = chrome.extension.getURL(`utils/md5.js`);
+(document.head || document.documentElement).appendChild(md5JS);
+md5JS.onload = function () {
+  md5JS.remove();
+};
 
 var css = document.createElement('link');
 css.rel = "stylesheet"
@@ -46,3 +52,4 @@ document.addEventListener('ROAMING_getURL', function (e) {
     detail: roamingPageURL // Some variable from Gmail.
   }));
 });
+

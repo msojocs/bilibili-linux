@@ -42,13 +42,24 @@ class BiliBiliApi {
   }
   getSeasonInfoByEpSsIdOnThailand(ep_id, season_id) {
     const params = '?' + (ep_id != '' ? `ep_id=${ep_id}` : `season_id=${season_id}`) + `&mobi_app=bstar_a&s_locale=zh_SG`;
-    const newParams = generateMobiPlayUrlParams(params, 'th');
-    return HTTP.get(`${this.server}/intl/gateway/v2/ogv/view/app/season?` + newParams);
+    const newParams = UTILS.generateMobiPlayUrlParams(params, 'th');
+    return HTTP.get(`//${this.server}/intl/gateway/v2/ogv/view/app/season?` + newParams).then(res=>{
+      return Promise.resolve(JSON.parse(res.responseText || "{}"))
+    });
   }
   getPlayURL(req, ak, area) {
     return HTTP.get(`//${this.server}/pgc/player/web/playurl?${req._params}&access_key=${ak}&area=${area}`).then(res=>{
       return Promise.resolve(JSON.parse(res.responseText || "{}"))
     });
+  }
+  getPlayURLThailand(req, ak, area) {
+    const params = `?${req._params}&mobi_app=bstar_a&s_locale=zh_SG`;
+    const newParams = UTILS.generateMobiPlayUrlParams(params, 'th');
+    return HTTP.get(`//${this.server}/intl/gateway/v2/ogv/playurl?${newParams}`).then(res=>{
+    // 参考：哔哩漫游 油猴插件
+      const result = JSON.parse(res.responseText || "{}")
+      return Promise.resolve(UTILS.fixThailandPlayUrlJson(result));
+    })
   }
   getAccessToken() {
     const url = "https://passport.bilibili.com/login/app/third?appkey=27eb53fc9058f8c3&api=https%3A%2F%2Fwww.mcbbs.net%2Ftemplate%2Fmcbbs%2Fimage%2Fspecial_photo_bg.png&sign=04224646d1fea004e79606d3b038c84a"
@@ -71,7 +82,7 @@ class BiliBiliApi {
       const resp = JSON.parse(res.responseText)
       console.log("searchBangumi: ", resp)
       if(area === "th")
-      return Promise.resolve(resp.data.items || [])
+      return Promise.resolve(UTILS.handleTHSearchResult(resp.data.items || []))
       else
       return Promise.resolve(resp.data.result || [])
     })
@@ -131,11 +142,12 @@ const URL_HOOK = {
           ep.id = ep.id || ep.ep_id
           ep.rights && (ep.rights.area_limit = 0)
         })
-        console.log('seasonInfo: ', seasonInfo)
+        // 处理部分番剧存在平台限制
+        seasonInfo.result.rights.watch_platform = 0
+        console.log('seasonInfo1: ', seasonInfo)
         req.responseText = JSON.stringify(seasonInfo)
         return;
       }
-      // TODO: 下面似乎没用了
       for (let area in serverList) {
         console.log("for ")
         const server = serverList[area] || ""
@@ -143,13 +155,17 @@ const URL_HOOK = {
 
         api.setServer(server)
 
-        seasonInfo = await api.getSeasonInfoByEpSsIdOnBangumi(params.ep_id || "", params.season_id || "")
+        seasonInfo = await api.getSeasonInfoByEpSsIdOnThailand(params.ep_id || "", params.season_id || "")
         if (seasonInfo.code !== 0) continue;
+        seasonInfo.result.episodes = seasonInfo.result.episodes || seasonInfo.result.modules[0].data.episodes
         // title id
         seasonInfo.result.episodes.forEach(ep => {
           ep.title = ep.title || `第${ep.index}话 ${ep.index_title}`
           ep.id = ep.id || ep.ep_id
+          delete ep.episode_type
         })
+        seasonInfo.result.rights.watch_platform = 0
+        console.log('seasonInfo2: ', seasonInfo)
         req.responseText = JSON.stringify(seasonInfo)
         break;
       }
@@ -165,14 +181,13 @@ const URL_HOOK = {
   "https://api.bilibili.com/pgc/view/web/season/user/status": async (req)=>{
     // console.log("解除区域限制")
     const resp = JSON.parse(req.responseText)
-    resp.result.area_limit = 0;
-    console.log(resp)
+    resp.result && (resp.result.area_limit = 0)
     req.responseText = JSON.stringify(resp)
   },
   // 获取播放链接
   "//api.bilibili.com/pgc/player/web/playurl": async (req)=>{
     const resp = JSON.parse(req.responseText)
-    if(resp.code !== 0 && resp.message === "抱歉您所在地区不可观看！"){
+    if(resp.code !== 0){
       const params = _params2obj(req._params)
       const serverList = JSON.parse(localStorage.serverList||"{}")
       const upos = localStorage.upos||""
@@ -193,12 +208,16 @@ const URL_HOOK = {
         if(server.length === 0)continue;
         api.setServer(server)
         
-        const playURL = await api.getPlayURL(req, sessionStorage.access_key || "", area)
+        let playURL
+        if(area !== "th")
+        playURL = await api.getPlayURL(req, sessionStorage.access_key || "", area)
+        else
+        playURL = await api.getPlayURLThailand(req, sessionStorage.access_key || "", area)
         if(playURL.code !== 0)continue
         // 解析成功
         AREA_MARK_CACHE[params.ep_id] = area
 
-        req.responseText = UTILS.replaceUpos(JSON.stringify(playURL), uposMap[upos], isReplaceAkamai)
+        req.responseText = JSON.stringify(playURL)
         break
       }
     }
@@ -402,6 +421,15 @@ function _params2obj(params){
 }
 window.XMLHttpRequest = HttpRequest;
 
+function __awaiter(thisArg, _arguments, P, generator) {
+  function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+  return new (P || (P = Promise))(function (resolve, reject) {
+      function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+      function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+      function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+      step((generator = generator.apply(thisArg, _arguments || [])).next());
+  });
+}
 const UTILS = {
   replaceUpos(playURL, host, replaceAkamai = false){
     console.log('replaceUpos:', host, replaceAkamai)
@@ -409,5 +437,328 @@ const UTILS = {
       playURL = playURL.replace(/:\\?\/\\?\/[^\/]+\\?\//g, `://${host}/`);
     }
     return playURL
+  },
+  handleTHSearchResult(itemList){
+    const result = []
+    for(let item of itemList){
+      result.push({
+        type: "media_bangumi",
+        title: item.title.replace(/\u003c.*?\u003e/g, ""),
+        media_type: 1,
+        season_id: item.season_id,
+        "season_type": 1,
+        "season_type_name": "番剧",
+        "selection_style": "horizontal",
+        "media_mode": 2,
+        "fix_pubtime_str": "",
+        cover: item.cover,
+        url: item.uri.replace('bstar://bangumi/season/', 'https://www.bilibili.com/bangumi/play/ss'),
+        "is_avid": false,
+      })
+    }
+    return result
+  },
+  generateMobiPlayUrlParams(originUrl, area) {
+    // 提取参数为数组
+    let a = originUrl.split('?')[1].split('&');
+    // 参数数组转换为对象
+    let theRequest = {};
+    for (let i = 0; i < a.length; i++) {
+        let key = a[i].split("=")[0];
+        let value = a[i].split("=")[1];
+        // 给对象赋值
+        theRequest[key] = value;
+    }
+    // 追加 mobi api 需要的参数
+    theRequest.access_key = sessionStorage.access_key;
+    if (area === 'th') {
+        theRequest.area = 'th';
+        theRequest.appkey = '7d089525d3611b1c';
+        theRequest.build = '1001310';
+        theRequest.mobi_app = 'bstar_a';
+        theRequest.platform = 'android';
+    }
+    else {
+        theRequest.area = area;
+        theRequest.appkey = '07da50c9a0bf829f';
+        theRequest.build = '5380700';
+        theRequest.device = 'android';
+        theRequest.mobi_app = 'android_b';
+        theRequest.platform = 'android_b';
+        theRequest.buvid = 'XY418E94B89774E201E22C5B709861B7712DD';
+        // theRequest.fnval = '0'; // 强制 FLV
+        theRequest.track_path = '0';
+    }
+    theRequest.force_host = '2'; // 强制音视频返回 https
+    theRequest.ts = `${~~(Date.now() / 1000)}`;
+    // 所需参数数组
+    let param_wanted = ['area', 'access_key', 'appkey', 'build', 'buvid', 'cid', 'device', 'ep_id', 'fnval', 'fnver', 'force_host', 'fourk', 'mobi_app', 'platform', 'qn', 's_locale', 'season_id', 'track_path', 'ts'];
+    // 生成 mobi api 参数字符串
+    let mobi_api_params = '';
+    for (let i = 0; i < param_wanted.length; i++) {
+        if (theRequest.hasOwnProperty(param_wanted[i])) {
+            mobi_api_params += param_wanted[i] + `=` + theRequest[param_wanted[i]] + `&`;
+        }
+    }
+    // 准备明文
+    let plaintext = '';
+    if (area === 'th') {
+        plaintext = mobi_api_params.slice(0, -1) + `acd495b248ec528c2eed1e862d393126`;
+    }
+    else {
+        plaintext = mobi_api_params.slice(0, -1) + `25bdede4e1581c836cab73a48790ca6e`;
+    }
+    // 生成 sign
+    let ciphertext = hex_md5(plaintext);
+    return `${mobi_api_params}sign=${ciphertext}`;
+  },
+  fixMobiPlayUrlJson(originJson) {
+      return __awaiter(this, void 0, void 0, function* () {
+          const codecsMap = {
+              30112: 'avc1.640028',
+              30102: 'hev1.1.6.L120.90',
+              30080: 'avc1.640028',
+              30077: 'hev1.1.6.L120.90',
+              30064: 'avc1.64001F',
+              30066: 'hev1.1.6.L120.90',
+              30032: 'avc1.64001E',
+              30033: 'hev1.1.6.L120.90',
+              30011: 'hev1.1.6.L120.90',
+              30016: 'avc1.64001E',
+              30280: 'mp4a.40.2',
+              30232: 'mp4a.40.2',
+              30216: 'mp4a.40.2',
+              'nb2-1-30016': 'avc1.64001E',
+              'nb2-1-30032': 'avc1.64001F',
+              'nb2-1-30064': 'avc1.640028',
+              'nb2-1-30080': 'avc1.640032',
+              'nb2-1-30216': 'mp4a.40.2',
+              'nb2-1-30232': 'mp4a.40.2',
+              'nb2-1-30280': 'mp4a.40.2' // APP源 高码音频
+          };
+          const resolutionMap = {
+              30112: [1920, 1080],
+              30102: [1920, 1080],
+              30080: [1920, 1080],
+              30077: [1920, 1080],
+              30064: [1280, 720],
+              30066: [1280, 720],
+              30032: [852, 480],
+              30033: [852, 480],
+              30011: [640, 360],
+              30016: [640, 360],
+          };
+          const frameRateMap = {
+              30112: '16000/672',
+              30102: '16000/672',
+              30080: '16000/672',
+              30077: '16000/656',
+              30064: '16000/672',
+              30066: '16000/656',
+              30032: '16000/672',
+              30033: '16000/656',
+              30011: '16000/656',
+              30016: '16000/672'
+          };
+          let segmentBaseMap = {};
+          function getId(url, default_value, get_filename = false) {
+              if (get_filename) {
+                  // 作为SegmentBaseMap的Key，在同一个页面下切换集数不至于出错
+                  let path = url.split('?')[0];
+                  let pathArr = path.split('/');
+                  return pathArr[pathArr.length - 1].replace('.m4s', ''); // 返回文件名
+              }
+              let i = /(nb2-1-)?\d{5}\.m4s/.exec(url);
+              if (i !== null) {
+                  return i[0].replace('.m4s', '');
+              }
+              else {
+                  return default_value;
+              }
+          }
+          function getSegmentBase(url, id, range = '5000') {
+              return new Promise((resolve, reject) => {
+                  // 从 window 中读取已有的值
+                  if (window.__segment_base_map__) {
+                      if (window.__segment_base_map__.hasOwnProperty(id)) {
+                          // console.log('SegmentBase read from cache ', window.__segment_base_map__[id], 'id=', id)
+                          return resolve(window.__segment_base_map__[id]);
+                      }
+                  }
+                  let xhr = new XMLHttpRequest();
+                  xhr.open('GET', url, true);
+                  // TV 动画 range 通常在 4000~5000，剧场版动画大概 14000+
+                  xhr.setRequestHeader('Range', `bytes=0-${range}`); // 下载前 5000 字节数据用于查找 sidx 位置
+                  xhr.responseType = 'arraybuffer';
+                  let data;
+                  xhr.onload = function (oEvent) {
+                      data = new Uint8Array(xhr.response);
+                      let hex_data = Array.prototype.map.call(data, x => ('00' + x.toString(16)).slice(-2)).join(''); // 转换成 hex
+                      let indexRangeStart = hex_data.indexOf('73696478') / 2 - 4; // 73696478 是 'sidx' 的 hex ，前面还有 4 个字节才是 sidx 的开始
+                      let indexRagneEnd = hex_data.indexOf('6d6f6f66') / 2 - 5; // 6d6f6f66 是 'moof' 的 hex，前面还有 4 个字节才是 moof 的开始，-1为sidx结束位置
+                      let result = ['0-' + String(indexRangeStart - 1), String(indexRangeStart) + '-' + String(indexRagneEnd)];
+                      // 储存在 window，切换清晰度不用重新解析
+                      if (window.__segment_base_map__) {
+                          window.__segment_base_map__[id] = result;
+                      }
+                      else {
+                          window.__segment_base_map__ = {};
+                          window.__segment_base_map__[id] = result;
+                      }
+                      // console.log('get SegmentBase ', result, 'id=', id);
+                      resolve(result);
+                  };
+                  xhr.send(null); // 发送请求
+              });
+          }
+          let result = JSON.parse(JSON.stringify(originJson));
+          result.dash.duration = Math.round(result.timelength / 1000);
+          result.dash.minBufferTime = 1.5;
+          result.dash.min_buffer_time = 1.5;
+          // 异步构建 segmentBaseMap
+          let taskList = [];
+          // SegmentBase 最大 range 和 duration 的比值大概在 2.5~3.2，保险这里取 3.5
+          // let range = Math.round(result.dash.duration * 3.5).toString()
+          // 乱猜 range 导致泡面番播不出
+          result.dash.video.forEach((video) => {
+              if (video.backupUrl.length > 0 && video.backupUrl[0].indexOf('akamaized.net') > -1) {
+                  // 有时候返回 bcache 地址, 直接访问 bcache CDN 会报 403，如果备用地址有 akam，替换为 akam
+                  video.baseUrl = video.backupUrl[0];
+              }
+              taskList.push(getSegmentBase(video.baseUrl, getId(video.baseUrl, '30080', true)));
+          });
+          result.dash.audio.forEach((audio) => {
+              if (audio.backupUrl.length > 0 && audio.backupUrl[0].indexOf('akamaized.net') > -1) {
+                  audio.baseUrl = audio.backupUrl[0];
+              }
+              taskList.push(getSegmentBase(audio.baseUrl, getId(audio.baseUrl, '30080', true)));
+          });
+          yield Promise.all(taskList);
+          if (window.__segment_base_map__)
+              segmentBaseMap = window.__segment_base_map__;
+          // 填充视频流数据
+          result.dash.video.forEach((video) => {
+              let video_id = getId(video.baseUrl, '30280');
+              if (!codecsMap.hasOwnProperty(video_id)) {
+                  // https://github.com/ipcjs/bilibili-helper/issues/775
+                  // 泰区的视频URL不包含 id 了
+                  video_id = (30000 + video.id).toString();
+              }
+              video.codecs = codecsMap[video_id];
+              let segmentBaseId = getId(video.baseUrl, '30280', true);
+              video.segment_base = {
+                  initialization: segmentBaseMap[segmentBaseId][0],
+                  index_range: segmentBaseMap[segmentBaseId][1]
+              };
+              video.SegmentBase = {
+                  Initialization: segmentBaseMap[segmentBaseId][0],
+                  indexRange: segmentBaseMap[segmentBaseId][1]
+              };
+              video_id = video_id.replace('nb2-1-', '');
+              video.width = resolutionMap[video_id][0];
+              video.height = resolutionMap[video_id][1];
+              video.mimeType = 'video/mp4';
+              video.mime_type = 'video/mp4';
+              video.frameRate = frameRateMap[video_id];
+              video.frame_rate = frameRateMap[video_id];
+              video.sar = "1:1";
+              video.startWithSAP = 1;
+              video.start_with_sap = 1;
+          });
+          // 填充音频流数据
+          result.dash.audio.forEach((audio) => {
+              let audio_id = getId(audio.baseUrl, '30280');
+              if (!codecsMap.hasOwnProperty(audio_id)) {
+                  // https://github.com/ipcjs/bilibili-helper/issues/775
+                  // 泰区的音频URL不包含 id 了
+                  audio_id = audio.id.toString();
+              }
+              let segmentBaseId = getId(audio.baseUrl, '30280', true);
+              audio.segment_base = {
+                  initialization: segmentBaseMap[segmentBaseId][0],
+                  index_range: segmentBaseMap[segmentBaseId][1]
+              };
+              audio.SegmentBase = {
+                  Initialization: segmentBaseMap[segmentBaseId][0],
+                  indexRange: segmentBaseMap[segmentBaseId][1]
+              };
+              audio.codecs = codecsMap[audio_id];
+              audio.mimeType = 'audio/mp4';
+              audio.mime_type = 'audio/mp4';
+              audio.frameRate = '';
+              audio.frame_rate = '';
+              audio.height = 0;
+              audio.width = 0;
+          });
+          return result;
+      });
+  },
+  fixThailandPlayUrlJson(originJson) {
+      return __awaiter(this, void 0, void 0, function* () {
+          let origin = JSON.parse(JSON.stringify(originJson));
+          let result = {
+              'format': 'flv720',
+              'type': 'DASH',
+              'result': 'suee',
+              'video_codecid': 7,
+              'no_rexcode': 0,
+              'code': origin.code,
+              'message': +origin.message,
+              'timelength': origin.data.video_info.timelength,
+              'quality': origin.data.video_info.quality,
+              'accept_format': 'hdflv2,flv,flv720,flv480,mp4',
+          };
+          let dash = {
+              'duration': 0,
+              'minBufferTime': 0.0,
+              'min_buffer_time': 0.0,
+              'audio': []
+          };
+          // 填充音频流数据
+          origin.data.video_info.dash_audio.forEach((audio) => {
+              audio.backupUrl = [];
+              audio.backup_url = [];
+              audio.base_url = audio.base_url.replace('http://', 'https://');
+              audio.baseUrl = audio.base_url;
+              dash.audio.push(audio);
+          });
+          // 填充视频流数据
+          let accept_quality = [];
+          let accept_description = [];
+          let support_formats = [];
+          let dash_video = [];
+          origin.data.video_info.stream_list.forEach((stream) => {
+              support_formats.push(stream.stream_info);
+              accept_quality.push(stream.stream_info.quality);
+              accept_description.push(stream.stream_info.new_description);
+              // 只加入有视频链接的数据
+              if (stream.dash_video && stream.dash_video.base_url) {
+                  stream.dash_video.backupUrl = [];
+                  stream.dash_video.backup_url = [];
+                  stream.dash_video.base_url = stream.dash_video.base_url.replace('http://', 'https://');
+                  stream.dash_video.baseUrl = stream.dash_video.base_url;
+                  stream.dash_video.id = stream.stream_info.quality;
+                  dash_video.push(stream.dash_video);
+              }
+          });
+          dash['video'] = dash_video;
+          result['accept_quality'] = accept_quality;
+          result['accept_description'] = accept_description;
+          result['support_formats'] = support_formats;
+          result['dash'] = dash;
+          // 下面参数取自安达(ep359333)，总之一股脑塞进去（
+          result['fnval'] = 80;
+          result['fnver'] = 0;
+          result['status'] = 2;
+          result['vip_status'] = 1;
+          result['vip_type'] = 2;
+          result['seek_param'] = 'start';
+          result['seek_type'] = 'offset';
+          result['bp'] = 0;
+          result['from'] = 'local';
+          result['has_paid'] = false;
+          result['is_preview'] = 0;
+          return UTILS.fixMobiPlayUrlJson(result);
+      });
   }
 }

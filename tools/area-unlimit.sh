@@ -22,8 +22,12 @@ notice "扩展注入"
 cat "$root_dir/res/scripts/injectExt.js" > "$tmp_dir/main/temp.js"
 cat "$tmp_dir/main/index.js" >> "$tmp_dir/main/temp.js"
 sed -i 's#\[jq(0x89b)]=P,this#[jq(0x89b)]=P,injectExtensions(P),this#' "$tmp_dir/main/temp.js"
+sed -i 's#\[jf(0x8f2)]=M,this#[jf(0x8f2)]=M,injectExtensions(M),this#' "$tmp_dir/main/temp.js"
 rm -f "$tmp_dir/main/index.js"
 mv "$tmp_dir/main/temp.js" "$tmp_dir/main/index.js"
+
+notice "添加PAC设置channel"
+sed -i "s#'window/isLiveRoomWindowVisible']#'window/isLiveRoomWindowVisible','config/roamingPAC']#" "$tmp_dir/main/assets/bili-bridge.js"
 
 asar p $tmp_dir app.asar
 rm -rf $tmp_dir

@@ -148,6 +148,7 @@ function createRoamingPage(e){
         ],
         uposKey: localStorage.upos || 'none',
         replaceAkamai: localStorage.replaceAkamai === "true",
+        pacLink: localStorage.pacLink || "",
         serverList: {
           default: '',
           mainLand: '',
@@ -212,6 +213,29 @@ function createRoamingPage(e){
           type:'success'
         })
         localStorage.replaceAkamai = this.replaceAkamai?'true':'false'
+      },
+      changePACLink: function(){
+        localStorage.pacLink = this.pacLink
+        if(this.pacLink && this.pacLink.length > 0){
+          let result = biliBridgePc.callNativeSync('config/roamingPAC', this.pacLink)
+          if(result === 'error')
+            this.$notify({
+              title: 'Success',
+              message: "失败",
+              type:'error'
+            })
+          else
+            this.$notify({
+              title: 'Success',
+              message: "成功",
+              type:'success'
+            })
+        }else
+        this.$notify({
+          title: 'Success',
+          message: "成功",
+          type:'success'
+        })
       },
       saveServer: function(formEl){
         if (!formEl) return
