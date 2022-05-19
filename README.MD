@@ -45,3 +45,10 @@ https://github.com/msojocs/bilibili-linux/releases/tag/continuous
 ![检查更新](res/screenshots/update.png)
 
 ![退出](res/screenshots/exit.png)
+
+![漫游](res/screenshots/roaming.png)
+
+## 感谢以下项目
+
+1. [BiliRoaming](https://github.com/yujincheng08/BiliRoaming)
+2. [解除B站区域限制](https://github.com/ipcjs/bilibili-helper)

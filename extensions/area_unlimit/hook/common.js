@@ -1,3 +1,4 @@
+// 简易GET,POST请求封装
 const HTTP = {
   get(url) {
     return new Promise((resolve, reject) => {
@@ -22,18 +23,20 @@ const HTTP = {
     })
   }
 }
+
+// 哔哩哔哩API
 class BiliBiliApi {
-  constructor(server = '//api.bilibili.com') {
+  constructor(server = 'api.bilibili.com') {
     this.server = server;
   }
   setServer(server) {
     this.server = server
   }
   getSeasonInfoByEpId(ep_id) {
-    return HTTP.get(`${this.server}/pgc/view/web/season?ep_id=${ep_id}`);
+    return HTTP.get(`//${this.server}/pgc/view/web/season?ep_id=${ep_id}`);
   }
   getSeasonInfo(season_id) {
-    return HTTP.get(`${this.server}/pgc/view/web/season?season_id=${season_id}`);
+    return HTTP.get(`//${this.server}/pgc/view/web/season?season_id=${season_id}`);
   }
   getSeasonInfoByEpSsIdOnBangumi(ep_id, season_id) {
     return HTTP.get('//bangumi.bilibili.com/view/web_api/season?' + (ep_id != '' ? `ep_id=${ep_id}` : `season_id=${season_id}`)).then(res=>{
@@ -45,6 +48,24 @@ class BiliBiliApi {
     const newParams = UTILS.generateMobiPlayUrlParams(params, 'th');
     return HTTP.get(`//${this.server}/intl/gateway/v2/ogv/view/app/season?` + newParams).then(res=>{
       return Promise.resolve(JSON.parse(res.responseText || "{}"))
+    });
+  }
+  getSubtitleOnThailand(params) {
+    return HTTP.get(`//${this.server}/intl/gateway/v2/app/subtitle?${params}`).then(res=>{
+      const resp = JSON.parse(res.responseText || "{}")
+      const subtitles = []
+      if(resp.code === 0){
+        for(let subtitle of resp.data.subtitles){
+          subtitles.push({
+            id: subtitle.id,
+            is_str: subtitle.id.toString(),
+            lan: subtitle.key,
+            lan_doc: subtitle.title,
+            subtitle_url: subtitle.url.replace(/https?:\/\//, '//')
+          })
+        }
+      }
+      return Promise.resolve(subtitles)
     });
   }
   getPlayURL(req, ak, area) {
@@ -118,6 +139,7 @@ const uposMap = {
   akamai: 'upos-hz-mirrorakam.akamaized.net',
 };
 const AREA_MARK_CACHE = {}
+// HOOK
 const URL_HOOK = {
   "https://api.bilibili.com/pgc/view/pc/season": async (req)=>{
     console.log('HOOK', req)
@@ -259,7 +281,34 @@ const URL_HOOK = {
         console.error(err)
       }
     }
-  }
+  },
+  // 东南亚字幕
+  "//api.bilibili.com/x/player/v2": async (req)=>{
+    if(!req._params)return;
+    const resp = JSON.parse(req.responseText || "{}")
+    const serverList = JSON.parse(localStorage.serverList || "{}")
+    if((resp.code === -400 || resp.code === -404 || resp.data.subtitle.subtitles.length === 0) && serverList.th){
+      console.log('处理字幕')
+      // 字幕请求失败
+      const api = new BiliBiliApi(serverList.th);
+      const subtitles = await api.getSubtitleOnThailand(req._params);
+      if(resp.code === 0){
+        resp.data.subtitle.subtitles.push(...subtitles)
+      }else if(subtitles.length > 1){
+        resp.code = 0
+        resp.message = "0"
+        resp.data = {
+          subtitle:{
+            allow_submit: false,
+            lan: "",
+            lan_doc: "",
+            subtitles
+          }
+        }
+      }
+      req.responseText = JSON.stringify(resp)
+    }
+  },
 }
 
 /*请求响应修改器1.0*/
