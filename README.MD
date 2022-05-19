@@ -1,12 +1,15 @@
 # BILIBILI FOR Linux
 
-特点：
+[![aur](https://img.shields.io/aur/version/bilibili-bin)](https://aur.archlinux.org/packages/bilibili-bin)
+
+## 特点：
 
 1. 没有讨厌的标题栏
 2. 支持小分辨率屏幕全屏
 3. 检查更新支持
 4. 有能够关闭程序的菜单
 5. 支持漫游
+6. 外区搜索
 
 ## 使用方法
 

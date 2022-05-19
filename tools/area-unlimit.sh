@@ -11,6 +11,7 @@ notice() {
 mkdir -p "$root_dir/app"
 
 notice "复制拓展"
+rm -rf "$root_dir/app/extensions"
 cp -r "$root_dir/extensions" "$root_dir/app"
 
 cd "$root_dir/app"

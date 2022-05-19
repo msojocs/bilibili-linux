@@ -46,8 +46,7 @@ function injectExtensions(win){
         const ses = win.webContents.session
         ses.setProxy({
           mode: 'pac_script',
-          pacScript: args[1],
-          proxyBypassRules: '"unpkg.com"'
+          pacScript: args[1]
         }).then(res=>{
           console.log("====set proxy")
           ses.forceReloadProxyConfig().then(()=>{
