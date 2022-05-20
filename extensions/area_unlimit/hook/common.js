@@ -78,7 +78,11 @@ class BiliBiliApi {
     const newParams = UTILS.generateMobiPlayUrlParams(params, 'th');
     return HTTP.get(`//${this.server}/intl/gateway/v2/ogv/playurl?${newParams}`).then(res=>{
       // 参考：哔哩漫游 油猴插件
-      const result = JSON.parse(res.responseText || "{}")
+      const upos = localStorage.upos||""
+      const isReplaceAkamai = localStorage.replaceAkamai === "true"
+      const _params = _params2obj(req._params)
+      const responseText = UTILS.replaceUpos(res.responseText, uposMap[upos], isReplaceAkamai, 'th')
+      let result = JSON.parse(responseText || "{}")
       return Promise.resolve(UTILS.fixThailandPlayUrlJson(result));
     })
   }
@@ -212,6 +216,17 @@ const URL_HOOK = {
       const upos = localStorage.upos||""
       const isReplaceAkamai = localStorage.replaceAkamai === "true"
 
+      /**
+       * 港澳台：替换 - 要referer
+       * 东南亚：替换 - 不要referer
+       */
+      if(AREA_MARK_CACHE[params.ep_id] === 'th'){
+        console.log('remove referer')
+        UTILS.disableReferer()
+      }else{
+        console.log('add referer')
+        UTILS.enableReferer()
+      }
       const api = new BiliBiliApi()
       if(serverList[AREA_MARK_CACHE[params.ep_id]] && serverList[AREA_MARK_CACHE[params.ep_id]].length > 0){
         api.setServer(serverList[AREA_MARK_CACHE[params.ep_id]])
@@ -234,10 +249,12 @@ const URL_HOOK = {
         api.setServer(server)
         
         let playURL
-        if(area !== "th")
-        playURL = await api.getPlayURL(req, sessionStorage.access_key || "", area)
-        else
-        playURL = await api.getPlayURLThailand(req, sessionStorage.access_key || "", area)
+        if(area !== "th"){
+          playURL = await api.getPlayURL(req, sessionStorage.access_key || "", area)
+        }else{
+          UTILS.disableReferer()
+          playURL = await api.getPlayURLThailand(req, sessionStorage.access_key || "", area)
+        }
         console.log("已获取播放链接")
         if(playURL.code !== 0)continue
         // 解析成功
@@ -499,23 +516,9 @@ const UTILS = {
   },
   replaceUpos(playURL, host, replaceAkamai = false, area=""){
     console.log('replaceUpos:', host, replaceAkamai)
-    /**
-     * 港澳台：替换 - 要referer
-     * 东南亚：替换 - 不要referer
-     */
     if (host && (!playURL.includes("akamaized.net") || replaceAkamai)) {
       playURL = playURL.replace(/:\\?\/\\?\/[^\/]+\\?\//g, `://${host}/`);
-      // add no-referer
-      if(area === 'th'){
-        console.log('remove referer')
-        UTILS.disableReferer()
-      }else{
-        console.log('add referer')
-        UTILS.enableReferer()
-      }
-    }else{
-      console.log('add referer')
-      UTILS.enableReferer()
+      
     }
     return playURL
   },
