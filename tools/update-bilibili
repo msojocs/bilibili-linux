@@ -27,6 +27,7 @@ mkdir -p "$tmp_dir/bili"
 7z x "$tmp_dir/bili/\$PLUGINSDIR/app-64.7z" -o"$tmp_dir/bili" "resources"
 rm -rf "$tmp_dir/bili/\$PLUGINSDIR/app-64.7z" "$tmp_dir/bili/resources/elevate.exe"
 
+rm -rf "$root_dir/app"
 mkdir -p "$root_dir/app"
 mv "$tmp_dir/bili/resources/"* "$root_dir/app"
 

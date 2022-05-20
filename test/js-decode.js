@@ -7,6 +7,7 @@ function parseSubFunc (str) {
   return str.replace(
     /(\w+|\S)\['([a-zA-Z_]*?)'\]/g,
     function ($0, $1, $2) {
+      if($2.length===0)return $0
       let result = $0
       switch ($1) {
         case '{':
@@ -52,15 +53,15 @@ function encodeUnicode (s) {
 const sourceCode = fs.readFileSync(path.resolve(__dirname, '../app/app/main/index.orgi.js'))
 
 let resultCode = sourceCode.toString()
-// let i = 0;
+let i = 0;
 resultCode = resultCode.replace(
   /'(([\\xa-z0-9]{2,2})+)'/g,
   function ($0, $1, $2) {
-    // i++;
+    i++;
     // 二分法查找异常点
     // 763 ok
     // 764 error
-    // if(i >= 763){
+    // if(i >= 4925){
     //     if(i === 763){
     //         console.log("---", $0, $1, $2)
     //         let result = eval('"' + $1 + '"')
@@ -69,19 +70,26 @@ resultCode = resultCode.replace(
     //     return $0
     // }
 
-    const result = eval('"' + $1 + '"')
+    let result = eval('"' + $1 + '"')
     if (result.includes('*')) {
       // 不做处理
       return $0
     }
+    if (result.includes("\\")) {
+      result = result.replace(/\\/g, "\\\\")
+    }
     if (result.includes("'")) {
-      return `'${result.replace(/'/g, "\\'")}'`
+      result = result.replace(/'/g, "\\'")
+    }
+    if (result.includes("\n")) {
+      result = result.replace(/\n/g, "\\n")
     }
     return `'${result}'`
   }
 )
 resultCode = encodeUnicode(resultCode)
+// fs.writeFileSync(path.resolve(__dirname, '../app/app/main/index1.js'), resultCode)
+// resultCode = parseSubFunc(resultCode)
+// resultCode = parseSubFunc(resultCode)
 fs.writeFileSync(path.resolve(__dirname, '../app/app/main/index1.js'), resultCode)
-resultCode = parseSubFunc(resultCode)
-resultCode = parseSubFunc(resultCode)
 fs.writeFileSync(path.resolve(__dirname, '../app/app/main/index.js'), resultCode)

@@ -91,6 +91,8 @@ function addAreaLimit() {
       ele.remove()
       appSettingDiv.prepend(ele)
     }
+    console.log('添加重载按钮')
+    loadStatus.append(reload)
     appSettingDiv.prepend(ele)
   }
 

@@ -170,27 +170,24 @@ const URL_HOOK = {
         req.responseText = JSON.stringify(seasonInfo)
         return;
       }
-      for (let area in serverList) {
-        console.log("for ")
-        const server = serverList[area] || ""
-        if (server.length === 0) continue
+      const server = serverList['th'] || ""
+      if (server.length === 0) return;
 
-        api.setServer(server)
+      api.setServer(server)
 
-        seasonInfo = await api.getSeasonInfoByEpSsIdOnThailand(params.ep_id || "", params.season_id || "")
-        if (seasonInfo.code !== 0) continue;
-        seasonInfo.result.episodes = seasonInfo.result.episodes || seasonInfo.result.modules[0].data.episodes
-        // title id
-        seasonInfo.result.episodes.forEach(ep => {
-          ep.title = ep.title || `第${ep.index}话 ${ep.index_title}`
-          ep.id = ep.id || ep.ep_id
-          delete ep.episode_type
-        })
-        seasonInfo.result.rights.watch_platform = 0
-        console.log('seasonInfo2: ', seasonInfo)
-        req.responseText = JSON.stringify(seasonInfo)
-        break;
-      }
+      seasonInfo = await api.getSeasonInfoByEpSsIdOnThailand(params.ep_id || "", params.season_id || "")
+      if (seasonInfo.code !== 0 || seasonInfo.result.modules.length === 0) return;
+      AREA_MARK_CACHE[params.ep_id] = 'th'
+      seasonInfo.result.episodes = seasonInfo.result.episodes || seasonInfo.result.modules[0].data.episodes
+      // title id
+      seasonInfo.result.episodes.forEach(ep => {
+        ep.title = ep.title || `第${ep.index}话 ${ep.index_title}`
+        ep.id = ep.id || ep.ep_id
+        delete ep.episode_type
+      })
+      seasonInfo.result.rights.watch_platform = 0
+      console.log('seasonInfo2: ', seasonInfo)
+      req.responseText = JSON.stringify(seasonInfo)
 
     }else{
       // 一些番剧可以获取到信息，但是内部有限制区域
@@ -241,6 +238,7 @@ const URL_HOOK = {
         playURL = await api.getPlayURL(req, sessionStorage.access_key || "", area)
         else
         playURL = await api.getPlayURLThailand(req, sessionStorage.access_key || "", area)
+        console.log("已获取播放链接")
         if(playURL.code !== 0)continue
         // 解析成功
         AREA_MARK_CACHE[params.ep_id] = area
@@ -487,6 +485,18 @@ function __awaiter(thisArg, _arguments, P, generator) {
   });
 }
 const UTILS = {
+  enableReferer(){
+    document.getElementById('refererMark') && document.getElementById('refererMark').remove()
+  },
+  disableReferer(){
+    if(!document.getElementById('refererMark')){
+      let meta = document.createElement('meta')
+      meta.id = "refererMark"
+      meta.name = "referrer"
+      meta.content = "no-referrer"
+      document.head.appendChild(meta);
+    }
+  },
   replaceUpos(playURL, host, replaceAkamai = false, area=""){
     console.log('replaceUpos:', host, replaceAkamai)
     /**
@@ -498,20 +508,14 @@ const UTILS = {
       // add no-referer
       if(area === 'th'){
         console.log('remove referer')
-        if(!document.getElementById('refererMark')){
-          let meta = document.createElement('meta')
-          meta.id = "refererMark"
-          meta.name = "referrer"
-          meta.content = "no-referrer"
-          document.head.appendChild(meta);
-        }
+        UTILS.disableReferer()
       }else{
         console.log('add referer')
-        document.getElementById('refererMark') && document.getElementById('refererMark').remove()
+        UTILS.enableReferer()
       }
     }else{
       console.log('add referer')
-      document.getElementById('refererMark') && document.getElementById('refererMark').remove()
+      UTILS.enableReferer()
     }
     return playURL
   },
