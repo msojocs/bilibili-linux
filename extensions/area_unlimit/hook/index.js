@@ -85,6 +85,12 @@ function addAreaLimit() {
   ele.src = "https://lib.baomitu.com/element-plus/2.1.4/index.full.min.js";
   vue.onload = ()=>{
     loadStatus.textContent="[2/2]加载element-plus"
+    const reload = document.createElement('button')
+    reload.textContent = "重载"
+    reload.onclick = ()=>{
+      ele.remove()
+      appSettingDiv.prepend(ele)
+    }
     appSettingDiv.prepend(ele)
   }
 

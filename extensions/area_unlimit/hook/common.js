@@ -54,14 +54,14 @@ class BiliBiliApi {
     return HTTP.get(`//${this.server}/intl/gateway/v2/app/subtitle?${params}`).then(res=>{
       const resp = JSON.parse(res.responseText || "{}")
       const subtitles = []
-      if(resp.code === 0){
+      if(resp.code === 0 && resp.data.subtitles){
         for(let subtitle of resp.data.subtitles){
           subtitles.push({
             id: subtitle.id,
             is_str: subtitle.id.toString(),
             lan: subtitle.key,
             lan_doc: subtitle.title,
-            subtitle_url: subtitle.url.replace(/https?:\/\//, '//')
+            subtitle_url: subtitle.url.replace(/https?:\/\//, '//').replace('s.bstarstatic.com', this.server)
           })
         }
       }
@@ -77,7 +77,7 @@ class BiliBiliApi {
     const params = `?${req._params}&mobi_app=bstar_a&s_locale=zh_SG`;
     const newParams = UTILS.generateMobiPlayUrlParams(params, 'th');
     return HTTP.get(`//${this.server}/intl/gateway/v2/ogv/playurl?${newParams}`).then(res=>{
-    // 参考：哔哩漫游 油猴插件
+      // 参考：哔哩漫游 油猴插件
       const result = JSON.parse(res.responseText || "{}")
       return Promise.resolve(UTILS.fixThailandPlayUrlJson(result));
     })
@@ -218,12 +218,18 @@ const URL_HOOK = {
       const api = new BiliBiliApi()
       if(serverList[AREA_MARK_CACHE[params.ep_id]] && serverList[AREA_MARK_CACHE[params.ep_id]].length > 0){
         api.setServer(serverList[AREA_MARK_CACHE[params.ep_id]])
-        const playURL = await api.getPlayURL(req, sessionStorage.access_key || "", AREA_MARK_CACHE[params.ep_id])
+        let playURL;
+        if(AREA_MARK_CACHE[params.ep_id] !== "th")
+        playURL = await api.getPlayURL(req, sessionStorage.access_key || "", AREA_MARK_CACHE[params.ep_id])
+        else
+        playURL = await api.getPlayURLThailand(req, sessionStorage.access_key || "", AREA_MARK_CACHE[params.ep_id])
         if(playURL.code === 0){
-          req.responseText = UTILS.replaceUpos(JSON.stringify(playURL), uposMap[upos], isReplaceAkamai)
+          // 从cache的区域中取到了播放链接
+          req.responseText = UTILS.replaceUpos(JSON.stringify(playURL), uposMap[upos], isReplaceAkamai, AREA_MARK_CACHE[params.ep_id])
           return;
         }
       }
+      // 没有从cache的区域中取到播放链接
       for(let area in serverList){
         const server = serverList[area] || ""
         console.log('getPlayURL from ', area, ' - ', server)
@@ -239,7 +245,8 @@ const URL_HOOK = {
         // 解析成功
         AREA_MARK_CACHE[params.ep_id] = area
 
-        req.responseText = JSON.stringify(playURL)
+        // req.responseText = JSON.stringify(playURL)
+        req.responseText = UTILS.replaceUpos(JSON.stringify(playURL), uposMap[upos], isReplaceAkamai, area)
         break
       }
     }
@@ -480,10 +487,31 @@ function __awaiter(thisArg, _arguments, P, generator) {
   });
 }
 const UTILS = {
-  replaceUpos(playURL, host, replaceAkamai = false){
+  replaceUpos(playURL, host, replaceAkamai = false, area=""){
     console.log('replaceUpos:', host, replaceAkamai)
+    /**
+     * 港澳台：替换 - 要referer
+     * 东南亚：替换 - 不要referer
+     */
     if (host && (!playURL.includes("akamaized.net") || replaceAkamai)) {
       playURL = playURL.replace(/:\\?\/\\?\/[^\/]+\\?\//g, `://${host}/`);
+      // add no-referer
+      if(area === 'th'){
+        console.log('remove referer')
+        if(!document.getElementById('refererMark')){
+          let meta = document.createElement('meta')
+          meta.id = "refererMark"
+          meta.name = "referrer"
+          meta.content = "no-referrer"
+          document.head.appendChild(meta);
+        }
+      }else{
+        console.log('add referer')
+        document.getElementById('refererMark') && document.getElementById('refererMark').remove()
+      }
+    }else{
+      console.log('add referer')
+      document.getElementById('refererMark') && document.getElementById('refererMark').remove()
     }
     return playURL
   },
