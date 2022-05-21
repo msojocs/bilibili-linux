@@ -76,23 +76,53 @@ function addAreaLimit() {
   loadStatus.style.fontSize = "xxx-large"
   areaLimitPage.appendChild(loadStatus)
 
-  let vue = document.createElement('script');
-  vue.src = "https://lib.baomitu.com/vue/3.2.31/vue.global.prod.min.js";
+  function createVueJS(){
+    let ele = document.createElement('script');
+    ele.src = "https://lib.baomitu.com/vue/3.2.31/vue.global.prod.min.js";
+    return ele
+  }
+  function createElementPlusJS(){
+    let ele = document.createElement('script');
+    ele.src = "https://lib.baomitu.com/element-plus/2.1.4/index.full.min.js";
+    return ele
+  }
+  let vue = createVueJS()
   loadStatus.textContent="[1/2]加载vue"
+  vue.onerror = (e)=>{
+    const reload = document.createElement('button')
+    reload.textContent = "重载vue"
+    reload.className = "vui_button about-button mr_sm"
+    reload.onclick =  ()=>{
+      vue.remove()
+      let vueNew = createVueJS()
+      vueNew.onload = vue.onload
+      vueNew.onerror = vue.onerror
+      appSettingDiv.prepend(vueNew)
+      reload.remove()
+    }
+    loadStatus.append(reload)
+  }
   appSettingDiv.prepend(vue)
   
-  let ele = document.createElement('script');
-  ele.src = "https://lib.baomitu.com/element-plus/2.1.4/index.full.min.js";
-  vue.onload = ()=>{
-    loadStatus.textContent="[2/2]加载element-plus"
+  let ele = createElementPlusJS()
+  ele.onerror = ()=>{
     const reload = document.createElement('button')
-    reload.textContent = "重载"
-    reload.onclick = ()=>{
+    reload.textContent = "重载ele"
+    reload.className = "vui_button about-button mr_sm"
+    reload.onclick = function (){
       ele.remove()
-      appSettingDiv.prepend(ele)
+      let eleNew = createElementPlusJS()
+      eleNew.onload = ele.onload
+      eleNew.onerror = ele.onerror
+      reload.remove()
+      appSettingDiv.prepend(eleNew)
     }
-    console.log('添加重载按钮')
+
     loadStatus.append(reload)
+  }
+  vue.onload = (e)=>{
+    loadStatus.textContent="[2/2]加载element-plus"
+    loadStatus.children.length === 1 && loadStatus.children[0].remove()
     appSettingDiv.prepend(ele)
   }
 
@@ -303,6 +333,8 @@ window.addEventListener('pushState', function (e) {
 //   }
 // });
 const url = new URL(location.href)
-if (url.hash === "#/page/settings") {
-  setTimeout(addAreaLimit, 500)
+window.onload = ()=>{
+  if (url.hash === "#/page/settings") {
+    setTimeout(addAreaLimit, 500)
+  }
 }
