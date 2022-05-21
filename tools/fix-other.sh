@@ -37,10 +37,13 @@ sed -i "s#\\\x72\\\x65\\\x73\\\x69\\\x7a\\\x61\\\x62\\\x6c\\\x65':\\!\\[]#\\\x72
 # Width
 sed -i "s#\\\x57\\\x69\\\x64\\\x74\\\x68':0x[0-9a-z]\+#\\\x57\\\x69\\\x64\\\x74\\\x68':800#g" app/main/index.js
 # Height
-sed -i "s#\\\x48\\\x65\\\x69\\\x67\\\x68\\\x74':0x[0-9a-z]\+#\\\x48\\\x65\\\x69\\\x67\\\x68\\\x74':400#g" app/main/index.js
+sed -i "s#\\\x48\\\x65\\\x69\\\x67\\\x68\\\x74':0x[0-9a-z]\+#\\\x48\\\x65\\\x69\\\x67\\\x68\\\x74':600#g" app/main/index.js
 # 检查更新
 sed -i 's#// noinspection SuspiciousTypeOfGuard#runtimeOptions.platform="win32";// noinspection SuspiciousTypeOfGuard#' app/node_modules/electron-updater/out/providerFactory.js
 sed -i 's#process.resourcesPath#path.dirname(this.app.getAppPath())#' app/node_modules/electron-updater/out/ElectronAppAdapter.js
+
+notice "isWin强制true"
+sed -i 's#callNativeSync=(e,...f)=>{var#callNativeSync=(e,...f)=>{if(e==="system/isWin")return true;var#' "app/main/assets/bili-bridge.js"
 
 # notice "更新MD5"
 # md5=$(md5sum app/main/index.js|cut -d ' ' -f1)

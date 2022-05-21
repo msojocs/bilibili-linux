@@ -432,10 +432,14 @@ class HttpRequest extends window.XMLHttpRequest {
       // 用于arraybuffer等
       if(super.responseType === "arraybuffer")
         this.response = super.response
-      if (fn) {
-        if(this.readyState === 4 && URL_HOOK[this._url]) URL_HOOK[this._url](this).then(()=>fn())
-        else
-        fn();
+      try{
+        if (fn) {
+          if(this.readyState === 4 && URL_HOOK[this._url]) URL_HOOK[this._url](this).then(()=>fn())
+          else
+          fn();
+        }
+      }catch(err){
+        console.log('为处理的error: ', err)
       }
     };
 
