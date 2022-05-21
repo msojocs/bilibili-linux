@@ -146,9 +146,6 @@ jobs:
       - name: Prepare
         run: |
           sudo apt-get install -y build-essential fakeroot devscripts debhelper # debmake lintian pbuilder
-          sudo npm install asar -g
-          mkdir -p tmp/build
-          tools/build-prepare.sh
 
       - name: Generate TAG
         id: Tag
@@ -159,9 +156,7 @@ jobs:
             tag='${{ github.ref_name }}'
             name='${{ github.ref_name }}'
           else
-            mkdir -p tmp
-            asar e app/app.asar tmp/app
-            BILIBILI_VERSION=$(grep -Pa 'version": "\d+\.\d+\.\d' -o  tmp/app/package.json | sed 's/version": "//')
+            BILIBILI_VERSION=$(cat conf/bilibili_version)
             tag="v${BILIBILI_VERSION}-${tag}"
           fi
           echo "tag result: $tag - $name"
@@ -173,6 +168,8 @@ jobs:
         run: |
           export BUILD_VERSION=${{ steps.tag.outputs.tag }}
           ls -l
+          mkdir -p tmp/build
+          tools/build-prepare.sh
           tools/build-deepin.sh ${{ steps.tag.outputs.tag }}
 
       - name: Upload artifact
