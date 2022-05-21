@@ -1,10 +1,10 @@
-Source: io.github.msojocs.bilibili-bin
+Source: io.github.msojocs.bilibili
 Maintainer: msojocs
 Standards-Version: BUILD_VERSION
 Priority: optional
 Section: application
 
-Package: io.github.msojocs.bilibili-bin
+Package: io.github.msojocs.bilibili
 Architecture: amd64
 Description: BiliBili For Linux.
   BiliBili For Linux. This version is unofficial. 

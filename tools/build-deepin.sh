@@ -18,7 +18,7 @@ if [ -z "$BUILD_VERSION" ];then
 fi
 
 ############ 准备构建deb包所需的文件及结构 ################
-package_name="io.github.msojocs.bilibili-bin"
+package_name="io.github.msojocs.bilibili"
 
 echo "root_dir: $root_dir"
 tmp_dir="$root_dir/tmp"
@@ -35,8 +35,8 @@ mkdir -p $base_dir/files/{bin/bin,doc,lib}
 
 notice "COPY Files"
 cp -r "$root_dir/res/deepin"/* $build_dir
-# mv "$build_dir/opt/apps/io.github.msojocs.bilibili-bin"/* $base_dir
-# rm -r "$build_dir/opt/apps/io.github.msojocs.bilibili-bin"
+# mv "$build_dir/opt/apps/io.github.msojocs.bilibili"/* $base_dir
+# rm -r "$build_dir/opt/apps/io.github.msojocs.bilibili"
 sed -i "s/BUILD_VERSION/${BUILD_VERSION//v/}/" "$build_dir/debian/control" "$build_dir/debian/changelog" "$base_dir/info"
 \cp -rf "$root_dir/bin/bilibili" "$base_dir/files/bin/bin/bilibili"
 # 时间
