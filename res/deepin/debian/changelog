@@ -1,0 +1,6 @@
+io.github.msojocs.bilibili-bin (BUILD_VERSION) unstable; urgency=medium
+ 
+  * update:
+    - bilibili 1.1.2
+
+ -- msojocs <jiyecafe@gmail.com>  Mon, 11 Mar 2022 14:56:04 +0800

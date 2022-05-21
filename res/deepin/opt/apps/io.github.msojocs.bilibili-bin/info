@@ -1,0 +1,21 @@
+{
+    "appid": "io.github.msojocs.bilibili-bin",
+    "name": "BiliBili",
+    "version": "BUILD_VERSION",
+    "arch": ["amd64"],
+    "permissions": {
+        "autostart": false,
+        "notification": false,
+        "trayicon": true,
+        "clipboard": true,
+        "account": false,
+        "bluetooth": false,
+        "camera": false,
+        "audio_record": false,
+        "installed_apps": false
+    },
+    "support-plugins": [
+    ],
+    "plugins": [
+    ]
+}

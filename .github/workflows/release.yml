@@ -61,8 +61,9 @@ jobs:
         run: |
           ls -l
           mkdir -p tmp/src
+          mkdir -p tmp/build
           tar -zcf tmp/src/bilibili-${{ steps.tag.outputs.tag }}-${{ matrix.ARCH }}.tar.gz bin app electron
-          tar -zcf tmp/src/extensions-${{ steps.tag.outputs.tag }}.tar.gz extensions
+          tar -zcf tmp/build/extensions-${{ steps.tag.outputs.tag }}.tar.gz extensions
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2.3.1
@@ -70,6 +71,12 @@ jobs:
           # Artifact name
           name: bilibili-${{ matrix.ARCH }}.src
           path: tmp/src
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2.3.1
+        with:
+          # Artifact name
+          name: bilibili-${{ matrix.ARCH }}.build
+          path: tmp/build
 
   build-appimage:
     name: Build tar.gz AppImage
@@ -120,62 +127,54 @@ jobs:
           name: bilibili-${{ matrix.ARCH }}.build
           path: tmp/build
 
-  # build-deb:
-  #   name: Build DEB Package
-  #   needs:
-  #     - build-src
-  #   runs-on: ubuntu-18.04
+  build-deb:
+    name: Build DEB Package
+    needs:
+      - build-src
+    runs-on: ubuntu-18.04
 
-  #   strategy:
-  #     matrix:
-  #       ARCH: ['x86_64']
-  #       # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    strategy:
+      matrix:
+        ARCH: ['x86_64']
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: Download artifacts
-  #       uses: actions/download-artifact@v2
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
 
-  #     - name: Generate TAG
-  #       id: Tag
-  #       run: |
-  #         tag='continuous'
-  #         name='Continuous Build'
-  #         if [ 'true' == ${{ startsWith(github.ref, 'refs/tags/') }} ];then
-  #           tag='${{ github.ref_name }}'
-  #           name='${{ github.ref_name }}'
-  #         fi
-  #         echo "tag result: $tag - $name"
-  #         echo "::set-output name=tag::$tag"
-  #         echo "::set-output name=name::$name"
-  #     # https://stackoverflow.com/questions/61096521/how-to-use-gpg-key-in-github-actions
-  #     - name: Configure GPG Key
-  #       run: |
-  #         echo -n "$GPG_SIGNING_KEY" | base64 --decode | gpg --import
-  #       env:
-  #         GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
+      - name: Generate TAG
+        id: Tag
+        run: |
+          tag='continuous'
+          name='Continuous Build'
+          if [ 'true' == ${{ startsWith(github.ref, 'refs/tags/') }} ];then
+            tag='${{ github.ref_name }}'
+            name='${{ github.ref_name }}'
+          fi
+          echo "tag result: $tag - $name"
+          echo "::set-output name=tag::$tag"
+          echo "::set-output name=name::$name"
+      # https://stackoverflow.com/questions/61096521/how-to-use-gpg-key-in-github-actions
+      
+      - name: Prepare
+        run: |
+          sudo apt-get install -y build-essential fakeroot devscripts debhelper # debmake lintian pbuilder
 
-  #     - name: Prepare
-  #       run: |
-  #         sudo apt-get install -y build-essential fakeroot devscripts debhelper # debmake lintian pbuilder
+      - name: Build Deb Package
+        run: |
+          export BUILD_VERSION=${{ steps.tag.outputs.tag }}
+          ls -l
+          mkdir -p tmp/build
+          tools/build-prepare.sh
+          tools/build-deepin.sh ${{ steps.tag.outputs.tag }}
 
-  #     - name: Build Deb Package
-  #       run: |
-  #         export BUILD_VERSION=${{ steps.tag.outputs.tag }}
-  #         ls -l
-  #         mkdir -p tmp/build
-  #         tools/build-prepare.sh
-  #         env NO_WINE=false tools/build-deepin.sh ${{ steps.tag.outputs.tag }}
-  #         export NO_WINE=true
-  #         tools/build-prepare.sh
-  #         env NO_WINE=true tools/build-deepin.sh ${{ steps.tag.outputs.tag }}
-
-  #     - name: Upload artifact
-  #       uses: actions/upload-artifact@v2.3.1
-  #       with:
-  #         # Artifact name
-  #         name: bilibili-${{ matrix.ARCH }}.build
-  #         path: tmp/build
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2.3.1
+        with:
+          # Artifact name
+          name: bilibili-${{ matrix.ARCH }}.build
+          path: tmp/build
 
   # build-arch:
   #   name: Build ArchLinux Package
@@ -299,6 +298,7 @@ jobs:
     needs:
       - build-src
       - build-appimage
+      - build-deb
     runs-on: ubuntu-latest
     steps:
       - name: Download artifacts
@@ -326,7 +326,7 @@ jobs:
         run: |
           wget -q https://github.com/TheAssassin/pyuploadtool/releases/download/continuous/pyuploadtool-x86_64.AppImage
           chmod +x pyuploadtool-x86_64.AppImage
-          ./pyuploadtool-x86_64.AppImage **src/*.tar.gz **build/*.AppImage # **build/*.deb
+          ./pyuploadtool-x86_64.AppImage **src/*.tar.gz **build/*.tar.gz **build/*.AppImage **build/*.deb
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -338,5 +338,6 @@ jobs:
           tag_name: ${{ steps.tag.outputs.tag }}
           files: |
             **src/*.tar.gz
+            **build/*.tar.gz
             **build/*.AppImage
-            # **build/*.deb
+            **build/*.deb

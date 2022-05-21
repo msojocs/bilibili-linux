@@ -4,5 +4,5 @@ node_modules
 
 electron
 
-app*
+app
 vue-devtools

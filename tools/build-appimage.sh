@@ -55,7 +55,7 @@ mkdir -p $app_dir/usr/share/{metainfo,icons}
 
 notice "COPY FILES"
 install -Dm755 "$root_dir/bin/bilibili" "$app_dir/bin/bilibili"
-install -Dm644 "$root_dir/res/icons/icon.svg" "$app_dir/bilibili.svg"
+install -Dm644 "$root_dir/res/icons/bilibili.svg" "$app_dir/bilibili.svg"
 install -Dm644 "$root_dir/res/bilibili.desktop" "$app_dir/bilibili.desktop"
 
 cat > "$app_dir/AppRun" <<- 'EOF'
