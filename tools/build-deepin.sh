@@ -65,5 +65,5 @@ cd "$build_dir"
 ls -l "$build_dir"
 mkdir -p "$root_dir/tmp/build"
 
-debuild --no-tgz-check -i -I
+debuild --no-tgz-check -i -I -uc -us
 mv $tmp_dir/*.deb $tmp_dir/build
