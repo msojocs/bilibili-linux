@@ -7,7 +7,7 @@ console.log("====HOOK===PLAYER====");
 
 (()=>{
 
-  const HTTP_INDEX = {
+  const HTTP = {
     get(url) {
       return new Promise((resolve, reject) => {
         const Http = new XMLHttpRequest()
@@ -18,6 +18,62 @@ console.log("====HOOK===PLAYER====");
         }
         Http.onerror = e => reject
       })
+    }
+  }
+  const BilibiliAPI = {
+    getEpDetails: (seasonId, epId)=>{
+      const api = new BiliBiliApi()
+      return api.getSeasonInfoByEpSsIdOnBangumi(epId || "", seasonId || "")
+      .then(seasonInfo=>{
+        console.log('seasonInfo: ', seasonInfo)
+        if(seasonInfo.code !==0)return Promise.reject(seasonInfo)
+
+        const ep = seasonInfo.result.episodes.filter(ep=>ep.ep_id===epId)
+        if(ep.length === 0)return Promise.reject("剧集查找失败")
+        return Promise.resolve(ep[0])
+      })
+    }
+  }
+  const SearchAPI = {
+    bilibili: (str)=>{
+      const url = `http://api.bilibili.com/x/web-interface/search/type?keyword=${str}&search_type=media_bangumi`
+      return HTTP.get(url).then(res=>{
+        const resp = JSON.parse(res.responseText)
+        console.log('bilibili: ', resp)
+        const bangumiList = []
+        const result = resp.data?.result ?? []
+        console.log('result: ', result)
+        for(let bangumi of result){
+          let children = []
+          for(let ep of bangumi.eps){
+            const title = ep.title.length < 5 ? `${ep.title}-${ep.long_title.replace(/<.*?>/g, '')}` : ep.title.replace(/<.*?>/g, '')
+            children.push({
+              label: title,
+              value: ep.id
+            })
+          }
+          bangumiList.push({
+            label: bangumi.title.replace(/<.*?>/g, ''),
+            value: bangumi.pgc_season_id,
+            children
+          })
+        }
+        return Promise.resolve(bangumiList)
+      })
+    }
+  }
+  const HandleResult = {
+    bilibili: async (options)=>{
+      console.log('bilibili options: ', options)
+      const epDetails = await BilibiliAPI.getEpDetails(...options)
+      console.log('getEpDetails: ', epDetails)
+
+      // 弹幕池操作
+      danmakuManage.rootStore.configStore.reload.cid = epDetails.cid
+      // danmakuManage.rootStore.configStore.reload.aid = epDetails.aid
+      danmakuManage.danmaku.danmakuArray = []
+      danmakuManage.danmaku.clear()
+      danmakuManage.danmakuStore.loadDmPbAll(true)
     }
   }
   const UI = (()=>{
@@ -91,7 +147,7 @@ console.log("====HOOK===PLAYER====");
         // Do something, for example:
         console.log('ROAMING_sendURL: ', e.detail);
         if(e.detail.includes("PlayerEnhance")){
-          const roamingHTML = await HTTP_INDEX.get(e.detail)
+          const roamingHTML = await HTTP.get(e.detail)
           const container = document.createElement('div')
       
           container.innerHTML = roamingHTML.responseText
@@ -117,16 +173,26 @@ console.log("====HOOK===PLAYER====");
       const App = {
         data() {
           return {
-            message: "1234",
             activeName: "bilibili",
             searchStr: "",
-            searchResult: []
+            searchResult: [],
+            selectOptions: null
           };
         },
         created() {
           console.log('vue created')
         },
         methods: {
+          doSearch: function(){
+            SearchAPI[this.activeName](this.searchStr)
+            .then(resp=>{
+              this.searchResult = resp || []
+            })
+          },
+          doConfirm: function(){
+            console.log('selectOptions', this.selectOptions)
+            HandleResult[this.activeName](this.selectOptions)
+          }
         }
       };
       const app = Vue.createApp(App);

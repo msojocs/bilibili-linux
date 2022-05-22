@@ -2,8 +2,6 @@
   <link rel="stylesheet" href="https://lib.baomitu.com/element-plus/2.1.4/index.min.css">
 </div>
 <div id="player-settings-ext">
-  hhhh
- {{message}}
  <el-tabs
     v-model="activeName"
     type="card"
@@ -12,10 +10,11 @@
   >
     <el-tab-pane label="B站" name="bilibili">
       <div style="display:flex">搜索:
-        <el-input style="width:50%" v-model="searchStr" @change="search"></el-input>
+        <el-input style="width:50%" v-model="searchStr" @change="doSearch"></el-input>
       </div>
       <div>结果
-        <el-cascader-panel :options="searchResult" />
+        <el-cascader-panel v-model="selectOptions" :options="searchResult" ></el-cascader-panel>
+        <el-button type="primary" @click="doConfirm">确定</el-button>
       </div>
     </el-tab-pane>
   </el-tabs>
