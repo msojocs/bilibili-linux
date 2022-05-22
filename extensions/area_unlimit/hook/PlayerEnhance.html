@@ -1,0 +1,22 @@
+<div>
+  <link rel="stylesheet" href="https://lib.baomitu.com/element-plus/2.1.4/index.min.css">
+</div>
+<div id="player-settings-ext">
+  hhhh
+ {{message}}
+ <el-tabs
+    v-model="activeName"
+    type="card"
+    class="demo-tabs"
+    @tab-click="handleClick"
+  >
+    <el-tab-pane label="B站" name="bilibili">
+      <div style="display:flex">搜索:
+        <el-input style="width:50%" v-model="searchStr" @change="search"></el-input>
+      </div>
+      <div>结果
+        <el-cascader-panel :options="searchResult" />
+      </div>
+    </el-tab-pane>
+  </el-tabs>
+</div>

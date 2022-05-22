@@ -27,7 +27,8 @@
         "hook/common.css",
         "hook/common.js",
         "utils/md5.js",
-        "hook/RoamingPage.html"
+        "hook/RoamingPage.html",
+        "hook/PlayerEnhance.html"
       ],
       "matches": [
         "<all_urls>"

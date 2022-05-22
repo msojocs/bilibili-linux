@@ -2,6 +2,11 @@
 
 [![aur](https://img.shields.io/aur/version/bilibili-bin)](https://aur.archlinux.org/packages/bilibili-bin)
 
+本项目用到了：
+
+1. 反混淆
+2. 脑子
+
 ## 特点：
 
 1. 没有讨厌的标题栏
