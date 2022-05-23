@@ -83,6 +83,7 @@ console.log("====HOOK===PLAYER====");
       const page = document.createElement('div')
       page.className = "msojocs-player-settings"
       page.id = "msojocs-player-settings"
+      page.style.display = "none"
       appContainer.appendChild(page)
       const loadStatus = document.createElement('span')
       loadStatus.style.color = "red"
@@ -132,7 +133,7 @@ console.log("====HOOK===PLAYER====");
           page.prepend(eleNew)
         }
     
-        loadStatus.append(reload)
+        loadStatus.children.length === 0 && loadStatus.append(reload)
       }
       vue.onload = (e) => {
         loadStatus.textContent = "[2/2]加载element-plus"
@@ -153,6 +154,7 @@ console.log("====HOOK===PLAYER====");
           container.innerHTML = roamingHTML.responseText
           ele.onload = () => {
             loadStatus.textContent = ""
+            page.className = ""
             loadPage()
           }
           page.appendChild(container)
@@ -162,7 +164,7 @@ console.log("====HOOK===PLAYER====");
         detail: 'PlayerEnhance' // Some variable from Gmail.
       }));
     }
-    const changeShow = ()=>{
+    let changeShow = ()=>{
       const page = document.getElementById("msojocs-player-settings")
       if(page){
         page.style.display = page.style.display === "none" ? "" : "none"
@@ -176,11 +178,17 @@ console.log("====HOOK===PLAYER====");
             activeName: "bilibili",
             searchStr: "",
             searchResult: [],
-            selectOptions: null
+            selectOptions: null,
+            settingsVisible: false
           };
         },
         created() {
           console.log('vue created')
+          document.getElementById("player-ext-settings").onclick = ()=>{
+            this.settingsVisible = !this.settingsVisible
+          }
+          this.settingsVisible = document.getElementById("msojocs-player-settings").style.display !== "none"
+          document.getElementById("msojocs-player-settings").style.display = ""
         },
         methods: {
           doSearch: function(){
@@ -211,6 +219,7 @@ console.log("====HOOK===PLAYER====");
     // 创建菜单元素
     const playerExtPage = document.createElement('span')
     playerExtPage.textContent = "弹幕Ext"
+    playerExtPage.id = "player-ext-settings"
     playerExtPage.className = "app_player--header-home no_drag"
     playerExtPage.onclick = ()=>{
       UI.changeShow()
