@@ -179,7 +179,8 @@ console.log("====HOOK===PLAYER====");
             searchStr: "",
             searchResult: [],
             selectOptions: null,
-            settingsVisible: false
+            settingsVisible: false,
+            damakuMode: "1"
           };
         },
         created() {
@@ -200,6 +201,7 @@ console.log("====HOOK===PLAYER====");
           doConfirm: function(){
             console.log('selectOptions', this.selectOptions)
             HandleResult[this.activeName](this.selectOptions)
+            this.settingsVisible = !this.settingsVisible
           }
         }
       };
