@@ -47,7 +47,7 @@ document.addEventListener('ROAMING_getURL', function (e) {
   // from JavaScript objects to strings).
   // Do something, for example:
   console.log(e.detail);
-  const roamingPageURL = chrome.extension.getURL(`hook/RoamingPage.html`);
+  const roamingPageURL = chrome.extension.getURL(`hook/${e.detail}.html`);
   document.dispatchEvent(new CustomEvent('ROAMING_sendURL', {
     detail: roamingPageURL // Some variable from Gmail.
   }));

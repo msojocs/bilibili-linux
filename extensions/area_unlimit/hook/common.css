@@ -1,3 +1,4 @@
+/********************** 漫游设置 *******************/
 .area_limit{
   cursor: pointer;
 }
@@ -19,3 +20,24 @@
   align-items: center;
   display: flex;
 }
+
+
+/************播放页面*************/
+/* id: msojocs */
+.app_player--content{
+  position: relative;
+}
+.msojocs-player-settings{
+  position: absolute;
+  top: 50px;
+  left: 50px;
+  right: 50px;
+  bottom: 50px;
+  background-color: white;
+  z-index: 99;
+}
+
+/* #player-settings-ext{
+  color: black;
+  padding: 50px;;
+} */

@@ -188,6 +188,7 @@ const URL_HOOK = {
         ep.title = ep.title || `第${ep.index}话 ${ep.index_title}`
         ep.id = ep.id || ep.ep_id
         delete ep.episode_type
+        ep.status = 2
       })
       seasonInfo.result.rights.watch_platform = 0
       console.log('seasonInfo2: ', seasonInfo)
