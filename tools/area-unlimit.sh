@@ -30,6 +30,9 @@ mv "$tmp_dir/main/temp.js" "$tmp_dir/main/index.js"
 notice "添加PAC设置channel"
 sed -i "s#'window/isLiveRoomWindowVisible']#'window/isLiveRoomWindowVisible','config/roamingPAC']#" "$tmp_dir/main/assets/bili-bridge.js"
 
+# 暴露弹幕管理接口
+sed -i 's#this.initDanmaku(),this#this.initDanmaku(),window.danmakuManage = this,this#' "$tmp_dir/render/assets/lib/core.js"
+
 # notice "更新MD5"
 # md5=$(md5sum app/main/index.js|cut -d ' ' -f1)
 # echo ${md5[0]} > app/.appkey

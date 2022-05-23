@@ -26,6 +26,17 @@ fi
 tmp_dir="$root_dir/tmp"
 mkdir -p "$tmp_dir/bili"
 
+notice "一次版本校验"
+BILIBILI_VERSION=$(exiftool -S -ProductVersion "$root_dir/cache/bili_win-install.exe")
+BILIBILI_VERSION=(${BILIBILI_VERSION//: / })
+BILIBILI_VERSION=${BILIBILI_VERSION[1]}
+# BILIBILI_VERSION=$(grep -Pa 'version": "\d+\.\d+\.\d' -o  app/package.json | sed 's/version": "//')
+CONF_VERSION=$(cat "$root_dir/conf/bilibili_version")
+if [[ "$BILIBILI_VERSION" != "$CONF_VERSION" ]];then
+  fail "下载的版本与配置的版本不匹配！！！$BILIBILI_VERSION != $CONF_VERSION"
+  exit 1
+fi
+
 7z x "$root_dir/cache/bili_win-install.exe" -o"$tmp_dir/bili" "\$PLUGINSDIR/app-64.7z"
 7z x "$tmp_dir/bili/\$PLUGINSDIR/app-64.7z" -o"$tmp_dir/bili" "resources"
 rm -rf "$tmp_dir/bili/\$PLUGINSDIR/app-64.7z" "$tmp_dir/bili/resources/elevate.exe"
@@ -33,7 +44,7 @@ rm -rf "$tmp_dir/bili/\$PLUGINSDIR/app-64.7z" "$tmp_dir/bili/resources/elevate.e
 cd "$tmp_dir/bili/resources"
 asar e app.asar app
 
-notice "版本校验"
+notice "二次版本校验"
 BILIBILI_VERSION=$(grep -Pa 'version": "\d+\.\d+\.\d' -o  app/package.json | sed 's/version": "//')
 CONF_VERSION=$(cat "$root_dir/conf/bilibili_version")
 if [[ "$BILIBILI_VERSION" != "$CONF_VERSION" ]];then
