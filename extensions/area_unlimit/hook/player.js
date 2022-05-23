@@ -34,6 +34,15 @@ console.log("====HOOK===PLAYER====");
       })
     }
   }
+  const DandanAPI = {
+    getComment(epId, withRelated=false){
+      const url = `https://api.acplay.net/api/v2/comment/${epId}?withRelated=${withRelated}`
+      return HTTP.get(url).then(res=>{
+        const resp = JSON.parse(res.responseText || "{}")
+        return Promise.resolve(resp.comments || [])
+      })
+    }
+  }
   const SearchAPI = {
     bilibili: (str)=>{
       const url = `http://api.bilibili.com/x/web-interface/search/type?keyword=${str}&search_type=media_bangumi`
@@ -60,6 +69,31 @@ console.log("====HOOK===PLAYER====");
         }
         return Promise.resolve(bangumiList)
       })
+    },
+    dandanplay: (str)=>{
+      const url = `https://api.acplay.net/api/v2/search/episodes?anime=${str}`
+      return HTTP.get(url).then(res=>{
+        const resp = JSON.parse(res.responseText)
+        console.log('dandanplay: ', resp)
+        const bangumiList = []
+        const result = resp?.animes ?? []
+        console.log('dandanplay result: ', result)
+        for(let anime of result){
+          let children = []
+          for(let ep of anime.episodes){
+            children.push({
+              label: ep.episodeTitle,
+              value: ep.episodeId
+            })
+          }
+          bangumiList.push({
+            label: anime.animeTitle,
+            value: anime.animeId,
+            children
+          })
+        }
+        return Promise.resolve(bangumiList)
+      })
     }
   }
   const HandleResult = {
@@ -74,6 +108,54 @@ console.log("====HOOK===PLAYER====");
       danmakuManage.danmaku.danmakuArray = []
       danmakuManage.danmaku.clear()
       danmakuManage.danmakuStore.loadDmPbAll(true)
+    },
+    dandanplay: async (options, actionMode)=>{
+      console.log('dandanplay options: ', options)
+      const comments = await DandanAPI.getComment(options[1], false)
+      console.log('getComment: ', comments)
+      const result = []
+      const nowTime = new Date().getTime()/1000
+      for(let comment of comments){
+        const p = comment.p.split(',')
+        // 出现时间,模式,颜色,用户ID
+        const time = parseFloat(p[0])
+        const mode = parseInt(p[1])
+        const color = parseInt(p[2])
+        result.push({
+          attr: -1,
+          color,
+          date: nowTime,
+          mode,
+          pool: 0,
+          renderAs: 1,
+          size: 25,
+          text: comment.m,
+          stime: time,
+          weight: 1,
+        })
+      }
+      /**
+       * attr: -1
+        color: 16777215
+        date: 1653221671
+        dmid: "1058059079576006912"
+        effect: {}
+        mode: 1
+        pool: 0
+        renderAs: 1
+        size: 25
+        stime: 8.295
+        text: "好！"
+        uhash: "c515e33f"
+        weight: 1
+       */
+      // 弹幕池操作
+      danmakuManage.danmaku.reset()
+      if(actionMode === "1")
+      danmakuManage.danmaku.danmakuArray = []
+      danmakuManage.danmaku.addAll(result)
+      danmakuManage.danmaku.clear()
+      // danmakuManage.danmakuStore.loadDmPbAll(true)
     }
   }
   const UI = (()=>{
@@ -200,7 +282,7 @@ console.log("====HOOK===PLAYER====");
           },
           doConfirm: function(){
             console.log('selectOptions', this.selectOptions)
-            HandleResult[this.activeName](this.selectOptions)
+            HandleResult[this.activeName](this.selectOptions, this.damakuMode)
             this.settingsVisible = !this.settingsVisible
           }
         }

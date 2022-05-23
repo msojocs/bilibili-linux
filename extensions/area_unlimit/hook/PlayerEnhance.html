@@ -10,30 +10,34 @@
         @tab-click="handleClick"
       >
       <el-tab-pane label="B站" name="bilibili">
-        <el-row>
-          <el-col :span="4" class="flex_center">搜索:</el-col>
-          <el-col :span="19">
-            <el-input v-model="searchStr" @change="doSearch"></el-input>
-          </el-col>
-        </el-row>
-        <span style="display:block;height: 10px;"></span>
-        <el-row>
-          <el-col :span="4" class="flex_center">结果：</el-col>
-          <el-col :span="19">
-            <el-cascader-panel v-model="selectOptions" :options="searchResult" ></el-cascader-panel>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="4" class="flex_center">模式：</el-col>
-          <el-col :span="19">
-            <el-radio-group v-model="damakuMode" :disabled="true">
-              <el-radio label="1">替换弹幕池</el-radio>
-              <el-radio label="2">追加弹幕池</el-radio>
-            </el-radio-group>
-          </el-col>
-        </el-row>
+      </el-tab-pane>
+      <el-tab-pane label="弹弹Play" name="dandanplay">
       </el-tab-pane>
     </el-tabs>
+    <div>
+      <el-row>
+        <el-col :span="4" class="flex_center">搜索:</el-col>
+        <el-col :span="19">
+          <el-input v-model="searchStr" @change="doSearch"></el-input>
+        </el-col>
+      </el-row>
+      <span style="display:block;height: 10px;"></span>
+      <el-row>
+        <el-col :span="4" class="flex_center">结果：</el-col>
+        <el-col :span="19">
+          <el-cascader-panel v-model="selectOptions" :options="searchResult" ></el-cascader-panel>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="4" class="flex_center">模式：</el-col>
+        <el-col :span="19">
+          <el-radio-group v-model="damakuMode" :disabled="activeName === 'bilibili'">
+            <el-radio label="1">替换弹幕池</el-radio>
+            <el-radio label="2">追加弹幕池</el-radio>
+          </el-radio-group>
+        </el-col>
+      </el-row>
+    </div>
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="settingsVisible = false">取消</el-button>
