@@ -180,7 +180,7 @@ console.log("====HOOK===PLAYER====");
     
       function createElementPlusJS() {
         let ele = document.createElement('script');
-        ele.src = "https://lib.baomitu.com/element-plus/2.1.4/index.full.min.js";
+        ele.src = "https://lib.baomitu.com/element-plus/2.2.0/index.full.min.js";
         return ele
       }
       let vue = createVueJS()

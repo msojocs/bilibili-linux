@@ -31,7 +31,7 @@
     // 菜单切换
     const menuDiv = document.querySelector("#app > div > div > div.app_layout--content.flex_col > div > div.app_settings.i_page_wrapper > div.header_slot.flex_start.drag")
     for (let h3 of menuDiv.children) {
-      h3.style.cssText = h3.dataset.hash === hash ? "color:black!important" : "color:gray!important";
+      h3.style.cssText = h3.dataset.hash === hash ? "color:var(--el-text-color-primary)!important" : "color:gray!important";
     }
 
     // 界面切换
@@ -85,7 +85,7 @@
 
     function createElementPlusJS() {
       let ele = document.createElement('script');
-      ele.src = "https://lib.baomitu.com/element-plus/2.1.4/index.full.min.js";
+      ele.src = "https://lib.baomitu.com/element-plus/2.2.0/index.full.min.js";
       return ele
     }
     let vue = createVueJS()
