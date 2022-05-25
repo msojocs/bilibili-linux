@@ -80,9 +80,10 @@ class BiliBiliApi {
       // 参考：哔哩漫游 油猴插件
       const upos = localStorage.upos||""
       const isReplaceAkamai = localStorage.replaceAkamai === "true"
-      const _params = _params2obj(req._params)
+      // const _params = _params2obj(req._params)
       const responseText = UTILS.replaceUpos(res.responseText, uposMap[upos], isReplaceAkamai, 'th')
       let result = JSON.parse(responseText || "{}")
+      if(result.code !== 0)return Promise.reject(result);
       return Promise.resolve(UTILS.fixThailandPlayUrlJson(result));
     })
   }
@@ -575,13 +576,13 @@ const UTILS = {
         theRequest.mobi_app = 'android_b';
         theRequest.platform = 'android_b';
         theRequest.buvid = 'XY418E94B89774E201E22C5B709861B7712DD';
-        // theRequest.fnval = '0'; // 强制 FLV
+        theRequest.fnval = '976'; // 强制 FLV
         theRequest.track_path = '0';
     }
     theRequest.force_host = '2'; // 强制音视频返回 https
     theRequest.ts = `${~~(Date.now() / 1000)}`;
     // 所需参数数组
-    let param_wanted = ['area', 'access_key', 'appkey', 'build', 'buvid', 'cid', 'device', 'ep_id', 'fnval', 'fnver', 'force_host', 'fourk', 'mobi_app', 'platform', 'qn', 's_locale', 'season_id', 'track_path', 'ts'];
+    let param_wanted = ['access_key', 'appkey', 'area', 'build', 'buvid', 'cid', 'device', 'ep_id', 'fnval', 'fnver', 'force_host', 'fourk', 'mobi_app', 'platform', 'qn', 's_locale', 'season_id', 'track_path', 'ts'];
     // 生成 mobi api 参数字符串
     let mobi_api_params = '';
     for (let i = 0; i < param_wanted.length; i++) {
