@@ -50,7 +50,9 @@ function encodeUnicode (s) {
     }
   )
 }
-const sourceCode = fs.readFileSync(path.resolve(__dirname, '../app/app/main/index.orgi.js'))
+const src = "app/app/main/index.js"
+const dist = "app/app/main/index.js"
+const sourceCode = fs.readFileSync(path.resolve(__dirname, '../' + src))
 
 let resultCode = sourceCode.toString()
 let i = 0;
@@ -61,7 +63,7 @@ resultCode = resultCode.replace(
     // 二分法查找异常点
     // 763 ok
     // 764 error
-    // if(i >= 4925){
+    // if(i >= 10830){
     //     if(i === 763){
     //         console.log("---", $0, $1, $2)
     //         let result = eval('"' + $1 + '"')
@@ -84,6 +86,9 @@ resultCode = resultCode.replace(
     if (result.includes("\n")) {
       result = result.replace(/\n/g, "\\n")
     }
+    if (result.includes("\r")) {
+      result = result.replace(/\r/g, "\\r")
+    }
     return `'${result}'`
   }
 )
@@ -91,5 +96,5 @@ resultCode = encodeUnicode(resultCode)
 // fs.writeFileSync(path.resolve(__dirname, '../app/app/main/index1.js'), resultCode)
 resultCode = parseSubFunc(resultCode)
 resultCode = parseSubFunc(resultCode)
-fs.writeFileSync(path.resolve(__dirname, '../app/app/main/index1.js'), resultCode)
-fs.writeFileSync(path.resolve(__dirname, '../app/app/main/index.js'), resultCode)
+fs.writeFileSync(path.resolve(__dirname, '../' + dist), resultCode)
+// fs.writeFileSync(path.resolve(__dirname, '../'), resultCode)
