@@ -3,6 +3,10 @@
 const fs = require('fs')
 const path = require('path')
 
+const args = process.argv.slice(2)
+const src = args[0]
+const dist = args[1]
+
 function parseSubFunc (str) {
   return str.replace(
     /(\w+|\S)\['([a-zA-Z_]*?)'\]/g,
@@ -50,9 +54,8 @@ function encodeUnicode (s) {
     }
   )
 }
-const src = "app/app/main/index.js"
-const dist = "app/app/main/index.js"
-const sourceCode = fs.readFileSync(path.resolve(__dirname, '../' + src))
+
+const sourceCode = fs.readFileSync(src)
 
 let resultCode = sourceCode.toString()
 let i = 0;
@@ -96,5 +99,6 @@ resultCode = encodeUnicode(resultCode)
 // fs.writeFileSync(path.resolve(__dirname, '../app/app/main/index1.js'), resultCode)
 resultCode = parseSubFunc(resultCode)
 resultCode = parseSubFunc(resultCode)
-fs.writeFileSync(path.resolve(__dirname, '../' + dist), resultCode)
+resultCode = resultCode.replace(/'\+'/g, '')
+fs.writeFileSync(dist, resultCode)
 // fs.writeFileSync(path.resolve(__dirname, '../'), resultCode)
