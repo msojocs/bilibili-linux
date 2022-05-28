@@ -78,8 +78,8 @@ jobs:
           name: bilibili-${{ matrix.ARCH }}.build
           path: tmp/build
 
-  build-appimage:
-    name: Build tar.gz AppImage
+  build-linux:
+    name: Build Linux
     needs:
       - build-src
     runs-on: ubuntu-latest
@@ -97,6 +97,8 @@ jobs:
 
       - name: Prepare
         run: |
+          sudo npm install asar -g
+          npm install
           echo "$UID, $GID"
 
       - name: Generate TAG
@@ -113,12 +115,16 @@ jobs:
           echo "::set-output name=name::$name"
          
       - name: Build
+        env:
+          BUILD_VERSION: ${{ steps.tag.outputs.tag }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          export ACTION_MODE=true
           ls -l
           mkdir -p tmp/build
           tools/build-prepare.sh
-          tools/build-appimage.sh ${{ steps.tag.outputs.tag }} ${{ matrix.ARCH }}
+          asar e app/app.asar app/app
+          npm run pkg-linux
+          # tools/build-appimage.sh ${{ steps.tag.outputs.tag }} ${{ matrix.ARCH }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2.3.1
@@ -127,8 +133,8 @@ jobs:
           name: bilibili-${{ matrix.ARCH }}.build
           path: tmp/build
 
-  build-deb:
-    name: Build DEB Package
+  build-deepin:
+    name: Build Deepin Package
     needs:
       - build-src
     runs-on: ubuntu-18.04
@@ -300,8 +306,8 @@ jobs:
     name: Create release and upload artifacts
     needs:
       - build-src
-      - build-appimage
-      - build-deb
+      - build-linux
+      - build-deepin
     runs-on: ubuntu-latest
     steps:
       - name: Download artifacts

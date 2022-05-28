@@ -111,7 +111,7 @@ console.log("====HOOK===PLAYER====");
     },
     dandanplay: async (options, actionMode)=>{
       console.log('dandanplay options: ', options)
-      const comments = await DandanAPI.getComment(options[1], false)
+      const comments = await DandanAPI.getComment(options[1], true)
       console.log('getComment: ', comments)
       const result = []
       const nowTime = new Date().getTime()/1000

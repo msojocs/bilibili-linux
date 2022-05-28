@@ -16,6 +16,16 @@ fail() {
 }
 
 root_dir=$(cd `dirname $0`/.. && pwd -P)
+
+if [[ "$BUILD_VERSION" == *continuous ]];then
+    echo "continuous"
+    sed -i 's#"buildVersion": "[0-9]\+",#"buildVersion": "0",#' "$root_dir/package.json"
+else
+    tag=(${BUILD_VERSION//-/ })
+    echo "${tag[1]}"
+    sed -i 's#"buildVersion": "[0-9]\+",#"buildVersion": "'${tag[1]}'",#' "$root_dir/package.json"
+fi
+
 tmp_dir="$root_dir/tmp"
 store_dir="$tmp_dir/build"
 mkdir -p $store_dir

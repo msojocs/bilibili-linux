@@ -1,6 +1,22 @@
-# BILIBILI FOR Linux
+<div align="center">
+
+  <img src="./res/icons/bilibili.svg" height="100px" width="100px"/>
+
+  <h3>哔哩哔哩 Linux版</h3>
+  <br>
+
+----
+
 
 [![aur](https://img.shields.io/aur/version/bilibili-bin)](https://aur.archlinux.org/packages/bilibili-bin)
+
+  这是哔哩哔哩 Linux版
+  
+
+  <br>
+</div>
+
+## 介绍
 
 本项目用到了：
 
@@ -44,6 +60,9 @@ https://github.com/msojocs/bilibili-linux/releases/tag/continuous
    ```
    bin/bilibili
    ```
+### AppImage 安装
+
+请使用 [AppImageLauncher](https://github.com/TheAssassin/AppImageLauncher)
 
 ## 预览
 
