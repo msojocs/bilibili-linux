@@ -19,13 +19,21 @@
       "target": [
         "dmg",
         "zip"
-      ]
+      ],
+      "icon": "res/icons/bilibili.icns"
     },
     "win": {
       "target": [
-        "nsis",
-        "zip"
-      ]
+        "nsis"
+      ],
+      "icon": "res/icons/bilibili.ico"
+    },
+    "nsis":{
+      "oneClick": false,
+      "installerIcon": "res/icons/bilibili.ico",
+      "uninstallerIcon": "res/icons/bilibili.ico",
+      "installerHeaderIcon": "res/icons/bilibili.ico",
+      "allowToChangeInstallationDirectory": true
     },
     "linux": {
       "target": [
