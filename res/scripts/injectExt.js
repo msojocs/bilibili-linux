@@ -1,3 +1,4 @@
+
 // 简易代理服务器，用于东南亚图片
 const net = require('net')
 const serverPort = 22332
@@ -25,25 +26,31 @@ net.createServer(client => {
       client.write(res)
     })
   })
-}).listen(serverPort)
+}).listen(serverPort);
 
-const { app } = require('electron');
-function injectExtensions(win){
-  win.webContents.openDevTools();
-  const path = require('path');
-  app.whenReady().then(()=>{
-    // const extPath = app.isPackaged ? path.join(process.resourcesPath, "extensions") : path.join(app.getAppPath(), "extensions");
+// HOOK
+const {app, BrowserWindow} = require('electron');
+// app.commandLine.appendSwitch('remote-debugging-port', '8315');
+// app.commandLine.appendSwitch('host-rules', 'MAP * 127.0.0.1');
+const originloadURL = BrowserWindow.prototype.loadURL;
+BrowserWindow.prototype.loadURL = function(){
+  this.setMinimumSize(300, 300);
+  
+  console.log('=====loadURL', arguments)
+  if(arguments[0].includes('player.html') || arguments[0].includes('index.html')){
+    this.webContents.openDevTools()
+    const path = require('path');
     const extPath = path.join(path.dirname(app.getAppPath()), "extensions");
     console.log('----extPath----', extPath)
-    win.webContents.session.loadExtension(extPath + "/area_unlimit").then(({ id }) => {
+    this.webContents.session.loadExtension(extPath + "/area_unlimit").then(({ id }) => {
       // ...
       console.log('-----Load Extension:', id)
     })
     // 设置PAC代理脚本
-    win.webContents.on('ipc-message-sync', (event, ...args)=>{
+    this.webContents.on('ipc-message-sync', (event, ...args)=>{
       if(args[0] === "config/roamingPAC"){
         console.log("receive config/roamingPAC: ", ...args)
-        const ses = win.webContents.session
+        const ses = this.webContents.session
         ses.setProxy({
           mode: 'pac_script',
           pacScript: args[1]
@@ -60,8 +67,10 @@ function injectExtensions(win){
           })
         }).catch(err=>{
           console.error("====set error", err)
+          event.returnValue = 'error'
         })
       }
     })
-  })
-}
+  }
+  originloadURL.apply(this, arguments)
+};

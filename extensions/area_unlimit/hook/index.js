@@ -332,4 +332,4 @@
       setTimeout(addAreaLimit, 500)
     }
   }
-})()
+})();

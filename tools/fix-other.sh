@@ -34,10 +34,6 @@ grep -lr 'if(!_0x4bb4b2)' --exclude="app.asar" .
 sed -i 's#if(!_0x4bb4b2)#if(_0x4bb4b2)#' app/main/index.js
 
 notice "====app.js===="
-notice "修复新版不能启动的问题 app.js"
-# 从index启动!global[lA
-# grep -lr "!global[lA" --exclude="app.asar" .
-# sed -i 's#!global[lA#global[lA#' app/main/app.js
 
 notice "屏蔽检测"
 grep -lr 'if(!z2){' --exclude="app.asar" .
@@ -48,9 +44,6 @@ sed -i 's#if(!ls){#if(false\&\&!ls){#' app/main/app.js
 # package检测
 grep -lr "}ll\\[lA(')\$6Z'" --exclude="app.asar" .
 sed -i "s#}ll\\[lA(')\$6Z'#}false\&\&ll[lA(')\$6Z'#" app/main/app.js
-
-# grep -lr "gE!=='\\\x6c\\\x69\\\x6e\\\x75\\\x78'" --exclude="app.asar" .
-# sed -i "s#gE!=='\\\x6c\\\x69\\\x6e\\\x75\\\x78'#gE==='\\\x6c\\\x69\\\x6e\\\x75\\\x78'#" app/main/app.js
 
 notice "路由"
 grep -lr 'case"SettingsPage":return r.push({name:"Settings"})}}' --exclude="app.asar" .
@@ -68,18 +61,6 @@ sed -i "s#]}});this\\[#]},frame:false});this[#g" app/main/app.js
 sed -i "s#]}}),this\\[#]},frame:false}),this[#g" app/main/app.js
 # splash
 sed -i "s#erence']}})#erence']},frame:false})#g" app/main/app.js
-
-notice "边框可调整，边框大小"
-# 降低窗口大小限制，处理小分辨率屏幕无法全屏的问题
-# resizable
-grep -lr "'resizable':\!\\[]" --exclude="app.asar" .
-sed -i "s#'resizable':\!\\[]#'resizable':true#g" app/main/app.js
-# Width
-grep -lr "Width':0x[0-9a-z]\+" --exclude="app.asar" .
-sed -i "s#Width':0x[0-9a-z]\+#Width':800#g" app/main/app.js
-# Height
-grep -lr "Height':0x[0-9a-z]\+" --exclude="app.asar" .
-sed -i "s#Height':0x[0-9a-z]\+#Height':600#g" app/main/app.js
 
 notice "检查更新"
 # 检查更新
@@ -99,8 +80,5 @@ notice "直播间：isWin强制true"
 grep -lr "G=(g,...h)=>{var" --exclude="app.asar" .
 sed -i 's#G=(g,...h)=>{var#G=(g,...h)=>{if(g==="system/isWin")return true;var#' "app/main/assets/bili-bridge.js"
 
-# notice "更新MD5"
-# md5=$(md5sum app/main/index.js|cut -d ' ' -f1)
-# echo ${md5[0]} > app/.appkey
 asar p app app.asar
 rm -rf app
