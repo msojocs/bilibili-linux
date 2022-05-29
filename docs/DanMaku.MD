@@ -24,3 +24,7 @@ for(let t of document.querySelector("#app > div > div.app_player--content.flex_e
   t.remove()
 }
 ```
+
+## 时间轴
+
+seek(900, true)

@@ -45,4 +45,30 @@
       </span>
     </template>
   </el-dialog>
+  <el-drawer
+    v-model="dmTimelineDrawer"
+    title="弹幕时间轴调整"
+    direction="btt"
+  >
+    <el-row>
+      <el-col :span="4" class="flex_center">
+        时间轴偏移：
+      </el-col>
+      <el-col :span="19">
+        <el-input-number v-model="moveFactor" :disabled="true" ></el-input-number>
+      </el-col>
+    </el-row>
+    <br />
+    <el-row>
+      <el-col :span="4" class="flex_center">
+        时间轴调整：
+      </el-col>
+      <el-col :span="19">
+        <el-button @click="dmTimelineMove(-5)">-5s</el-button>
+        <el-button @click="dmTimelineMove(-1)">-1s</el-button>
+        <el-button @click="dmTimelineMove(1)">+1s</el-button>
+        <el-button @click="dmTimelineMove(5)">+5s</el-button>
+      </el-col>
+    </el-row>
+  </el-drawer>
 </div>

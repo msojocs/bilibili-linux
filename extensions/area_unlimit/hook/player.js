@@ -262,7 +262,9 @@ console.log("====HOOK===PLAYER====");
             searchResult: [],
             selectOptions: null,
             settingsVisible: false,
-            damakuMode: "1"
+            damakuMode: "1",
+            dmTimelineDrawer: false,
+            moveFactor: 0,
           };
         },
         created() {
@@ -272,6 +274,9 @@ console.log("====HOOK===PLAYER====");
           }
           this.settingsVisible = document.getElementById("msojocs-player-settings").style.display !== "none"
           document.getElementById("msojocs-player-settings").style.display = ""
+          UI.dmTimeline = ()=>{
+            this.dmTimelineDrawer = !this.dmTimelineDrawer
+          }
         },
         methods: {
           doSearch: function(){
@@ -284,6 +289,12 @@ console.log("====HOOK===PLAYER====");
             console.log('selectOptions', this.selectOptions)
             HandleResult[this.activeName](this.selectOptions, this.damakuMode)
             this.settingsVisible = !this.settingsVisible
+          },
+          dmTimelineMove: function(time){
+            this.moveFactor += time
+            console.log('dmTimelineMove: ', time, this.moveFactor)
+            const danmaku = danmakuManage.danmaku
+            danmaku.seek(danmaku.time/1000 + this.moveFactor, true)
           }
         }
       };
@@ -308,8 +319,17 @@ console.log("====HOOK===PLAYER====");
     playerExtPage.onclick = ()=>{
       UI.changeShow()
     }
+    headerLeft.appendChild(playerExtPage)
+    const dmTimeline = document.createElement('span')
+    dmTimeline.textContent = "弹幕时间轴"
+    dmTimeline.style.marginLeft = "5px"
+    dmTimeline.id = "player-ext-settings"
+    dmTimeline.className = "app_player--header-home no_drag"
+    dmTimeline.onclick = ()=>{
+      UI.dmTimeline && UI.dmTimeline()
+    }
+    headerLeft.appendChild(dmTimeline)
     UI.init()
     // 添加按钮到页面
-    headerLeft.appendChild(playerExtPage)
   }
 })()
