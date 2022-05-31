@@ -12,6 +12,7 @@
 
   这是哔哩哔哩 Linux版
   
+  SVG图标来自 [@Peternal](https://github.com/Peternal)
 
   <br>
 </div>
@@ -21,7 +22,8 @@
 本项目用到了：
 
 1. 反混淆
-2. 脑子
+2. 调试
+3. 脑子
 
 ## 特点：
 
