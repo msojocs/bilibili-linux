@@ -309,6 +309,7 @@ console.log("====HOOK===PLAYER====");
   })()
 
   window.onload = ()=>{
+    console.log("====onload====")
     const headerLeft = document.querySelector("#app > div > div.app_player--header.flex_between.draggable > div.app_player--header-left.mt_2")
 
     // 创建菜单元素
@@ -331,5 +332,21 @@ console.log("====HOOK===PLAYER====");
     headerLeft.appendChild(dmTimeline)
     UI.init()
     // 添加按钮到页面
+
   }
+  // 1.75倍速
+  let rate175check = setInterval(()=>{
+    // console.log('1.75倍速')
+    try{
+      const speedRate = window.danmakuManage.nodes.controlBottomRight.querySelector('.cpx-player-ctrl-playbackrate-menu > li:nth-child(1)')
+      const rate175 = document.createElement('li')
+      rate175.className = "cpx-player-ctrl-playbackrate-menu-item"
+      rate175.dataset.value = "1.75"
+      rate175.textContent = "1.75x"
+      speedRate.after(rate175)
+      clearInterval(rate175check)
+    }catch(err){
+      // console.error('添加1.75倍速失败：', err)
+    }
+  }, 1000)
 })()

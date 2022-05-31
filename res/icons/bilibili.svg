@@ -25,10 +25,10 @@
      inkscape:document-units="mm"
      showgrid="false"
      inkscape:zoom="0.7937095"
-     inkscape:cx="244.42192"
-     inkscape:cy="258.91085"
-     inkscape:window-width="1255"
-     inkscape:window-height="686"
+     inkscape:cx="243.79197"
+     inkscape:cy="259.5408"
+     inkscape:window-width="1336"
+     inkscape:window-height="732"
      inkscape:window-x="525"
      inkscape:window-y="213"
      inkscape:window-maximized="0"
@@ -55,7 +55,8 @@
        y1="513.92328"
        x2="255.49025"
        y2="1.6289048"
-       gradientUnits="userSpaceOnUse" />
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.92618356,0,0,0.92618356,18.897638,18.897638)" />
   </defs>
   <g
      inkscape:groupmode="layer"
@@ -63,11 +64,11 @@
      inkscape:label="图层 3"
      style="display:inline">
     <circle
-       style="fill:url(#linearGradient2165);fill-opacity:1;stroke-width:1.0015748;stroke-miterlimit:4;stroke-dasharray:none"
+       style="fill:url(#linearGradient2165);fill-opacity:1;stroke-width:0.927642;stroke-miterlimit:4;stroke-dasharray:none"
        id="path919"
-       cx="256"
-       cy="256"
-       r="256" />
+       cx="256.00064"
+       cy="256.00064"
+       r="237.103" />
   </g>
   <g
      inkscape:groupmode="layer"
