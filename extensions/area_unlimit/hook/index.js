@@ -135,6 +135,7 @@
       // Do something, for example:
       console.log(e.detail);
       if(e.detail.includes("RoamingPage")){
+        // 判断HTML为漫游页面
         const roamingHTML = await HTTP_INDEX.get(e.detail)
         const container = document.createElement('div')
 
@@ -147,6 +148,7 @@
         }
       }
     });
+    // 获取漫游HTML
     document.dispatchEvent(new CustomEvent('ROAMING_getURL', {
       detail: 'RoamingPage' // Some variable from Gmail.
     }));
@@ -291,7 +293,7 @@
           // console.log(rule, value)
           if ((value || "") === "")
             callback()
-          else if (!/^(?=^.{3,255}$)[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+$/.test(value)) {
+          else if (!/^(?=^.{3,255}$)[a-zA-Z0-9\u4e00-\u9fa5][-a-zA-Z0-9\u4e00-\u9fa5]{0,62}(\.[a-zA-Z0-9\u4e00-\u9fa5][-a-zA-Z0-9\u4e00-\u9fa5]{0,62})+$/.test(value)) {
             callback(new Error("域名校验失败"))
           }
           callback()
