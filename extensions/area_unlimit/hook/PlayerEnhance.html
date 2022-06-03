@@ -28,6 +28,14 @@
           <el-cascader-panel v-model="selectOptions" :options="searchResult" ></el-cascader-panel>
         </el-col>
       </el-row>
+      <span style="display:block;height: 10px;"></span>
+      <el-row>
+        <el-col :span="4" class="flex_center">第三方弹幕：</el-col>
+        <el-col :span="19">
+          <el-switch v-model="dandanplayWithRelated" :disabled="activeName === 'bilibili'" />
+        </el-col>
+      </el-row>
+      <span style="display:block;height: 10px;"></span>
       <el-row>
         <el-col :span="4" class="flex_center">模式：</el-col>
         <el-col :span="19">
