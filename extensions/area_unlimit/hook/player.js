@@ -45,7 +45,7 @@ console.log("====HOOK===PLAYER====");
   }
   const SearchAPI = {
     bilibili: (str)=>{
-      const url = `http://api.bilibili.com/x/web-interface/search/type?keyword=${str}&search_type=media_bangumi`
+      const url = `https://api.bilibili.com/x/web-interface/search/type?__refresh__=true&_extra=&context=&page=1&page_size=12&order=&duration=&from_source=&from_spmid=333.337&platform=pc&device=win&highlight=1&single_column=0&keyword=${str}&search_type=media_bangumi`
       return HTTP.get(url).then(res=>{
         const resp = JSON.parse(res.responseText)
         console.log('bilibili: ', resp)
@@ -54,6 +54,7 @@ console.log("====HOOK===PLAYER====");
         console.log('result: ', result)
         for(let bangumi of result){
           let children = []
+          if(!bangumi.eps)continue;
           for(let ep of bangumi.eps){
             const title = ep.title.length < 5 ? `${ep.title}-${ep.long_title.replace(/<.*?>/g, '')}` : ep.title.replace(/<.*?>/g, '')
             children.push({
