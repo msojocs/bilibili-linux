@@ -26,7 +26,7 @@ fi
 tmp_dir="$root_dir/tmp"
 mkdir -p "$tmp_dir/bili"
 
-# notice "一次版本校验"
+notice "一次版本校验"
 BILIBILI_VERSION=$(exiftool -S -ProductVersionNumber "$root_dir/cache/bili_win-install.exe")
 BILIBILI_VERSION=(${BILIBILI_VERSION//: / })
 BILIBILI_VERSION=${BILIBILI_VERSION[1]}

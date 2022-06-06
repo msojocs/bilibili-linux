@@ -147,6 +147,7 @@ const AREA_MARK_CACHE = {}
 // HOOK
 const URL_HOOK = {
   "https://api.bilibili.com/pgc/view/pc/season": async (req)=>{
+    UTILS.enableReferer();
     console.log('HOOK', req)
     const resp = JSON.parse(req.responseText || "{}")
     if(resp.code !== 0){
@@ -223,10 +224,8 @@ const URL_HOOK = {
        * 东南亚：替换 - 不要referer
        */
       if(AREA_MARK_CACHE[params.ep_id] === 'th'){
-        console.log('remove referer')
         UTILS.disableReferer()
       }else{
-        console.log('add referer')
         UTILS.enableReferer()
       }
       const api = new BiliBiliApi()
@@ -252,6 +251,7 @@ const URL_HOOK = {
         
         let playURL
         if(area !== "th"){
+          UTILS.enableReferer()
           playURL = await api.getPlayURL(req, sessionStorage.access_key || "", area)
         }else{
           UTILS.disableReferer()
@@ -509,15 +509,21 @@ function __awaiter(thisArg, _arguments, P, generator) {
 }
 const UTILS = {
   enableReferer(){
-    document.getElementById('refererMark') && document.getElementById('refererMark').remove()
+    const referrerEle = document.getElementById('referrerMark')
+    if(!referrerEle)return;
+    
+    referrerEle.content = "strict-origin-when-cross-origin"
   },
   disableReferer(){
-    if(!document.getElementById('refererMark')){
+    const referrerEle = document.getElementById('referrerMark');
+    if(!referrerEle){
       let meta = document.createElement('meta')
-      meta.id = "refererMark"
+      meta.id = "referrerMark"
       meta.name = "referrer"
       meta.content = "no-referrer"
       document.head.appendChild(meta);
+    }else{
+      referrerEle.content = "no-referrer"
     }
   },
   replaceUpos(playURL, host, replaceAkamai = false, area=""){

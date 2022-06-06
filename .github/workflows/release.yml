@@ -35,7 +35,7 @@ jobs:
 
       - name: Prepare
         run: |
-          sudo apt install wget
+          sudo apt install wget exiftool
           sudo npm install asar -g
           echo "$UID, $GID"
 
