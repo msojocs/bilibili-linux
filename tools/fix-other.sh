@@ -30,28 +30,28 @@ notice "====index.js===="
 # 修复新版不能启动的问题
 notice "修复新版不能启动的问题 index.js"
 # 从app.js加载 ok
-grep -lr 'if(!_0x4bb4b2)' --exclude="app.asar" .
-sed -i 's#if(!_0x4bb4b2)#if(_0x4bb4b2)#' app/main/index.js
+grep -lr 'if(!_0x3ca18c)' --exclude="app.asar" .
+sed -i 's#if(!_0x3ca18c)#if(_0x3ca18c)#' app/main/index.js
 
 notice "====app.js===="
 
 notice "屏蔽检测"
-grep -lr 'if(!z2){' --exclude="app.asar" .
-sed -i 's#if(!z2){#if(false\&\&!z2){#' app/main/app.js
-grep -lr 'if(!ls){' --exclude="app.asar" .
-sed -i 's#if(!ls){#if(false\&\&!ls){#' app/main/app.js
+grep -lr 'if(!d2){' --exclude="app.asar" .
+sed -i 's#if(!d2){#if(false\&\&!d2){#' app/main/app.js
+grep -lr 'if(!tp){' --exclude="app.asar" .
+sed -i 's#if(!tp){#if(false\&\&!tp){#' app/main/app.js
 
 # package检测
-grep -lr "}ll\\[lA(')\$6Z'" --exclude="app.asar" .
-sed -i "s#}ll\\[lA(')\$6Z'#}false\&\&ll[lA(')\$6Z'#" app/main/app.js
+grep -lr "}tw\\[tO('3HJ@'" --exclude="app.asar" .
+sed -i "s#}tw\\[tO('3HJ@'#}false\&\&tw\\[tO('3HJ@'#" app/main/app.js
 
 notice "路由"
 grep -lr 'case"SettingsPage":return r.push({name:"Settings"})}}' --exclude="app.asar" .
 sed -i 's#case"SettingsPage":return r.push({name:"Settings"})}}#case"SettingsPage":return r.push({name:"Settings"});default:if(a)return r.push({name:a.page})}}#' app/render/assets/index.*.js
 
 notice "添加主页菜单" # ok
-grep -lr "'emplate'](\[{'label':'设置" --exclude="app.asar" .
-sed -i "s#'emplate'](\[{'label':'设置#'emplate'](\[{'label':'首页','click':()=>this.openMainWindowPage$.next({'page':'Root'})},{'label':'设置#" app/main/app.js
+grep -lr "'FromTemplate'](\[{'label':'设置" --exclude="app.asar" .
+sed -i "s#'FromTemplate'](\[{'label':'设置#'FromTemplate'](\[{'label':'首页','click':()=>this.openMainWindowPage$.next({'page':'Root'})},{'label':'设置#" app/main/app.js
 
 # 任务栏菜单
 # sed -i 's#\\x77\\x69\\x6e\\x33\\x32#linux#' app/main/index.js
@@ -70,11 +70,11 @@ sed -i 's#process.resourcesPath#path.dirname(this.app.getAppPath())#' app/node_m
 
 notice "====Bili Bridge===="
 notice "hack debugger"
-grep -lr "(ab(0x246,']nU]')+ab(0x24f,'tN&\!'))" --exclude="app.asar" .
-sed -i "s#(ab(0x246,']nU]')+ab(0x24f,'tN&\!'))#(ab(0x246,']nU]')+ab(0x24f,'tN\&\!')+'123')#" "app/main/assets/bili-bridge.js"
+# grep -lr "(ab(0x246,']nU]')+ab(0x24f,'tN&\!'))" --exclude="app.asar" .
+# sed -i "s#(ab(0x246,']nU]')+ab(0x24f,'tN&\!'))#(ab(0x246,']nU]')+ab(0x24f,'tN\&\!')+'123')#" "app/main/assets/bili-bridge.js"
 
-grep -lr "('debu'+ab" --exclude="app.asar" .
-sed -i "s#('debu'+ab#('123debu'+ab#" "app/main/assets/bili-bridge.js"
+grep -lr "('debu'+a6" --exclude="app.asar" .
+sed -i "s#('debu'+a6#('123debu'+a6#" "app/main/assets/bili-bridge.js"
 
 notice "直播间：isWin强制true"
 grep -lr "G=(g,...h)=>{var" --exclude="app.asar" .
