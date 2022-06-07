@@ -25,6 +25,8 @@
 2. 调试
 3. 脑子
 
+本项目完全开源，且没有任何代码加密操作，如有疑虑请自行审查代码或停止使用相关文件。
+
 ## 特点：
 
 1. 没有讨厌的标题栏
@@ -82,3 +84,13 @@ https://github.com/msojocs/bilibili-linux/releases/tag/continuous
 
 1. [BiliRoaming](https://github.com/yujincheng08/BiliRoaming)
 2. [解除B站区域限制](https://github.com/ipcjs/bilibili-helper)
+
+## 免责声明
+
+哔哩哔哩客户端版权归上海宽娱数码科技有限公司所有；
+
+本项目旨在交流学习之用，请使用者在下载后24小时内删除相关程序。
+
+对于使用本项目产生的额外问题，如账户封禁被盗等，维护者不对此负责，请谨慎使用；
+
+如有不当之处，请联系本人，邮箱：jiyecafe@gmail.com

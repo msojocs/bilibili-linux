@@ -27,3 +27,10 @@ contextBridge.exposeInMainWorld = function(){
   }
   originEIMW.apply(this, arguments);
 };
+// 漫游pac设置
+const originEW = String.prototype.endsWith
+String.prototype.endsWith = function (){
+  // console.log('endsWith: ', arguments);
+  if(arguments[0] === "config/roamingPAC")return true;
+  return originEW.apply(this, arguments)
+}

@@ -36,10 +36,6 @@ cat "app/main/app.js" >> "app/main/temp.js"
 rm -f "app/main/app.js"
 mv "app/main/temp.js" "app/main/app.js"
 
-notice "添加PAC设置channel"
-grep -lr "'window/isFullScreen',W" --exclude="app.asar" .
-sed -i "s#'window/isFullScreen',W#'window/isFullScreen','config/roamingPAC',W#" "app/main/assets/bili-bridge.js"
-
 notice "暴露弹幕管理接口"
 grep -lr "this.initDanmaku(),this" --exclude="app.asar" .
 sed -i 's#this.initDanmaku(),this#this.initDanmaku(),window.danmakuManage = this,this#' "app/render/assets/lib/core.js"

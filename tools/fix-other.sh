@@ -54,7 +54,6 @@ grep -lr "'FromTemplate'](\[{'label':'设置" --exclude="app.asar" .
 sed -i "s#'FromTemplate'](\[{'label':'设置#'FromTemplate'](\[{'label':'首页','click':()=>this.openMainWindowPage$.next({'page':'Root'})},{'label':'设置#" app/main/app.js
 
 # 任务栏菜单
-# sed -i 's#\\x77\\x69\\x6e\\x33\\x32#linux#' app/main/index.js
 notice "去除标题栏"
 grep -lr ']}});this\[' --exclude="app.asar" .
 sed -i "s#]}});this\\[#]},frame:false});this[#g" app/main/app.js
