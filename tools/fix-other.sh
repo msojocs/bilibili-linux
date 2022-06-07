@@ -69,16 +69,11 @@ sed -i 's#// noinspection SuspiciousTypeOfGuard#runtimeOptions.platform="win32";
 sed -i 's#process.resourcesPath#path.dirname(this.app.getAppPath())#' app/node_modules/electron-updater/out/ElectronAppAdapter.js
 
 notice "====Bili Bridge===="
-notice "hack debugger"
-# grep -lr "(ab(0x246,']nU]')+ab(0x24f,'tN&\!'))" --exclude="app.asar" .
-# sed -i "s#(ab(0x246,']nU]')+ab(0x24f,'tN&\!'))#(ab(0x246,']nU]')+ab(0x24f,'tN\&\!')+'123')#" "app/main/assets/bili-bridge.js"
-
-grep -lr "('debu'+a6" --exclude="app.asar" .
-sed -i "s#('debu'+a6#('123debu'+a6#" "app/main/assets/bili-bridge.js"
-
-notice "直播间：isWin强制true"
-grep -lr "G=(g,...h)=>{var" --exclude="app.asar" .
-sed -i 's#G=(g,...h)=>{var#G=(g,...h)=>{if(g==="system/isWin")return true;var#' "app/main/assets/bili-bridge.js"
+notice "inject"
+cat "$root_dir/res/scripts/injectBridge.js" > "app/main/assets/temp.js"
+cat "app/main/assets/bili-bridge.js" >> "app/main/assets/temp.js"
+rm "app/main/assets/bili-bridge.js"
+mv "app/main/assets/temp.js" "app/main/assets/bili-bridge.js"
 
 asar p app app.asar
 rm -rf app

@@ -4,8 +4,8 @@ const fs = require('fs')
 const path = require('path')
 const crypto = require('crypto')
 
-const biliKey = "7b305469a2c01ef020b0a624ffcd9f19"
-const biliIv = "64853c1f595ca897db82273d40a73c31"
+const biliKey = "7b305469a2c01ef020b0a624ffcd9f19"  // 字符串 bili_key 的 md5
+const biliIv = "64853c1f595ca897db82273d40a73c31"   // 字符串 bili_iv 的 md5
 const args = process.argv.slice(2)
 
 const src = args[0]
