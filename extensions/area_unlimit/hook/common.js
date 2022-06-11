@@ -547,7 +547,7 @@ const UTILS = {
         "selection_style": "horizontal",
         "media_mode": 2,
         "fix_pubtime_str": "",
-        cover: item.cover.replace(/\?x.*?webp/, '').replace('https://pic.bstarstatic.com', 'http://localhost:22332'),
+        cover: item.cover.replace(/@.*?webp/, '').replace('https://pic.bstarstatic.com', 'http://localhost:22332'),
         url: item.uri.replace('bstar://bangumi/season/', 'https://www.bilibili.com/bangumi/play/ss'),
         "is_avid": false,
       })
