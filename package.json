@@ -49,7 +49,7 @@
   "scripts": {
     "pkg-win": "electron-builder --win --x64",
     "pkg-mac": "electron-builder --mac --x64",
-    "pkg-linux": "electron-builder --linux --x64",
+    "pkg-linux": "electron-builder --linux --x64 --arm64",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

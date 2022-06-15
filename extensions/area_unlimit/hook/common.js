@@ -3,6 +3,7 @@ const HTTP = {
   get(url) {
     return new Promise((resolve, reject) => {
       const Http = new XMLHttpRequest()
+      Http.timeout = 5000;
       Http.open('GET', url)
       Http.send()
       Http.onloadend = e => {
@@ -14,6 +15,7 @@ const HTTP = {
   post(url, body=null) {
     return new Promise((resolve, reject) => {
       const Http = new XMLHttpRequest()
+      Http.timeout = 5000;
       Http.open('POST', url)
       Http.send(body)
       Http.onloadend = e => {
