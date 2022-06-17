@@ -623,6 +623,7 @@ const UTILS = {
               30033: 'hev1.1.6.L120.90',
               30011: 'hev1.1.6.L120.90',
               30016: 'avc1.64001E',
+              30006: 'avc1.64001E',
               30280: 'mp4a.40.2',
               30232: 'mp4a.40.2',
               30216: 'mp4a.40.2',
@@ -645,6 +646,7 @@ const UTILS = {
               30033: [852, 480],
               30011: [640, 360],
               30016: [640, 360],
+              30006: [352, 240],
           };
           const frameRateMap = {
               30112: '16000/672',
@@ -656,7 +658,8 @@ const UTILS = {
               30032: '16000/672',
               30033: '16000/656',
               30011: '16000/656',
-              30016: '16000/672'
+              30016: '16000/672',
+              30006: '16000/672'
           };
           let segmentBaseMap = {};
           function getId(url, default_value, get_filename = false) {
@@ -736,6 +739,7 @@ const UTILS = {
               segmentBaseMap = window.__segment_base_map__;
           // 填充视频流数据
           result.dash.video.forEach((video) => {
+            // console.log('video: ', video)
               let video_id = getId(video.baseUrl, '30280');
               if (!codecsMap.hasOwnProperty(video_id)) {
                   // https://github.com/ipcjs/bilibili-helper/issues/775
