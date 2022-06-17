@@ -174,6 +174,7 @@ const URL_HOOK = {
         })
         // 处理部分番剧存在平台限制
         seasonInfo.result.rights.watch_platform = 0
+        seasonInfo.result.rights.allow_download = 1
         console.log('seasonInfo1: ', seasonInfo)
         req.responseText = JSON.stringify(seasonInfo)
         return;
@@ -195,13 +196,14 @@ const URL_HOOK = {
         ep.status = 2
       })
       seasonInfo.result.rights.watch_platform = 0
+      seasonInfo.result.rights.allow_download = 1
       console.log('seasonInfo2: ', seasonInfo)
       req.responseText = JSON.stringify(seasonInfo)
 
     }else{
       // 一些番剧可以获取到信息，但是内部有限制区域
       resp.result.episodes.forEach(ep => {
-        ep.rights && (ep.rights.area_limit = 0,ep.rights.allow_dm = 0)
+        ep.rights && (ep.rights.area_limit = 0,ep.rights.allow_dm = 0,ep.rights.allow_download = 1)
       })
       req.responseText = JSON.stringify(resp)
     }

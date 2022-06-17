@@ -37,14 +37,14 @@ sed -i 's#global;import_electron2#global;!import_electron2#' app/main/index.js
 notice "====app.js===="
 
 notice "屏蔽检测"
-grep -lr 'if(!h8){' --exclude="app.asar" .
-sed -i 's#if(!h8){#if(false\&\&!h8){#' app/main/app.js
-grep -lr '}BG.app' --exclude="app.asar" .
-sed -i 's#}BG.app#}false\&\&BG.app#' app/main/app.js
-grep -lr 'if(!BQ){' --exclude="app.asar" .
-sed -i 's#if(!BQ){#if(false\&\&!BQ){#' app/main/app.js
-grep -lr ';!h8' --exclude="app.asar" .
-sed -i 's#;!h8#;false\&\&!h8#' app/main/app.js
+grep -lr 'if(!c8){' --exclude="app.asar" .
+sed -i 's#if(!c8){#if(false\&\&!c8){#' app/main/app.js
+grep -lr '}Nu.app' --exclude="app.asar" .
+sed -i 's#}Nu.app#}false\&\&Nu.app#' app/main/app.js
+grep -lr 'if(!NC){' --exclude="app.asar" .
+sed -i 's#if(!NC){#if(false\&\&!NC){#' app/main/app.js
+grep -lr ';}!c8' --exclude="app.asar" .
+sed -i 's#;}!c8#;}false\&\&!c8#' app/main/app.js
 
 notice "路由"
 grep -lr 'case"SettingsPage":return r.push({name:"Settings"});c' --exclude="app.asar" .
