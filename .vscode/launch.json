@@ -1,0 +1,19 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+      {
+          "name": "Debug Main Process",
+          "type": "node",
+          "request": "launch",
+          "cwd": "${workspaceRoot}",
+          "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
+          "env": {
+            // "ELECTRON_FORCE_IS_PACKAGED": "true" 
+          },
+          // "args": ["app/app"],
+          "program": "${workspaceRoot}/app/app/main/index.js",
+          "outputCapture": "std"
+          
+      }
+  ]
+}

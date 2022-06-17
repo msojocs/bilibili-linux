@@ -28,7 +28,7 @@
       ],
       "icon": "res/icons/bilibili.ico"
     },
-    "nsis":{
+    "nsis": {
       "oneClick": false,
       "installerIcon": "res/icons/bilibili.ico",
       "uninstallerIcon": "res/icons/bilibili.ico",
@@ -66,6 +66,7 @@
   },
   "homepage": "https://github.com/msojocs/bilibili-linux#readme",
   "devDependencies": {
+    "electron": "^17.4.0",
     "electron-builder": "^23.0.3"
   }
 }

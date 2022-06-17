@@ -1,9 +1,5 @@
 #!/bin/bash
 
-VERSION=$(exiftool -S -ProductVersion cache/bili_win-install.exe)
-echo $VERSION
-V1=(${VERSION//: / })
-echo ${V1[1]}
+root_dir=$(cd `dirname $0`/.. && pwd -P)
 
-# node test/js-decode.js
-# bin/bilibili
+"$root_dir/tools/app-decrypt.js" "$root_dir/app/app/main/.biliapp" "$root_dir/app/app/main/.biliapp.js"
