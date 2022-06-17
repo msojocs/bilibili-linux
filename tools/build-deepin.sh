@@ -42,6 +42,11 @@ sed -i "s/BUILD_VERSION/${BUILD_VERSION//v/}/" "$build_dir/debian/control" "$bui
 # 时间
 build_time=$(LANG=en_US date '+%a, %d %b %Y %H:%M:%S %z')
 sed -i "s#[A-Za-z]\+, [0-9]\+ [A-Za-z]\+ [0-9]\+ [0-9]\+:[0-9]\+:[0-9]\+ +[0-9]\+#${build_time}#" "$build_dir/debian/changelog"
+# 架构
+notice "架构：$BUILD_ARCH"
+if [ "$BUILD_ARCH" != "" ];then
+  sed -i "s#amd64#${BUILD_ARCH}#" "$build_dir/debian/control"
+fi
 
 # desktop
 \cp -rf "$root_dir/res/bilibili.desktop" "$base_dir/entries/applications/$package_name.desktop"
@@ -65,5 +70,5 @@ cd "$build_dir"
 ls -l "$build_dir"
 mkdir -p "$root_dir/tmp/build"
 
-debuild --no-tgz-check -i -I -uc -us
+debuild --no-tgz-check -i -I -uc -us -a"${BUILD_ARCH}"
 mv $tmp_dir/*.deb $tmp_dir/build

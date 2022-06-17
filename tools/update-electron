@@ -16,6 +16,9 @@ notice() {
 
 electron_version="17.4.0"
 download_url="https://npmmirror.com/mirrors/electron/${electron_version}/electron-v${electron_version}-linux-x64.zip"
+if [ "$BUILD_ARCH" == "arm64" ];then
+  download_url=$(echo "${download_url}" | sed "s/x64/${BUILD_ARCH}/")
+fi
 
 mkdir -p "$root_dir/cache"
 if [[ ! -f "$root_dir/cache/electron-v${electron_version}-linux-x64.zip" ]];then

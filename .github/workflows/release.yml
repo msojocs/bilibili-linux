@@ -203,7 +203,7 @@ jobs:
 
     strategy:
       matrix:
-        ARCH: ['x86_64']
+        ARCH: ['x86_64', 'ARM64']
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -213,7 +213,7 @@ jobs:
 
       - name: Prepare
         run: |
-          sudo apt-get install -y build-essential fakeroot devscripts debhelper # debmake lintian pbuilder
+          sudo apt-get install -y build-essential fakeroot devscripts debhelper qemu-user-static # debmake lintian pbuilder
 
       - name: Generate TAG
         id: Tag
@@ -238,6 +238,14 @@ jobs:
           ls -l
           mkdir -p tmp/build
           tools/build-prepare.sh
+          echo "${{ matrix.ARCH }}"
+          if [ "${{ matrix.ARCH }}" == "ARM64" ];then
+            export BUILD_ARCH="arm64"
+            export LD_LIBRARY_PATH="/usr/aarch64-linux-gnu/lib"
+            tools/update-electron
+          else
+            export BUILD_ARCH="amd64"
+          fi
           tools/build-deepin.sh ${{ steps.tag.outputs.tag }}
 
       - name: Upload artifact
