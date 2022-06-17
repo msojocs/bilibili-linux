@@ -317,11 +317,24 @@ console.log("====HOOK===PLAYER====");
             })
             this.settingsVisible = !this.settingsVisible
           },
+          /**
+           * 弹幕时间轴调整
+           * 正值：弹幕提前
+           * 负值：弹幕延后
+           * 
+           * @param {Number} time 
+           */
           dmTimelineMove: function(time){
             this.moveFactor += time
             console.log('dmTimelineMove: ', time, this.moveFactor)
             const danmaku = danmakuManage.danmaku
-            danmaku.seek(danmaku.time/1000 + this.moveFactor, true)
+            danmakuManage.danmaku.danmakuArray.forEach(dm => {
+              dm.stime += time
+            });
+
+            danmakuManage.danmaku.timeLine.list.forEach(dm => {
+              dm.stime += time
+            });
           }
         }
       };

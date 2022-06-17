@@ -72,10 +72,10 @@
         时间轴调整：
       </el-col>
       <el-col :span="19">
-        <el-button @click="dmTimelineMove(-5)">-5s</el-button>
-        <el-button @click="dmTimelineMove(-1)">-1s</el-button>
-        <el-button @click="dmTimelineMove(1)">+1s</el-button>
-        <el-button @click="dmTimelineMove(5)">+5s</el-button>
+        <el-button @click="dmTimelineMove(-5)" title="所有弹幕左移5s">&lt;&lt;&nbsp;5s</el-button>
+        <el-button @click="dmTimelineMove(-1)" title="所有弹幕左移1s">&lt;&lt;&nbsp;1s</el-button>
+        <el-button @click="dmTimelineMove(1)" title="所有弹幕右移1s">&gt;&gt;&nbsp;1s</el-button>
+        <el-button @click="dmTimelineMove(5)" title="所有弹幕右移5s">&gt;&gt;&nbsp;5s</el-button>
       </el-col>
     </el-row>
   </el-drawer>
