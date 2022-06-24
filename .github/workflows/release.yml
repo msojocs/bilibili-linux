@@ -213,7 +213,7 @@ jobs:
 
       - name: Prepare
         run: |
-          sudo apt-get install -y build-essential fakeroot devscripts debhelper qemu-user-static # debmake lintian pbuilder
+          sudo apt-get install -y build-essential fakeroot devscripts debhelper # debmake lintian pbuilder
 
       - name: Generate TAG
         id: Tag
