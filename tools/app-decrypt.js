@@ -4,8 +4,8 @@ const fs = require('fs')
 const path = require('path')
 const crypto = require('crypto')
 
-const biliKey = "3fd28eac7aac3f38eca83206e27638fd"
-const biliIv = "d2a57dc1d883fd21fb9951699df71cc7"
+const biliKey = "826ac684c5e1fb190ff1d5f85bf397b1"
+const biliIv = "1e69a0b68e1682b8adfe6af7a2b0068d"
 const args = process.argv.slice(2)
 
 const src = args[0]

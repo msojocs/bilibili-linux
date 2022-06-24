@@ -28,23 +28,27 @@ notice "解密"
 
 notice "====index.js===="
 # 修复新版不能启动的问题
-notice "修复新版不能启动的问题 index.js"
+notice "修复不能启动的问题 index.js"
+cat "$root_dir/res/scripts/injectIndex.js" > "app/main/temp.js"
+cat "app/main/index.js" >> "app/main/temp.js"
+rm "app/main/index.js"
+mv "app/main/temp.js" "app/main/index.js"
 # 从app.js加载 ok
-grep -lr '!import_electron2' --exclude="app.asar" .
-sed -i 's#!import_electron2#import_electron2#' app/main/index.js
-grep -lr 'global;import_electron2' --exclude="app.asar" .
-sed -i 's#global;import_electron2#global;!import_electron2#' app/main/index.js
+# grep -lr '!import_electron2' --exclude="app.asar" .
+# sed -i 's#!import_electron2#import_electron2#' app/main/index.js
+# grep -lr 'global;import_electron2' --exclude="app.asar" .
+# sed -i 's#global;import_electron2#global;!import_electron2#' app/main/index.js
 notice "====app.js===="
 
 notice "屏蔽检测"
-grep -lr 'if(!c8){' --exclude="app.asar" .
-sed -i 's#if(!c8){#if(false\&\&!c8){#' app/main/app.js
-grep -lr '}Nu.app' --exclude="app.asar" .
-sed -i 's#}Nu.app#}false\&\&Nu.app#' app/main/app.js
-grep -lr 'if(!NC){' --exclude="app.asar" .
-sed -i 's#if(!NC){#if(false\&\&!NC){#' app/main/app.js
-grep -lr ';}!c8' --exclude="app.asar" .
-sed -i 's#;}!c8#;}false\&\&!c8#' app/main/app.js
+grep -lr 'if(!Ue){' --exclude="app.asar" .
+sed -i 's#if(!Ue){#if(false\&\&!Ue){#' app/main/app.js
+grep -lr '}z2\[zD' --exclude="app.asar" .
+sed -i 's#}z2\[zD#}false\&\&z2\[zD#' app/main/app.js
+grep -lr 'if(!zX){' --exclude="app.asar" .
+sed -i 's#if(!zX){#if(false\&\&!zX){#' app/main/app.js
+# grep -lr ';}!c8' --exclude="app.asar" .
+# sed -i 's#;}!c8#;}false\&\&!c8#' app/main/app.js
 
 notice "路由"
 grep -lr 'case"SettingsPage":return r.push({name:"Settings"});c' --exclude="app.asar" .
