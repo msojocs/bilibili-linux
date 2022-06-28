@@ -41,12 +41,12 @@ mv "app/main/temp.js" "app/main/index.js"
 notice "====app.js===="
 
 notice "屏蔽检测"
-grep -lr 'if(!Ue){' --exclude="app.asar" .
-sed -i 's#if(!Ue){#if(false\&\&!Ue){#' app/main/app.js
-grep -lr '}z2\[zD' --exclude="app.asar" .
-sed -i 's#}z2\[zD#}false\&\&z2\[zD#' app/main/app.js
-grep -lr 'if(!zX){' --exclude="app.asar" .
-sed -i 's#if(!zX){#if(false\&\&!zX){#' app/main/app.js
+grep -lr 'if(!fD){' --exclude="app.asar" .
+sed -i 's#if(!fD){#if(false\&\&!fD){#' app/main/app.js
+# grep -lr '}X5\[XY' --exclude="app.asar" .
+# sed -i 's#}X5\[XY#}false\&\&X5\[XY#' app/main/app.js
+grep -lr 'if(!Xz){' --exclude="app.asar" .
+sed -i 's#if(!Xz){#if(false\&\&!Xz){#' app/main/app.js
 # grep -lr ';}!c8' --exclude="app.asar" .
 # sed -i 's#;}!c8#;}false\&\&!c8#' app/main/app.js
 
