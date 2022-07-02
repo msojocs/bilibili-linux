@@ -7,10 +7,11 @@ const pkgHack = {
     true,
     true,
     true,
-    false,
-    false,
+    false,  // warning, jsc中的
+    false,  // .biliapp
+    // ======app.js start======
     true,
-    false // app.js isPackaged -> waring
+    false // app.js isPackaged -> warning
   ]
 }
 Object.defineProperty(app, 'isPackaged', {

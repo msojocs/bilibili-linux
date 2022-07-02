@@ -105,7 +105,7 @@ class BiliBiliApi {
   searchBangumi(params, area) {
     let path = "x/web-interface/search/type"
     if(area === "th")path = "intl/gateway/v2/app/search/type"
-    const url = `https://${this.server}/${path}?${params}&area=${area}`
+    const url = `https://${this.server}/${path}?${params}&area=${area}${area === "th"?'&type=7':''}`
     return HTTP.get(url).then(res => {
       const resp = JSON.parse(res.responseText)
       console.log("searchBangumi: ", resp)
