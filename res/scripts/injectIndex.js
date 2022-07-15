@@ -6,19 +6,17 @@ const pkgHack = {
   data: [
     true,
     true,
-    true,
-    false,  // warning, jsc中的
     false,  // .biliapp
-    // ======app.js start======
-    true,
-    false // app.js isPackaged -> warning
+    true, 
+    false,
+    false,
   ]
 }
 Object.defineProperty(app, 'isPackaged', {
   get() {
     let ret = pkgHack.data[pkgHack.idx++]
     if (ret === undefined) ret = true;
-    // console.log("get isPackaged", ret)
+    console.log("get isPackaged", ret)
     return ret;
   },
 

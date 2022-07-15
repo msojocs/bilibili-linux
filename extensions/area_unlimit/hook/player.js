@@ -165,12 +165,12 @@ console.log("====HOOK===PLAYER====");
   const UI = (()=>{
     const init = ()=>{
       console.log("init")
-      const appContainer = document.querySelector("#app > div > div.app_player--content.flex_end.ov_hidden")
+      const appContainer = document.querySelector("#app > div > div.app_player--header.flex_between.draggable.db_click_max")
       const page = document.createElement('div')
       page.className = "msojocs-player-settings"
       page.id = "msojocs-player-settings"
       page.style.display = "none"
-      appContainer.appendChild(page)
+      appContainer.lastChild.prepend(page)
       const loadStatus = document.createElement('span')
       loadStatus.style.color = "red"
       loadStatus.style.fontSize = "xxx-large"

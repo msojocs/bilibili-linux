@@ -41,22 +41,22 @@ mv "app/main/temp.js" "app/main/index.js"
 notice "====app.js===="
 
 notice "屏蔽检测"
-grep -lr 'if(!fD){' --exclude="app.asar" .
-sed -i 's#if(!fD){#if(false\&\&!fD){#' app/main/app.js
-# grep -lr '}X5\[XY' --exclude="app.asar" .
-# sed -i 's#}X5\[XY#}false\&\&X5\[XY#' app/main/app.js
-grep -lr 'if(!Xz){' --exclude="app.asar" .
-sed -i 's#if(!Xz){#if(false\&\&!Xz){#' app/main/app.js
-# grep -lr ';}!c8' --exclude="app.asar" .
-# sed -i 's#;}!c8#;}false\&\&!c8#' app/main/app.js
+grep -lr 'if(!Ak){' --exclude="app.asar" .
+sed -i 's#if(!Ak){#if(false\&\&!Ak){#' app/main/app.js
+grep -lr ';AA.split' --exclude="app.asar" .
+sed -i 's#;AA.split#;false\&\&AA.split#' app/main/app.js
+grep -lr 'if(uX)' --exclude="app.asar" .
+sed -i 's#if(uX)#if(!uX)#' app/main/app.js
+grep -lr ';}!uX' --exclude="app.asar" .
+sed -i 's#;}!uX#;}false\&\&!uX#' app/main/app.js
 
 notice "路由"
 grep -lr 'case"SettingsPage":return r.push({name:"Settings"});c' --exclude="app.asar" .
 sed -i 's#case"SettingsPage":return r.push({name:"Settings"});c#case"SettingsPage":return r.push({name:"Settings"});default:if(a)return r.push({name:a.page});c#' app/render/assets/index.*.js
 
 notice "添加主页菜单" # ok
-grep -lr "emplate'](\[{'label':'设置" --exclude="app.asar" .
-sed -i "s#emplate'](\[{'label':'设置#emplate'](\[{'label':'首页','click':()=>this.openMainWindowPage$.next({'page':'Root'})},{'label':'设置#" app/main/app.js
+grep -lr "te'](\[{'label':'设置" --exclude="app.asar" .
+sed -i "s#te'](\[{'label':'设置#te'](\[{'label':'首页','click':()=>this.openMainWindowPage$.next({'page':'Root'})},{'label':'设置#" app/main/app.js
 
 # 任务栏菜单
 notice "去除标题栏"
