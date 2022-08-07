@@ -41,14 +41,14 @@ mv "app/main/temp.js" "app/main/index.js"
 notice "====app.js===="
 
 notice "屏蔽检测"
-grep -lr 'if(!Ak){' --exclude="app.asar" .
-sed -i 's#if(!Ak){#if(false\&\&!Ak){#' app/main/app.js
-grep -lr ';AA.split' --exclude="app.asar" .
-sed -i 's#;AA.split#;false\&\&AA.split#' app/main/app.js
-grep -lr 'if(uX)' --exclude="app.asar" .
-sed -i 's#if(uX)#if(!uX)#' app/main/app.js
-grep -lr ';}!uX' --exclude="app.asar" .
-sed -i 's#;}!uX#;}false\&\&!uX#' app/main/app.js
+grep -lr 'if(!OJ' --exclude="app.asar" .
+sed -i 's#if(!OJ#if(false\&\&!OJ#g' app/main/app.js
+grep -lr 'if(!Tm)' --exclude="app.asar" .
+sed -i 's#if(!Tm)#if(false\&\&!Tm)#' app/main/app.js
+grep -lr 'if(OJ)' --exclude="app.asar" .
+sed -i 's#if(OJ)#if(!OJ)#' app/main/app.js
+# grep -lr ';}!uX' --exclude="app.asar" .
+# sed -i 's#;}!uX#;}false\&\&!uX#' app/main/app.js
 
 notice "路由"
 grep -lr 'case"SettingsPage":return r.push({name:"Settings"});c' --exclude="app.asar" .

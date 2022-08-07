@@ -9,7 +9,7 @@ const pkgHack = {
     false,  // .biliapp
     true, 
     false,
-    false,
+    true,
   ]
 }
 Object.defineProperty(app, 'isPackaged', {

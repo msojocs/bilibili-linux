@@ -14,7 +14,7 @@ notice() {
     echo -e "\033[36m $1 \033[0m "
 }
 
-electron_version="17.4.0"
+electron_version="17.4.11"
 download_url="https://npmmirror.com/mirrors/electron/${electron_version}/electron-v${electron_version}-linux-x64.zip"
 if [ "$BUILD_ARCH" == "arm64" ];then
   download_url=$(echo "${download_url}" | sed "s/x64/${BUILD_ARCH}/")
