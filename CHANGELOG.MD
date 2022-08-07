@@ -1,3 +1,8 @@
+# v1.4.1-1 / 2022-08-07
+
+ - bilibili: update to v1.4.1.1055
+ - fix: extension of player
+
 # v1.3.1-2 / 2022-07-24
 
  - fix: 东南亚部分番剧集可能不能播放

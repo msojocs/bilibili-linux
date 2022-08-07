@@ -350,7 +350,7 @@ console.log("====HOOK===PLAYER====");
 
   window.onload = ()=>{
     console.log("====onload====")
-    const headerLeft = document.querySelector("#app > div > div.app_player--header.flex_between.draggable > div.app_player--header-left.mt_2")
+    const headerLeft = document.querySelector("#app > div > div.app_player--header.flex_between.draggable.db_click_max > div.app_player--header-left")
 
     // 创建菜单元素
     const playerExtPage = document.createElement('span')
