@@ -28,8 +28,9 @@
   history.replaceState = _historyWrap('replaceState');
 
   function switchPage(hash) {
+    console.log('switch to:', hash)
     // 菜单切换
-    const menuDiv = document.querySelector("#app > div > div > div.app_layout--content.flex_col > div > div.app_settings.i_page_wrapper > div.header_slot.flex_start.drag")
+    const menuDiv = document.querySelector("#app > div > div > div.app_layout--content.flex_col > div > div.app_settings.i_page_wrapper > div.header_slot.flex_start.drag").querySelector('.vui_tabs--nav-link')
     for (let h3 of menuDiv.children) {
       h3.style.cssText = h3.dataset.hash === hash ? "color:var(--el-text-color-primary)!important" : "color:gray!important";
     }
@@ -47,7 +48,7 @@
     const url = new URL(location.href)
 
     // 菜单
-    const menuDiv = document.querySelector("#app > div > div > div.app_layout--content.flex_col > div > div.app_settings.i_page_wrapper > div.header_slot.flex_start.drag")
+    const menuDiv = document.querySelector("#app > div > div > div.app_layout--content.flex_col > div > div.app_settings.i_page_wrapper > div.header_slot.flex_start.drag").querySelector('.vui_tabs--nav-link')
     if (menuDiv.children.length === 2) return;
     menuDiv.children[0].dataset.hash = url.hash
     const areaLimitH3 = document.createElement('h3');

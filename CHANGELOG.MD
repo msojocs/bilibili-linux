@@ -1,3 +1,8 @@
+# v1.5.0-1 / 2022-08-21
+
+ - bilibili: update to v1.5.0.1184
+ - fix: 漫游按钮异常
+
 # v1.4.1-1 / 2022-08-07
 
  - bilibili: update to v1.4.1.1055
