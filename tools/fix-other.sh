@@ -41,18 +41,19 @@ mv "app/main/temp.js" "app/main/index.js"
 notice "====app.js===="
 
 notice "屏蔽检测"
-grep -lr 'if(!OJ' --exclude="app.asar" .
-sed -i 's#if(!OJ#if(false\&\&!OJ#g' app/main/app.js
-grep -lr 'if(!Tm)' --exclude="app.asar" .
-sed -i 's#if(!Tm)#if(false\&\&!Tm)#' app/main/app.js
-grep -lr 'if(OJ)' --exclude="app.asar" .
-sed -i 's#if(OJ)#if(!OJ)#' app/main/app.js
-# grep -lr ';}!uX' --exclude="app.asar" .
-# sed -i 's#;}!uX#;}false\&\&!uX#' app/main/app.js
+grep -lr 'if(!nY' --exclude="app.asar" .
+sed -i 's#if(!nY#if(false\&\&!nY#g' app/main/app.js
+grep -lr 'if(!PV)' --exclude="app.asar" .
+sed -i 's#if(!PV)#if(false\&\&!PV)#' app/main/app.js
+# global['bootstrapApp']();
+grep -lr 'if(nY)' --exclude="app.asar" .
+sed -i 's#if(nY)#if(!nY)#' app/main/app.js
+grep -lr ';}!nY' --exclude="app.asar" .
+sed -i 's#;}!nY#;}false\&\&!nY#' app/main/app.js
 
 notice "路由"
-grep -lr 'case"SettingsPage":return r.push({name:"Settings"});c' --exclude="app.asar" .
-sed -i 's#case"SettingsPage":return r.push({name:"Settings"});c#case"SettingsPage":return r.push({name:"Settings"});default:if(a)return r.push({name:a.page});c#' app/render/assets/index.*.js
+grep -lr 'case"SettingsPage":return e.push({name:"Settings"});c' --exclude="app.asar" .
+sed -i 's#case"SettingsPage":return e.push({name:"Settings"});c#case"SettingsPage":return e.push({name:"Settings"});default:if(a)return e.push({name:i.page});c#' app/render/assets/index.*.js
 
 notice "添加主页菜单" # ok
 grep -lr "te'](\[{'label':'设置" --exclude="app.asar" .
@@ -60,9 +61,10 @@ sed -i "s#te'](\[{'label':'设置#te'](\[{'label':'首页','click':()=>this.open
 
 # 任务栏菜单
 notice "去除标题栏"
-grep -lr ']}});this\[' --exclude="app.asar" .
-sed -i "s#]}});this\\[#]},frame:false});this[#g" app/main/app.js
-sed -i "s#]}}),this\\[#]},frame:false}),this[#g" app/main/app.js
+# )}});
+grep -lr ')}});this\[' --exclude="app.asar" .
+sed -i "s#)}});this\\[#)},frame:false});this[#g" app/main/app.js
+sed -i "s#)}}),this\\[#)},frame:false}),this[#g" app/main/app.js
 # splash
 sed -i "s#erence']}})#erence']},frame:false})#g" app/main/app.js
 
