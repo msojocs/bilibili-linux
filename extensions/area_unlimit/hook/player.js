@@ -232,7 +232,7 @@ console.log("====HOOK===PLAYER====");
         // e.detail contains the transferred data (can be anything, ranging
         // from JavaScript objects to strings).
         // Do something, for example:
-        console.log('ROAMING_sendURL: ', e.detail);
+        console.log('player ROAMING_sendURL: ', e.detail);
         if(e.detail.includes("PlayerEnhance")){
           const roamingHTML = await HTTP.get(e.detail)
           const container = document.createElement('div')

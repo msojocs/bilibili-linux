@@ -134,7 +134,7 @@
       // e.detail contains the transferred data (can be anything, ranging
       // from JavaScript objects to strings).
       // Do something, for example:
-      console.log(e.detail);
+      console.log('index ROAMING_sendURL:', e.detail);
       if(e.detail.includes("RoamingPage")){
         // 判断HTML为漫游页面
         const roamingHTML = await HTTP_INDEX.get(e.detail)
