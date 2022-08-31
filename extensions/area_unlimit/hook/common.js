@@ -102,6 +102,24 @@ class BiliBiliApi {
       return Promise.resolve(access_key)
     })
   }
+
+  // searchBangumi(params, area) {
+  //   return new Promise(async (resolve, reject)=>{
+  //     let path = "x/web-interface/search/type"
+  //     sessionStorage.access_key = sessionStorage.access_key || await this.getAccessToken()
+  //     if(area === "th")path = "intl/gateway/v2/app/search/type"
+  //     const url = `https://${this.server}/${path}?${params}&area=${area}&access_key=${sessionStorage.access_key}${area === "th"?'&type=7':''}`
+  //     return HTTP.get(url).then(res => {
+  //       const resp = JSON.parse(res.responseText)
+  //       console.log("searchBangumi: ", resp)
+  //       if(area === "th")
+  //         resolve(UTILS.handleTHSearchResult(resp.data.items || []))
+  //       else
+  //         resolve(resp.data?.result || [])
+  //     })
+  //   })
+  // }
+  
   searchBangumi(params, area) {
     let path = "x/web-interface/search/type"
     if(area === "th")path = "intl/gateway/v2/app/search/type"
@@ -112,7 +130,7 @@ class BiliBiliApi {
       if(area === "th")
       return Promise.resolve(UTILS.handleTHSearchResult(resp.data.items || []))
       else
-      return Promise.resolve(resp.data.result || [])
+      return Promise.resolve(resp.data?.result || [])
     })
   }
 }
