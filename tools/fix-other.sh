@@ -65,6 +65,7 @@ notice "去除标题栏"
 grep -lr ')}});this\[' --exclude="app.asar" .
 sed -i "s#)}});this\\[#)},frame:false});this[#g" app/main/app.js
 sed -i "s#)}}),this\\[#)},frame:false}),this[#g" app/main/app.js
+sed -i "s#)}}),#)},frame:false}),#g" app/main/app.js
 # splash
 sed -i "s#erence']}})#erence']},frame:false})#g" app/main/app.js
 
