@@ -1,10 +1,15 @@
 // 简易GET,POST请求封装
 const HTTP = {
-  get(url) {
+  get(url, headers = {}) {
     return new Promise((resolve, reject) => {
       const Http = new XMLHttpRequest()
       Http.timeout = 5000;
       Http.open('GET', url)
+      if(headers){
+        for(let key in headers){
+          Http.setRequestHeader(key, headers[key])
+        }
+      }
       Http.send()
       Http.onloadend = e => {
         resolve(Http)
@@ -119,12 +124,12 @@ class BiliBiliApi {
   //     })
   //   })
   // }
-  
-  searchBangumi(params, area) {
+  searchBangumi(params, area, buvid3='') {
     let path = "x/web-interface/search/type"
     if(area === "th")path = "intl/gateway/v2/app/search/type"
-    const url = `https://${this.server}/${path}?${params}&area=${area}${area === "th"?'&type=7':''}`
-    return HTTP.get(url).then(res => {
+    const url = `roaming://${this.server}/${path}?${params}&area=${area}${area === "th"?'&type=7':''}`
+
+    return HTTP.get(url, {'x-cookie': `buvid3=${buvid3}`}).then(res => {
       const resp = JSON.parse(res.responseText)
       console.log("searchBangumi: ", resp)
       if(area === "th")
@@ -315,7 +320,8 @@ const URL_HOOK = {
           if(server.length === 0)continue
 
           api.setServer(server)
-          const result = await api.searchBangumi(req._params, area)
+          const buvid3 = await cookieStore.get('buvid3') || {}
+          const result = await api.searchBangumi(req._params, area, buvid3.value || '')
           console.log('searchResult:', result)
           result.forEach(s=>{
             s.title = `[${area}]${s.title}`
@@ -569,7 +575,7 @@ const UTILS = {
         "selection_style": "horizontal",
         "media_mode": 2,
         "fix_pubtime_str": "",
-        cover: item.cover.replace(/@.*?webp/, '').replace('https://pic.bstarstatic.com', 'http://localhost:22332'),
+        cover: item.cover.replace(/@.*?webp/, '').replace('https://pic.bstarstatic.com', 'roaming-thpic://pic.bstarstatic.com'),
         url: item.uri.replace('bstar://bangumi/season/', 'https://www.bilibili.com/bangumi/play/ss'),
         "is_avid": false,
       })

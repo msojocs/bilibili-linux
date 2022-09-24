@@ -1,32 +1,31 @@
-
-// 简易代理服务器，用于东南亚图片
-const net = require('net')
-const serverPort = 22332
-// 有请求就创建一个tcp链接
-net.createServer(client => {
-  client.on('error', error => console.error('client', error))
-  client.on('data', req => {
-    // 请求的处理
-    let content = req.toString()
-    content = content.replace('localhost:' + serverPort, 'pic.bstarstatic.com')
-    //  除掉referer
-    content = content.replace(/Referer:.*?\r\n/, '')
-    //  console.log('req: ', content)
-    // 创建与b服务的链接
-    const bServer = new net.Socket()
-    bServer.connect(80, 'pic.bstarstatic.com')
-    bServer.on('error', error => console.error('bSserve', error))
-    // 把请求发送给b服务器
-    bServer.write(content)
-    bServer.on('data', res => {
-      // 响应的处理
-      const content = res.toString()
-      //  console.log('resp: ', content)
-      // 把响应发送给客户端
-      client.write(res)
-    })
+const {protocol, session} = require('electron')
+const https = require('https');
+const HttpGet = (url, headers = {})=>{
+  return new Promise((resolve, reject)=>{
+    const u = new URL(url)
+    // console.log(u)
+    const options = {
+      hostname: u.hostname,
+      port: u.port,
+      path: `${u.pathname}${u.search}`,
+      method: 'GET',
+      headers,
+    };
+    const req = https.request(options, res => {
+      // console.log(`statusCode: ${res.statusCode}`);
+  
+      res.on('data', d => {
+        resolve(d.toString())
+      });
+    });
+    req.on('error', error => {
+      // console.error(error);
+      reject(error)
+    });
+  
+    req.end();
   })
-}).listen(serverPort);
+}
 
 // HOOK
 const {app, BrowserWindow} = require('electron');
@@ -74,3 +73,37 @@ BrowserWindow.prototype.loadURL = function(){
   }
   originloadURL.apply(this, arguments)
 };
+app.on('ready', ()=>{
+  session.defaultSession.cookies.set({
+    url: 'https://api.qiu.moe',
+    name: 'a',
+    value: 'b',
+    expirationDate: Date.now() / 1000 + 60*60*24,
+    session: false
+  }).then(res=>{
+    console.log('set cookie success')
+  }).catch(res=>{
+    console.log('set cookie error')
+  })
+  // 自定义协议的具体实现
+  protocol.registerStringProtocol('roaming', (req, cb) => {
+    console.log('registerHttpProtocol', req)
+    HttpGet(req.url.replace('roaming', 'https'), {
+      cookie: req.headers['x-cookie']
+    }).then(res=>{
+      cb(res)
+    }).catch(err=>{
+      cb({
+        statusCode: 500,
+        data: JSON.stringify(err)
+      })
+    })
+  })
+  
+  protocol.registerHttpProtocol('roaming-thpic', (req, cb) => {
+    cb({
+      url: req.url.replace('roaming-thpic', 'https')
+    })
+  })
+  
+});
