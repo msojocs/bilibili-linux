@@ -18,15 +18,20 @@ s.onload = function () {
 
 // 首页搜索iframe
 window.onload = ()=>{
-  const searchIframe = document.querySelector("#app > div > div > div.app_layout--content.flex_col > div > div.app_search.i_page_wrapper.app_container--search.p_cover > div > iframe")
-  if(searchIframe){
-    const searchDocument = searchIframe.contentWindow.document
-    var commonJS = document.createElement('script');
-    commonJS.src = URLS.commonJS;
-    (searchDocument.head || searchDocument.documentElement).appendChild(commonJS);
-    commonJS.onload = function () {
-      commonJS.remove();
-    };
+  console.log('hook search prepare')
+  const appIframe = document.getElementById('bili-app')
+  const targetWindow = appIframe.contentWindow
+  appIframe.onload = ()=>{
+    const searchIframe = targetWindow.document.querySelector("#app > div > div > div.app_layout--content.flex_col > div > div.app_search.i_page_wrapper.app_container--search.p_cover > div > iframe")
+    if(searchIframe){
+      const searchDocument = searchIframe.contentWindow.document
+      var commonJS = document.createElement('script');
+      commonJS.src = URLS.commonJS;
+      (searchDocument.head || searchDocument.documentElement).appendChild(commonJS);
+      commonJS.onload = function () {
+        commonJS.remove();
+      };
+    }
   }
 }
 
