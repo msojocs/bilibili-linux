@@ -21,20 +21,29 @@ window.onload = ()=>{
   console.log('search:', 'hook prepare')
   const appIframe = document.getElementById('bili-app')
   const targetWindow = appIframe.contentWindow
-  appIframe.onload = ()=>{
-    console.log('search:', 'appIframe.onload')
+  console.log('search:', 'appIframe.onload')
+  let t = setInterval(() =>{
+
     const searchIframe = targetWindow.document.querySelector("#app > div > div > div.app_layout--content.flex_col > div > div.app_search.i_page_wrapper.app_container--search.p_cover > div > iframe")
     if(searchIframe){
       console.log('search:', 'searchIframe')
-      const searchDocument = searchIframe.contentWindow.document
-      var commonJS = document.createElement('script');
+      const win = searchIframe.contentWindow
+      console.log(win.location.href)
+      const searchDocument = win.document
+      var commonJS = searchDocument.createElement('script');
       commonJS.src = URLS.commonJS;
-      (searchDocument.head || searchDocument.documentElement).appendChild(commonJS);
-      commonJS.onload = function () {
-        commonJS.remove();
-      };
+      if(searchDocument.head || searchDocument.documentElement){
+        (searchDocument.head || searchDocument.documentElement).appendChild(commonJS);
+        commonJS.onload = function () {
+          commonJS.remove();
+        };
+        clearInterval(t)
+      }
+    }else{
+      console.warn('search iframe not found')
     }
-  }
+  }, 500)
+  
 }
 
 var commonJS = document.createElement('script');

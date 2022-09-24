@@ -309,17 +309,17 @@ const URL_HOOK = {
     // console.log('===搜索 HOOK: ', req)
     const params = _params2obj(req._params)
     if(params.search_type === 'media_bangumi'){
-      try{
-        // 搜索番剧
-        const searchResult = JSON.parse(req.responseText)
-        searchResult.data.result = searchResult.data.result || []
-        const api = new BiliBiliApi()
-        const serverList = JSON.parse(localStorage.serverList||"{}")
-        for(let area in serverList){
-          const server = serverList[area] || ""
-          if(server.length === 0)continue
+      // 搜索番剧
+      const searchResult = JSON.parse(req.responseText)
+      searchResult.data.result = searchResult.data.result || []
+      const api = new BiliBiliApi()
+      const serverList = JSON.parse(localStorage.serverList||"{}")
+      for(let area in serverList){
+        const server = serverList[area] || ""
+        if(server.length === 0)continue
 
-          api.setServer(server)
+        api.setServer(server)
+        try{
           const buvid3 = await cookieStore.get('buvid3') || {}
           const result = await api.searchBangumi(req._params, area, buvid3.value || '')
           console.log('searchResult:', result)
@@ -328,9 +328,10 @@ const URL_HOOK = {
           })
           searchResult.data.result.push(...result)
           req.responseText = JSON.stringify(searchResult)
+        }catch(err){
+
+          console.error('搜索异常:', err)
         }
-      }catch(err){
-        console.error(err)
       }
     }
   },
