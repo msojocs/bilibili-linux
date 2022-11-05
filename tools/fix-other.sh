@@ -41,19 +41,19 @@ mv "app/main/temp.js" "app/main/index.js"
 notice "====app.js===="
 
 notice "屏蔽检测"
-grep -lr 'if(!kW' --exclude="app.asar" .
-sed -i 's#if(!kW#if(false\&\&!kW#g' app/main/app.js
-grep -lr 'if(!I6)' --exclude="app.asar" .
-sed -i 's#if(!I6)#if(false\&\&!I6)#' app/main/app.js
+grep -lr 'if(!at' --exclude="app.asar" .
+sed -i 's#if(!at#if(false\&\&!at#g' app/main/app.js
+grep -lr 'if(!e6)' --exclude="app.asar" .
+sed -i 's#if(!e6)#if(false\&\&!e6)#' app/main/app.js
 # global['bootstrapApp']();
-grep -lr 'if(kW)' --exclude="app.asar" .
-sed -i 's#if(kW)#if(!kW)#' app/main/app.js
-grep -lr ';}!kW' --exclude="app.asar" .
-sed -i 's#;}!kW#;}false\&\&!kW#' app/main/app.js
+grep -lr 'if(at)' --exclude="app.asar" .
+sed -i 's#if(at)#if(!at)#' app/main/app.js
+grep -lr ';}!at' --exclude="app.asar" .
+sed -i 's#;}!at#;}false\&\&!at#' app/main/app.js
 
 notice "路由"
 grep -lr 'case"SettingsPage":return n.push({name:"Settings"});c' --exclude="app.asar" .
-sed -i 's#case"SettingsPage":return n.push({name:"Settings"});c#case"SettingsPage":return n.push({name:"Settings"});default:if(n)return n.push({name:g.page});c#' app/render/assets/biliapp.*.js
+sed -i 's#case"SettingsPage":return n.push({name:"Settings"});c#case"SettingsPage":return n.push({name:"Settings"});default:if(n)return n.push({name:y.page});c#' app/render/assets/biliapp.*.js
 
 notice "添加主页菜单" # ok
 grep -lr "te'](\[{'label':'设置" --exclude="app.asar" .
