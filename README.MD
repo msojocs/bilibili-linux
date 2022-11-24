@@ -94,3 +94,10 @@ https://github.com/msojocs/bilibili-linux/releases/tag/continuous
 对于使用本项目产生的额外问题，如账户封禁被盗等，维护者不对此负责，请谨慎使用；
 
 如有不当之处，请联系本人，邮箱：jiyecafe@gmail.com
+
+## 鸣谢
+
+> [IntelliJ IDEA](https://zh.wikipedia.org/zh-hans/IntelliJ_IDEA) 是一个在各个方面都最大程度地提高开发人员的生产力的 IDE，适用于 JVM 平台语言。
+
+特别感谢 [JetBrains](https://www.jetbrains.com/?from=bilibili-linux) 为开源项目提供免费的 [IntelliJ IDEA](https://www.jetbrains.com/idea/?from=bilibili-linux) 等 IDE 的授权  
+[<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg" width="200"/>](https://www.jetbrains.com/?from=bilibili-linux)
