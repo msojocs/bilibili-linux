@@ -1,0 +1,45 @@
+name: Get Official Package Version
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  build-src:
+    name: Get Version Number and Update
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Prepare
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget exiftool
+
+      - name: Run Script
+        run: ./tools/update-version.sh
+
+      - name: Verify Changed Files
+        uses: tj-actions/verify-changed-files@v12
+        id: verify-changed-files
+        with:
+          files: conf/bilibili_version
+
+      - name: Commit files
+        if: steps.verify-changed-files.outputs.files_changed == 'true'
+        run: |
+          git config --local user.name ${{ github.actor }}
+          git status
+          git add conf/bilibili_version
+          git commit -m "Version update"
+          git log
+
+      - name: Push changes
+        if: steps.verify-changed-files.outputs.files_changed == 'true'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+          force: true
