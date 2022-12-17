@@ -23,12 +23,12 @@ asar e app.asar app
 
 notice "解密"
 "$root_dir/tools/app-decrypt.js" "$res_dir/app/main/.biliapp" "$res_dir/app/main/app.orgi.js"
-"$root_dir/tools/js-decode.js" "$res_dir/app/main/app.orgi.js" "$res_dir/app/main/app.js"
+"$root_dir/tools/js-decode.js" "$res_dir/app/main/app.orgi.js" "$res_dir/app/main/app.orgi.js"
 "$root_dir/tools/bridge-decode.js" "$res_dir/app/main/assets/bili-bridge.js" "$res_dir/app/main/assets/bili-bridge.js"
 
 notice "====index.js===="
 # 修复新版不能启动的问题
-notice "修复不能启动的问题 index.js"
+notice "修复不能启动的问题 index.js -- $root_dir"
 cat "$root_dir/res/scripts/injectIndex.js" > "app/main/temp.js"
 cat "app/main/index.js" >> "app/main/temp.js"
 rm "app/main/index.js"
@@ -41,19 +41,20 @@ mv "app/main/temp.js" "app/main/index.js"
 notice "====app.js===="
 
 notice "屏蔽检测"
-grep -lr 'if(!Tz' --exclude="app.asar" .
-sed -i 's#if(!Tz#if(false\&\&!Tz#g' app/main/app.js
-grep -lr 'if(!C8)' --exclude="app.asar" .
-sed -i 's#if(!C8)#if(false\&\&!C8)#' app/main/app.js
+grep -lr 'if(!zX' --exclude="app.asar" .
+sed -i 's#if(!zX#if(false\&\&!zX#g' app/main/app.js
+# ==='win';if(!
+grep -lr 'if(!GW)' --exclude="app.asar" .
+sed -i 's#if(!GW)#if(false\&\&!GW)#' app/main/app.js
 # global['bootstrapApp']();
-grep -lr 'if(Tz)' --exclude="app.asar" .
-sed -i 's#if(Tz)#if(!Tz)#' app/main/app.js
-grep -lr ';}!Tz' --exclude="app.asar" .
-sed -i 's#;}!Tz#;}false\&\&!Tz#' app/main/app.js
+grep -lr 'if(zX)' --exclude="app.asar" .
+sed -i 's#if(zX)#if(!zX)#' app/main/app.js
+grep -lr ';}!zX' --exclude="app.asar" .
+sed -i 's#;}!zX#;}false\&\&!zX#' app/main/app.js
 
 notice "路由"
-grep -lr 'case"SettingsPage":return n.push({name:"Settings"});c' --exclude="app.asar" .
-sed -i 's#case"SettingsPage":return n.push({name:"Settings"});c#case"SettingsPage":return n.push({name:"Settings"});default:if(n)return n.push({name:y.page});c#' app/render/assets/biliapp.*.js
+grep -lr 'case"SettingsPage":n.push({name:"Settings"});return' --exclude="app.asar" .
+sed -i 's#case"SettingsPage":n.push({name:"Settings"});return#case"SettingsPage":n.push({name:"Settings"});return;default:if(n)return n.push({name:y.page});return#' app/render/assets/biliapp.*.js
 
 notice "添加主页菜单" # ok
 grep -lr "te'](\[{'label':'设置" --exclude="app.asar" .
