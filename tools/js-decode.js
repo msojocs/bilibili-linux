@@ -66,8 +66,8 @@ resultCode = resultCode.replace(
     // 二分法查找异常点
     // 763 ok
     // 764 error
-    if(i === 11799){
-        // if(i === 11799){
+    if(i === 11798){
+        // if(i === 11798){
         //     console.log("--->", $0, $1, $2)
         //     let result = eval('"' + $1 + '"')
         //     console.log("--->", result)
