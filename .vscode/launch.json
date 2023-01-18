@@ -10,8 +10,8 @@
           "env": {
             // "ELECTRON_FORCE_IS_PACKAGED": "true" 
           },
-          // "args": ["app/app"],
-          "program": "${workspaceRoot}/app/app/index.js",
+          "args": ["app/app"],
+          // "program": "${workspaceRoot}/app/app/index.js",
           "outputCapture": "std"
           
       }

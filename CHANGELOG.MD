@@ -1,3 +1,7 @@
+# v1.9.0-2 / 2023-01-
+
+- fix: can not check for update
+
 # v1.9.0-1 / 2023-01-18
 
 - update: bilibili to v1.9.0.1982
