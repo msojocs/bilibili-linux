@@ -6,12 +6,12 @@
           "type": "node",
           "request": "launch",
           "cwd": "${workspaceRoot}",
-          "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
+          "runtimeExecutable": "${workspaceRoot}/electron/electron",
           "env": {
             // "ELECTRON_FORCE_IS_PACKAGED": "true" 
           },
           // "args": ["app/app"],
-          "program": "${workspaceRoot}/app/app/main/index.js",
+          "program": "${workspaceRoot}/app/app/index.js",
           "outputCapture": "std"
           
       }

@@ -29,6 +29,7 @@ notice "解密"
 notice "====index.js===="
 # 修复新版不能启动的问题
 notice "修复不能启动的问题 index.js -- $root_dir"
+echo "require('./main/index.js')();" > "app/index.js"
 cat "$root_dir/res/scripts/injectIndex.js" > "app/main/temp.js"
 cat "app/main/index.js" >> "app/main/temp.js"
 rm "app/main/index.js"
@@ -41,16 +42,16 @@ mv "app/main/temp.js" "app/main/index.js"
 notice "====app.js===="
 
 notice "屏蔽检测"
-grep -lr 'if(!zX' --exclude="app.asar" .
-sed -i 's#if(!zX#if(false\&\&!zX#g' app/main/app.js
+grep -lr 'if(!He' --exclude="app.asar" .
+sed -i 's#if(!He#if(false\&\&!He#g' app/main/app.js
 # ==='win';if(!
-grep -lr 'if(!GW)' --exclude="app.asar" .
-sed -i 's#if(!GW)#if(false\&\&!GW)#' app/main/app.js
+grep -lr 'if(!FG)' --exclude="app.asar" .
+sed -i 's#if(!FG)#if(false\&\&!FG)#' app/main/app.js
 # global['bootstrapApp']();
-grep -lr 'if(zX)' --exclude="app.asar" .
-sed -i 's#if(zX)#if(!zX)#' app/main/app.js
-grep -lr ';}!zX' --exclude="app.asar" .
-sed -i 's#;}!zX#;}false\&\&!zX#' app/main/app.js
+grep -lr 'if(He)' --exclude="app.asar" .
+sed -i 's#if(He)#if(!He)#' app/main/app.js
+grep -lr ';}!He' --exclude="app.asar" .
+sed -i 's#;}!He#;}false\&\&!He#' app/main/app.js
 
 notice "路由"
 grep -lr 'case"SettingsPage":n.push({name:"Settings"});return' --exclude="app.asar" .

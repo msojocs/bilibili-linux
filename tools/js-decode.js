@@ -60,7 +60,7 @@ const sourceCode = fs.readFileSync(src)
 let resultCode = sourceCode.toString()
 let i = 0;
 resultCode = resultCode.replace(
-  /'(([\\xa-z0-9]{2,2})+)'/g,
+  /'((\\x[a-z0-9]{2,2})+)'/g,
   function ($0, $1, $2) {
     i++;
     // 二分法查找异常点

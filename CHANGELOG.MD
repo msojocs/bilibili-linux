@@ -1,3 +1,7 @@
+# v1.9.0-1 / 2023-01-18
+
+- update: bilibili to v1.9.0.1982
+
 # v1.8.2-1 / 2022-12-17
 
 - update: bilibili to v1.8.2.1852
