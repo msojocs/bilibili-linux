@@ -9,6 +9,14 @@
       "output": "tmp/build",
       "app": "app/app"
     },
+    "asar": true,
+    "files": [
+      "**/*",
+      {
+        "from": "node_modules",
+        "to": "node_modules"
+      }
+    ],
     "extraResources": [
       "extensions",
       "app/app-update.yml"
@@ -67,6 +75,6 @@
   "homepage": "https://github.com/msojocs/bilibili-linux#readme",
   "devDependencies": {
     "electron": "^17.4.0",
-    "electron-builder": "^23.0.3"
+    "electron-builder": "^23.6.0"
   }
 }
