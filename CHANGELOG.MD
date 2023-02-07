@@ -1,4 +1,9 @@
-# v1.9.0-2 / 2023-01-
+# v1.9.1-1 / 2023-02-07
+
+- update: bilibili to v1.9.1.2031
+- fix: 搜索没有任何番剧
+
+# v1.9.0-2 / 2023-01-19
 
 - fix: can not check for update
 

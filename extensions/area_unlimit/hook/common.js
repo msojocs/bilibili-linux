@@ -130,6 +130,8 @@ class BiliBiliApi {
     const url = `roaming://${this.server}/${path}?${params}&area=${area}${area === "th"?'&type=7':''}`
 
     return HTTP.get(url, {'x-cookie': `buvid3=${buvid3}`}).then(res => {
+      console.log('search result:', res)
+      console.log(res.responseText)
       const resp = JSON.parse(res.responseText)
       console.log("searchBangumi: ", resp)
       if(area === "th")

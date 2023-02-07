@@ -11,11 +11,14 @@ const HttpGet = (url, headers = {})=>{
       method: 'GET',
       headers,
     };
+    const result = []
     const req = https.request(options, res => {
       // console.log(`statusCode: ${res.statusCode}`);
-  
+      res.on('end', ()=>{
+        resolve(Buffer.concat(result).toString())
+      })
       res.on('data', d => {
-        resolve(d.toString())
+        result.push(d)
       });
     });
     req.on('error', error => {
@@ -74,20 +77,9 @@ BrowserWindow.prototype.loadURL = function(){
   originloadURL.apply(this, arguments)
 };
 app.on('ready', ()=>{
-  session.defaultSession.cookies.set({
-    url: 'https://api.qiu.moe',
-    name: 'a',
-    value: 'b',
-    expirationDate: Date.now() / 1000 + 60*60*24,
-    session: false
-  }).then(res=>{
-    console.log('set cookie success')
-  }).catch(res=>{
-    console.log('set cookie error')
-  })
   // 自定义协议的具体实现
   protocol.registerStringProtocol('roaming', (req, cb) => {
-    console.log('registerHttpProtocol', req)
+    // console.log('registerHttpProtocol', req)
     HttpGet(req.url.replace('roaming', 'https'), {
       cookie: req.headers['x-cookie']
     }).then(res=>{
