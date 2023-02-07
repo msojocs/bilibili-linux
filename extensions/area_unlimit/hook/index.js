@@ -344,7 +344,6 @@
   // 获取App的Iframe
   const appFrame = document.getElementById('bili-app')
   const targetWindow = appFrame.contentWindow
-  console.log(targetWindow.location.href)
   if(appFrame.attachEvent){
     appFrame.attachEvent('onload', ()=>{
       console.log("appFrame.attachEvent 'onload'")
@@ -352,6 +351,8 @@
   }else{
     appFrame.onload = ()=>{
       console.log('targetWindow.onload')
+      // console.log(window.XMLHttpRequest, targetWindow.XMLHttpRequest)
+      targetWindow.XMLHttpRequest = window.XMLHttpRequest
       targetOnload(targetWindow)
     }
   }

@@ -20,6 +20,10 @@ s.onload = function () {
 window.onload = ()=>{
   console.log('search:', 'hook prepare')
   const appIframe = document.getElementById('bili-app')
+  if(appIframe == null){
+    console.warn('搜索框元素未找到！')
+    return
+  }
   const targetWindow = appIframe.contentWindow
   console.log('search:', 'appIframe.onload')
   let t = setInterval(() =>{

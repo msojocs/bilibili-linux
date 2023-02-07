@@ -498,7 +498,7 @@ class HttpRequest extends window.XMLHttpRequest {
     });
     super.onload = async () => {
       if (fn2) {
-        // console.log('onload', this)
+        console.log('onload', this._url)
         if(URL_HOOK[this._url])await URL_HOOK[this._url](this)
         fn2();
       }
@@ -527,6 +527,7 @@ function _params2obj(params){
   }
   return result
 }
+console.log('替换XMLHttpRequest')
 window.XMLHttpRequest = HttpRequest;
 
 function __awaiter(thisArg, _arguments, P, generator) {
