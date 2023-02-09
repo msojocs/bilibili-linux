@@ -3,7 +3,7 @@ const HTTP = {
   get(url, headers = {}) {
     return new Promise((resolve, reject) => {
       const Http = new XMLHttpRequest()
-      Http.timeout = 5000;
+      Http.timeout = 10000;
       Http.open('GET', url)
       if(headers){
         for(let key in headers){
@@ -87,7 +87,7 @@ class BiliBiliApi {
       // 参考：哔哩漫游 油猴插件
       const upos = localStorage.upos||""
       const isReplaceAkamai = localStorage.replaceAkamai === "true"
-      // const _params = _params2obj(req._params)
+      // const _params = UTILS._params2obj(req._params)
       const responseText = UTILS.replaceUpos(res.responseText, uposMap[upos], isReplaceAkamai, 'th')
       let result = JSON.parse(responseText || "{}")
       if(result.code !== 0)return Promise.reject(result);
@@ -108,23 +108,43 @@ class BiliBiliApi {
     })
   }
 
-  // searchBangumi(params, area) {
-  //   return new Promise(async (resolve, reject)=>{
-  //     let path = "x/web-interface/search/type"
-  //     sessionStorage.access_key = sessionStorage.access_key || await this.getAccessToken()
-  //     if(area === "th")path = "intl/gateway/v2/app/search/type"
-  //     const url = `https://${this.server}/${path}?${params}&area=${area}&access_key=${sessionStorage.access_key}${area === "th"?'&type=7':''}`
-  //     return HTTP.get(url).then(res => {
-  //       const resp = JSON.parse(res.responseText)
-  //       console.log("searchBangumi: ", resp)
-  //       if(area === "th")
-  //         resolve(UTILS.handleTHSearchResult(resp.data.items || []))
-  //       else
-  //         resolve(resp.data?.result || [])
-  //     })
-  //   })
-  // }
-  searchBangumi(params, area, buvid3='') {
+  searchBangumi(params, area) {
+    return new Promise(async (resolve, reject)=>{
+      let path = "x/v2/search/type"
+      params.access_key = sessionStorage.access_key = sessionStorage.access_key || await this.getAccessToken()
+      if(area === 'th'){
+        path = "intl/gateway/v2/app/search/type"
+        let a = 'area=th'
+        for(let k in params){
+          a += `&${k}=${params[k]}`
+        }
+        params = a
+      }else {
+        params = UTILS.genSearchParam(params, area)
+      }
+      const url = `https://${this.server}/${path}?${params}`
+      return HTTP.get(url).then(res => {
+        try {
+
+          const resp = JSON.parse(res.responseText)
+          console.log("searchBangumi: ", resp)
+          if(area === "th")
+            resolve(UTILS.handleTHSearchResult(resp.data?.items || []))
+          else {
+            if(resp.data?.items)
+            {
+
+              resolve(UTILS.handleAppSearchResult(resp.data?.items || []))
+            }else
+              resolve(resp.data?.result || [])
+          }
+        }catch (e){
+          reject(e)
+        }
+      })
+    })
+  }
+  searchBangumi2(params, area, buvid3='') {
     let path = "x/web-interface/search/type"
     if(area === "th")path = "intl/gateway/v2/app/search/type"
     const url = `roaming://${this.server}/${path}?${params}&area=${area}${area === "th"?'&type=7':''}`
@@ -132,12 +152,17 @@ class BiliBiliApi {
     return HTTP.get(url, {'x-cookie': `buvid3=${buvid3}`}).then(res => {
       console.log('search result:', res)
       console.log(res.responseText)
-      const resp = JSON.parse(res.responseText)
-      console.log("searchBangumi: ", resp)
-      if(area === "th")
-      return Promise.resolve(UTILS.handleTHSearchResult(resp.data.items || []))
-      else
-      return Promise.resolve(resp.data?.result || [])
+      try{
+
+        const resp = JSON.parse(res.responseText)
+        console.log("searchBangumi: ", resp)
+        if(area === "th")
+          return Promise.resolve(UTILS.handleTHSearchResult(resp.data.items || []))
+        else
+          return Promise.resolve(resp.data?.result || [])
+      }catch (e) {
+        return Promise.resolve(e)
+      }
     })
   }
 }
@@ -187,7 +212,7 @@ const URL_HOOK = {
       console.log('serverList: ', serverList)
 
       let seasonInfo = null;
-      const params = _params2obj(req._params)
+      const params = UTILS._params2obj(req._params)
       console.log('params: ', params)
       seasonInfo = await api.getSeasonInfoByEpSsIdOnBangumi(params.ep_id || "", params.season_id || "")
       if (seasonInfo.code === 0) {
@@ -243,7 +268,7 @@ const URL_HOOK = {
   "//api.bilibili.com/pgc/player/web/playurl": async (req)=>{
     const resp = JSON.parse(req.responseText)
     if(resp.code !== 0){
-      const params = _params2obj(req._params)
+      const params = UTILS._params2obj(req._params)
       const serverList = JSON.parse(localStorage.serverList||"{}")
       const upos = localStorage.upos||""
       const isReplaceAkamai = localStorage.replaceAkamai === "true"
@@ -301,7 +326,7 @@ const URL_HOOK = {
   "//api.bilibili.com/x/space/acc/info": async (req)=>{
     const resp = JSON.parse(req.responseText)
     if(resp.code !== 0){
-      const params = _params2obj(req._params)
+      const params = UTILS._params2obj(req._params)
       const userInfo = space_account_info_map[params.mid]
       if(userInfo)req.responseText = JSON.stringify(userInfo)
     }
@@ -309,10 +334,11 @@ const URL_HOOK = {
   // 搜索
   "https://api.bilibili.com/x/web-interface/search/type": async (req)=>{
     // console.log('===搜索 HOOK: ', req)
-    const params = _params2obj(req._params)
+    const params = UTILS._params2obj(req._params)
     if(params.search_type === 'media_bangumi'){
       // 搜索番剧
       const searchResult = JSON.parse(req.responseText)
+      console.log('预期结果：', searchResult)
       searchResult.data.result = searchResult.data.result || []
       const api = new BiliBiliApi()
       const serverList = JSON.parse(localStorage.serverList||"{}")
@@ -322,9 +348,14 @@ const URL_HOOK = {
 
         api.setServer(server)
         try{
-          const buvid3 = await cookieStore.get('buvid3') || {}
-          const result = await api.searchBangumi(req._params, area, buvid3.value || '')
-          console.log('searchResult:', result)
+          // const buvid3 = await cookieStore.get('buvid3') || {}
+          function sleep(d){
+            for(var t = Date.now();Date.now() - t <= d;){}
+          }
+          sleep(500); //当前方法暂停0.5秒
+          // const result = await api.searchBangumi2(req._params, area, buvid3.value || '')
+          const result = await api.searchBangumi(params, area)
+          // console.log('searchResult:', result)
           result.forEach(s=>{
             s.title = `[${area}]${s.title}`
           })
@@ -518,15 +549,6 @@ function _deCode(params) {
   })
 }
 
-function _params2obj(params){
-  const arr = params.split('&')
-  const result = {}
-  for(let param of arr){
-    const [key, value] = param.split('=')
-    result[key] = value
-  }
-  return result
-}
 console.log('替换XMLHttpRequest')
 window.XMLHttpRequest = HttpRequest;
 
@@ -567,21 +589,74 @@ const UTILS = {
     return playURL
   },
   handleTHSearchResult(itemList){
+    console.log('th:', itemList)
     const result = []
     for(let item of itemList){
       result.push({
         type: "media_bangumi",
         title: item.title.replace(/\u003c.*?\u003e/g, ""),
+        goto_url: item.uri.replace('bstar://pgc/season/', 'https://www.bilibili.com/bangumi/play/ss'),
         media_type: 1,
         season_id: item.season_id,
+        pgc_season_id: item.season_id,
         "season_type": 1,
         "season_type_name": "番剧",
         "selection_style": "horizontal",
         "media_mode": 2,
         "fix_pubtime_str": "",
-        cover: item.cover.replace(/@.*?webp/, '').replace('https://pic.bstarstatic.com', 'roaming-thpic://pic.bstarstatic.com'),
-        url: item.uri.replace('bstar://bangumi/season/', 'https://www.bilibili.com/bangumi/play/ss'),
-        "is_avid": false,
+        cover: item.cover.replace(/@.*?webp/, '').replace('https://pic.bstarstatic.com', 'roaming-thpic://pic.bstarstatic.com') + '?123',
+        url: item.uri.replace('bstar://pgc/season/', 'https://www.bilibili.com/bangumi/play/ss'),
+        is_avid: false,
+      })
+    }
+    return result
+  },
+  handleAppSearchResult(itemList){
+    const result = []
+    for(let item of itemList){
+      const eps = (item.episodes || []).map(e=>{
+        return {
+          id: e.param,
+          title: e.index,
+          url: e.uri,
+          index_title: e.index
+        }
+      })
+      result.push({
+        type: "media_bangumi",
+        media_id: item.season_id,
+        title: item.title.replace(/\u003c.*?\u003e/g, ""),
+        org_title: 'org_title',
+        media_type: 1,
+        cv: item.cv,
+        staff: item.staff,
+        season_id: item.season_id,
+        is_avid: false,
+        season_type: item.season_type,
+        season_type_name: "番剧",
+        selection_style: item.selection_style, //"horizontal",
+        ep_size: 0,
+        url: item.uri,
+        button_text: '立即观看',
+        is_follow: item.is_atten || 0,
+        is_selection: 0,
+        eps: eps,
+        badges: [],
+        cover: item.cover,
+        areas: item.area || "",
+        styles: item.style,
+        goto_url: item.uri,
+        "desc": "",
+        "pubtime": item.ptime,
+        "media_mode": 2,
+        "fix_pubtime_str": "",
+        "media_score": {
+          "score": item.rating,
+          "user_count": item.vote
+        },
+        "pgc_season_id": item.season_id,
+        "corner": 13,
+        "index_show": "全0话"
       })
     }
     return result
@@ -634,7 +709,7 @@ const UTILS = {
         plaintext = mobi_api_params.slice(0, -1) + `acd495b248ec528c2eed1e862d393126`;
     }
     else {
-        plaintext = mobi_api_params.slice(0, -1) + `25bdede4e1581c836cab73a48790ca6e`;
+        plaintext = mobi_api_params.slice(0, -1) + `560c52ccd288fed045859ed18bffd973`;
     }
     // 生成 sign
     let ciphertext = hex_md5(plaintext);
@@ -897,6 +972,76 @@ const UTILS = {
           result['is_preview'] = 0;
           return UTILS.fixMobiPlayUrlJson(result);
       });
+  },
+  genSearchSign(params, area){
+
+    // 所需参数数组
+    let param_wanted = ['access_key', 'appkey', 'area', 'build', 'buvid', 'c_locale', 'channel', 'cid', 'device', 'disable_rcmd', 'ep_id', 'fnval', 'fnver', 'force_host', 'fourk', 'highlight', 'keyword', 'lang', 'mobi_app', 'platform', 'pn', 'ps', 'qn', 's_locale', 'sim_code', 'statistics', 'season_id', 'track_path', 'ts', 'type'];
+    // 生成 mobi api 参数字符串
+    let mobi_api_params = '';
+    for (let i = 0; i < param_wanted.length; i++) {
+      if (params.hasOwnProperty(param_wanted[i])) {
+        mobi_api_params += param_wanted[i] + `=` + params[param_wanted[i]] + `&`;
+      }
+    }
+    // 准备明文
+    let plaintext = '';
+    if (area === 'th') {
+      plaintext = mobi_api_params.slice(0, -1) + `acd495b248ec528c2eed1e862d393126`;
+    }
+    else {
+      plaintext = mobi_api_params.slice(0, -1) + `560c52ccd288fed045859ed18bffd973`;
+    }
+    // console.log(plaintext)
+    // 生成 sign
+    let ciphertext = window.hex_md5(plaintext);
+    return ciphertext
+  },
+  genSearchParam(params, area){
+    const result = {
+      // access_key: params.access_key,
+      appkey: area === 'th' ? '7d089525d3611b1c' : '1d8b6e7d45233436',
+      area,
+      build: area === 'th' ? '1001310' : '6400000',
+      c_locale: area === 'th' ? 'zh_SG' : 'zh_CN',
+      channel: 'yingyongbao',
+      device: 'android',
+      disable_rcmd: 0,
+      fnval: 976,
+      fnver: 0,
+      fourk: 1,
+      highlight: 1,
+      keyword: params.keyword,
+      // lang: 'hans',
+      mobi_app: area === 'th' ? 'bstar_a' : 'android',
+      platform: 'android',
+      pn: 1,
+      ps: 20,
+      qn: 80,
+      // force_host: 0,
+      s_locale: area === 'th' ? 'zh_SG' : 'zh_CN',
+      statistics: encodeURIComponent('{"appId":1,"platform":3,"version":"6.85.0","abtest":""}'),
+      ts: parseInt(new Date().getTime()/1000),
+      type: 7,
+      sign: ''
+    }
+    // const sign = UTILS.genSearchSign(result, area)
+    // result.sign = sign
+    let a = ''
+    for(const k in result){
+      a += `${k}=${result[k]}&`
+    }
+    return a.substring(0, a.length-1)
+
+  },
+  _params2obj(params){
+    const arr = params.split('&')
+    const result = {}
+    for(let param of arr){
+      const [key, value] = param.split('=')
+      result[key] = value
+    }
+    return result
   }
 }
 

@@ -353,7 +353,15 @@
       console.log('targetWindow.onload')
       // console.log(window.XMLHttpRequest, targetWindow.XMLHttpRequest)
       targetWindow.XMLHttpRequest = window.XMLHttpRequest
+      // console.log(window.hex_md5)
+      targetWindow.hex_md5 = window.hex_md5
       targetOnload(targetWindow)
+      try {
+        const search = targetWindow.document.querySelector("#app > div > div.app_layout.ov_hidden.flex_start.bg_bg1 > div.app_layout--content.flex_col > div > div.app_search.i_page_wrapper.app_container--search.p_cover > div > iframe")
+        search.contentWindow.hex_md5 = window.hex_md5
+      }catch (e){
+        console.error('md5初始化异常', e)
+      }
     }
   }
 })();
