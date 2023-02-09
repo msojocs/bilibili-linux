@@ -123,14 +123,13 @@ class BiliBiliApi {
       params.access_key = sessionStorage.access_key = sessionStorage.access_key || await this.getAccessToken()
       if (area === 'th') {
         path = "intl/gateway/v2/app/search/type"
-        let a = 'area=th'
-        for (let k in params) {
-          a += `&${k}=${params[k]}`
-        }
-        params = a
-      } else {
-        params = UTILS.genSearchParam(params, area)
+        // let a = 'area=th'
+        // for (let k in params) {
+        //   a += `&${k}=${params[k]}`
+        // }
+        // params = a
       }
+      params = UTILS.genSearchParam(params, area)
       const url = `https://${this.server}/${path}?${params}`
       return HTTP.get(url).then(res => {
         try {
@@ -825,7 +824,7 @@ const UTILS = {
       result.push({
         type: "media_bangumi",
         title: item.title.replace(/\u003c.*?\u003e/g, ""),
-        goto_url: item.uri.replace('bstar://pgc/season/', 'https://www.bilibili.com/bangumi/play/ss'),
+        goto_url: item.uri.replace('bstar://bangumi/season/', 'https://www.bilibili.com/bangumi/play/ss'),
         media_type: 1,
         season_id: item.season_id,
         pgc_season_id: item.season_id,
@@ -835,7 +834,7 @@ const UTILS = {
         "media_mode": 2,
         "fix_pubtime_str": "",
         cover: item.cover.replace(/@.*?webp/, '').replace('https://pic.bstarstatic.com', 'roaming-thpic://pic.bstarstatic.com') + '?123',
-        url: item.uri.replace('bstar://pgc/season/', 'https://www.bilibili.com/bangumi/play/ss'),
+        url: item.uri.replace('bstar://bangumi/season/', 'https://www.bilibili.com/bangumi/play/ss'),
         is_avid: false,
       })
     }
@@ -1223,14 +1222,12 @@ const UTILS = {
     }
     // console.log(plaintext)
     // 生成 sign
-    let ciphertext = window.hex_md5(plaintext);
-    return ciphertext
+    return window.hex_md5(plaintext)
   },
   genSearchParam(params, area) {
     const result = {
       // access_key: params.access_key,
       appkey: area === 'th' ? '7d089525d3611b1c' : '1d8b6e7d45233436',
-      area,
       build: area === 'th' ? '1001310' : '6400000',
       c_locale: area === 'th' ? 'zh_SG' : 'zh_CN',
       channel: 'yingyongbao',
@@ -1241,7 +1238,7 @@ const UTILS = {
       fourk: 1,
       highlight: 1,
       keyword: params.keyword,
-      // lang: 'hans',
+      lang: 'hans',
       mobi_app: area === 'th' ? 'bstar_a' : 'android',
       platform: 'android',
       pn: 1,
@@ -1249,13 +1246,18 @@ const UTILS = {
       qn: 80,
       // force_host: 0,
       s_locale: area === 'th' ? 'zh_SG' : 'zh_CN',
+      sim_code: 52004,
       statistics: encodeURIComponent('{"appId":1,"platform":3,"version":"6.85.0","abtest":""}'),
       ts: parseInt(new Date().getTime() / 1000),
       type: 7,
       sign: ''
     }
-    // const sign = UTILS.genSearchSign(result, area)
-    // result.sign = sign
+    if(area === 'th'){
+      result.access_key = params.access_key
+      result.sign = UTILS.genSearchSign(result, area)
+    }else{
+      result.area = area
+    }
     let a = ''
     for (const k in result) {
       a += `${k}=${result[k]}&`
