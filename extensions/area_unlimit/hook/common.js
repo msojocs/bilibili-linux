@@ -409,8 +409,11 @@ const URL_HOOK = {
         seasonInfo.result.episodes.forEach(ep => {
           ep.title = ep.title || `第${ep.index}话 ${ep.index_title}`
           ep.id = ep.id || ep.ep_id
+          ep.status = ep.status || 2
           ep.rights && (ep.rights.area_limit = 0)
         })
+        seasonInfo.result.status = seasonInfo.result.status || 2
+        seasonInfo.result.user_status && (seasonInfo.result.user_status.login = seasonInfo.result.user_status?.login || 1)
         // 处理部分番剧存在平台限制
         seasonInfo.result.rights.watch_platform = 0
         seasonInfo.result.rights.allow_download = 1
@@ -436,10 +439,12 @@ const URL_HOOK = {
         ep.ep_id = ep.ep_id || ep.id
         ep.episode_type = 0
         ep.status = 2
-        ep.duration = 0
+        ep.duration = ep.duration || 0
         ep.index_title = ep.long_title
         delete ep.long_title
       })
+      seasonInfo.result.status = seasonInfo.result.status || 2
+      seasonInfo.result.user_status && (seasonInfo.result.user_status.login = seasonInfo.result.user_status?.login || 1)
       seasonInfo.result.rights.watch_platform = 0
       seasonInfo.result.rights.allow_download = 1
       seasonInfo.result.seasons = []
@@ -457,7 +462,7 @@ const URL_HOOK = {
   "https://api.bilibili.com/pgc/view/web/season/user/status": async (req) => {
     // console.log("解除区域限制")
     const resp = JSON.parse(req.responseText)
-    resp.result && (resp.result.area_limit = 0)
+    resp.result && (resp.result.area_limit = 0,resp.result.follow = 0)
     req.responseText = JSON.stringify(resp)
   },
   "https://api.bilibili.com/pgc/season/episode/web/info": async (req) => {
@@ -489,6 +494,8 @@ const URL_HOOK = {
           playURL = await api.getPlayURL(req, sessionStorage.access_key || "", AREA_MARK_CACHE[params.ep_id])
         else
           playURL = await api.getPlayURLThailand(req, sessionStorage.access_key || "", AREA_MARK_CACHE[params.ep_id])
+        playURL.result.is_preview = 0
+        playURL.result.status = 2
         if (playURL.code === 0) {
           console.log('playURL:', playURL)
           // 从cache的区域中取到了播放链接
@@ -513,6 +520,8 @@ const URL_HOOK = {
         }
         console.log("已获取播放链接")
         if (playURL.code !== 0) continue
+        playURL.result.is_preview = 0
+        playURL.result.status = 2
         console.log('playURL:', playURL)
         // 解析成功
         AREA_MARK_CACHE[params.ep_id] = area
@@ -571,7 +580,7 @@ const URL_HOOK = {
       }
     }
   },
-  // 东南亚字幕
+  // 字幕
   "//api.bilibili.com/x/player/v2": async (req) => {
     if (!req._params) return;
     const resp = JSON.parse(req.responseText || "{}")
@@ -584,9 +593,13 @@ const URL_HOOK = {
       if (resp.code === 0) {
         resp.data.subtitle.subtitles.push(...subtitles)
       } else if (subtitles.length > 1) {
+        const id = await cookieStore.get('DedeUserID') || {}
         resp.code = 0
         resp.message = "0"
         resp.data = {
+          // 解决东南亚未登录
+          login_mid: id?.value || 0,
+          // login_mid_hash: "7874c463",
           subtitle: {
             allow_submit: false,
             lan: "",
@@ -595,8 +608,8 @@ const URL_HOOK = {
           }
         }
       }
-      req.responseText = JSON.stringify(resp)
     }
+    req.responseText = JSON.stringify(resp)
   },
 }
 
@@ -864,11 +877,11 @@ const UTILS = {
         season_type: item.season_type,
         season_type_name: "番剧",
         selection_style: item.selection_style, //"horizontal",
-        ep_size: 0,
+        ep_size: eps.length,
         url: item.uri,
         button_text: '立即观看',
         is_follow: item.is_atten || 0,
-        is_selection: 0,
+        is_selection: item.is_selection || 1,
         eps: eps,
         badges: [],
         cover: item.cover,
@@ -1156,7 +1169,7 @@ const UTILS = {
       };
       // 填充音频流数据
       origin.data.video_info.dash_audio.forEach((audio) => {
-        console.log('填充音频流数据:', audio)
+        // console.log('填充音频流数据:', audio)
         audio.base_url = audio.backup_url[0] || audio.base_url.replace('http://', 'https://');
         audio.baseUrl = audio.backup_url[0] || audio.base_url;
         audio.backupUrl = [];
