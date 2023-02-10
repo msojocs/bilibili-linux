@@ -28,8 +28,8 @@ console.log("====HOOK===PLAYER====");
         console.log('seasonInfo: ', seasonInfo)
         if(seasonInfo.code !==0)return Promise.reject(seasonInfo)
 
-        const ep = seasonInfo.result.episodes.filter(ep=>ep.ep_id===epId)
-        if(ep.length === 0)return Promise.reject("剧集查找失败")
+        const ep = seasonInfo.result.episodes.filter(ep=>ep.ep_id===parseInt(epId))
+        if(ep.length === 0)return Promise.reject("剧集查找失败, target:", epId)
         return Promise.resolve(ep[0])
       })
     }

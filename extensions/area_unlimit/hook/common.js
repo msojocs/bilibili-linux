@@ -670,7 +670,7 @@ const URL_HOOK = {
       }
     }
     // 查找简体
-    const zhHans = resp.data.subtitle.subtitles.find(e=>e.lan === 'zh-Hans')
+    const zhHans = resp.data.subtitle?.subtitles?.find(e=>e.lan === 'zh-Hans')
     if (!zhHans){
       // 没有简体，查找繁体
       const zhHant = resp.data.subtitle.subtitles.find(e=>e.lan === 'zh-Hant')
