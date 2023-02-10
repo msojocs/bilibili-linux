@@ -1,8 +1,9 @@
 // 简易GET,POST请求封装
+const OriginXMLHttpRequest = XMLHttpRequest
 const HTTP = {
   get(url, headers = {}) {
     return new Promise((resolve, reject) => {
-      const Http = new XMLHttpRequest()
+      const Http = new OriginXMLHttpRequest()
       Http.timeout = 10000;
       Http.open('GET', url)
       if (headers) {
@@ -19,7 +20,7 @@ const HTTP = {
   },
   post(url, body = null) {
     return new Promise((resolve, reject) => {
-      const Http = new XMLHttpRequest()
+      const Http = new OriginXMLHttpRequest()
       Http.timeout = 5000;
       Http.open('POST', url)
       Http.send(body)
@@ -29,6 +30,33 @@ const HTTP = {
       Http.onerror = e => reject
     })
   }
+}
+
+/**
+ * 动态添加JavaScript
+ * @param {*} url 资源地址
+ * @param {*} callback 回调方法
+ */
+function getScript(url, callback) {
+  const script = document.createElement('script');// 创建script元素
+  script.type = "text/javascript"; // 定义script元素的类型(可省略)
+  if (typeof (callback) != "undefined") { // 判断是否使用回调方法(第二个参数)
+    if (script.readyState) {// js状态
+      console.log(script.onreadystatechange); // onreadystatechange：js状态改变时执行下方函数
+      script.onreadystatechange = function () {
+        if (script.readyState == "loaded" || script.readyState == "complete") { // loaded：是否下载完成 complete：js执行完毕
+          script.onreadystatechange = null;
+          callback();
+        }
+      }
+    } else {
+      script.onload = function () {
+        callback();
+      }
+    }
+  }
+  script.src = url; // js地址
+  document.body.appendChild(script);// 插入body可改为head
 }
 
 // 哔哩哔哩API
@@ -386,6 +414,12 @@ const uposMap = {
 const AREA_MARK_CACHE = {}
 // HOOK
 const URL_HOOK = {
+
+  /**
+   * 番剧信息
+   * @param {XMLHttpRequest} req 原请求结果
+   * @returns {Promise<void>}
+   */
   "https://api.bilibili.com/pgc/view/pc/season": async (req) => {
     UTILS.enableReferer();
     console.log('HOOK', req)
@@ -468,7 +502,12 @@ const URL_HOOK = {
   "https://api.bilibili.com/pgc/season/episode/web/info": async (req) => {
     // console.log("解除区域限制")
   },
-  // 获取播放链接
+
+  /**
+   * 获取播放链接
+   * @param {XMLHttpRequest} req 原请求结果
+   * @returns {Promise<void>}
+   */
   "//api.bilibili.com/pgc/player/web/playurl": async (req) => {
     const resp = JSON.parse(req.responseText)
     if (resp.code !== 0) {
@@ -532,7 +571,12 @@ const URL_HOOK = {
       }
     }
   },
-  // 用户信息
+
+  /**
+   * 用户信息
+   * @param {XMLHttpRequest} req 原请求结果
+   * @returns {Promise<void>}
+   */
   "//api.bilibili.com/x/space/acc/info": async (req) => {
     const resp = JSON.parse(req.responseText)
     if (resp.code !== 0) {
@@ -541,7 +585,12 @@ const URL_HOOK = {
       if (userInfo) req.responseText = JSON.stringify(userInfo)
     }
   },
-  // 搜索
+
+  /**
+   * 搜索
+   * @param {XMLHttpRequest} req 原请求结果
+   * @returns {Promise<void>}
+   */
   "https://api.bilibili.com/x/web-interface/search/type": async (req) => {
     // console.log('===搜索 HOOK: ', req)
     const params = UTILS._params2obj(req._params)
@@ -580,7 +629,12 @@ const URL_HOOK = {
       }
     }
   },
-  // 字幕
+
+  /**
+   * 字幕
+   * @param {XMLHttpRequest} req 原请求结果
+   * @returns {Promise<void>}
+   */
   "//api.bilibili.com/x/player/v2": async (req) => {
     if (!req._params) return;
     const resp = JSON.parse(req.responseText || "{}")
@@ -609,8 +663,50 @@ const URL_HOOK = {
         }
       }
     }
+    // 删除旧的规则
+    for (const key in URL_HOOK) {
+      if (key && key.endsWith('json.translate')){
+        delete URL_HOOK[key]
+      }
+    }
+    // 查找简体
+    const zhHans = resp.data.subtitle.subtitles.find(e=>e.lan === 'zh-Hans')
+    if (!zhHans){
+      // 没有简体，查找繁体
+      const zhHant = resp.data.subtitle.subtitles.find(e=>e.lan === 'zh-Hant')
+      if (!!zhHant){
+        // 有繁体，构造简体拦截器
+        const zhHans = JSON.parse(JSON.stringify(zhHant))
+        zhHans.lan = 'zh-Hans'
+        zhHans.lan_doc = '中文（简体）'
+        zhHans.id = 1145141919810
+        zhHans.id_str = `${zhHans.id}`
+        zhHans.subtitle_url = `${zhHans.subtitle_url}.translate`
+        URL_HOOK[zhHans.subtitle_url] = URL_HOOK.zhHansSubtitle
+        resp.data.subtitle.subtitles.push(zhHans)
+      }
+    }
+    // console.log('subtitle result:', resp)
     req.responseText = JSON.stringify(resp)
   },
+
+  /**
+   * 繁体字幕转简体字幕
+   * @param {XMLHttpRequest} req 原请求结果
+   * @returns {Promise<void>}
+   */
+  zhHansSubtitle: async (req) => {
+    // console.log('繁体转简体')
+    const zhHantData = await HTTP.get(req._url.replace('.translate', ''))
+    // console.log('繁体字幕数据: ', zhHantData.responseText)
+    const tc2sc = window?.ChineseConversionAPI?.tc2sc
+    if (!!tc2sc) {
+      req.responseText = tc2sc(zhHantData.responseText)
+      req.response = JSON.parse(req.responseText)
+      req.status = 200
+      // console.log('中文字幕数据: ', req.responseText)
+    }
+  }
 }
 
 /*请求响应修改器1.0*/
@@ -623,6 +719,7 @@ class HttpRequest extends window.XMLHttpRequest {
     this.onloadend = null;
     let responseText = "";
     let response = null
+    let status = 200
     Object.defineProperty(this, "responseText", {
       get() {
         return responseText
@@ -639,16 +736,24 @@ class HttpRequest extends window.XMLHttpRequest {
         response = v
       }
     })
+    Object.defineProperty(this, "status", {
+      get() {
+        return status
+      },
+      set(v) {
+        status = v
+      }
+    })
   }
 
   send() {
     const arr = [...arguments];
-    if (arr[0]) {
-      const params = null;
-      if (params !== null) {
-        arr[0] = params
-      }
-    }
+    // if (arr[0]) {
+      // const params = null;
+      // if (params !== null) {
+      //   arr[0] = params
+      // }
+    // }
     return super.send(...arr)
   }
 
@@ -660,12 +765,12 @@ class HttpRequest extends window.XMLHttpRequest {
       const [path, params] = url.split(/\?/);
       this._url = path;
       this._params = params;
-      if (this._params) {
-        const params = null;
-        if (params !== null) {
-          arr[1] = this._url + "?" + params
-        }
-      }
+      // if (this._params) {
+        // const params = null;
+        // if (params !== null) {
+        //   arr[1] = this._url + "?" + params
+        // }
+      // }
     }
     let fn = this.onreadystatechange;
     Object.defineProperty(this, "onreadystatechange", {
@@ -681,29 +786,29 @@ class HttpRequest extends window.XMLHttpRequest {
           case '': {
             const responseText = super.responseText;
             if (responseText) {
-              // console.log(responseText)
-              const res = null;
-              if (res !== null) {
-                this.responseText = res
-              } else {
-                this.responseText = super.responseText
-              }
-            } else {
-              this.responseText = super.responseText
+            //   console.log(responseText)
+            //   const res = null;
+            //   if (res !== null) {
+            //     this.responseText = res
+            //   } else {
+            //     this.responseText = super.responseText
+            //   }
+            // } else {
+              this.responseText = responseText
             }
           }
             break;
           case 'json': {
             const response = super.response;
             if (response) {
-              const res = null;
-              if (res !== null) {
-                this.response = res
-              } else {
-                this.response = super.response
-              }
-            } else {
-              this.response = super.response
+            //   const res = null;
+            //   if (res !== null) {
+            //     this.response = res
+            //   } else {
+            //     this.response = super.response
+            //   }
+            // } else {
+              this.response = response
             }
           }
             break;
@@ -721,7 +826,7 @@ class HttpRequest extends window.XMLHttpRequest {
             fn();
         }
       } catch (err) {
-        console.log('为处理的error: ', err)
+        console.log('未处理的error: ', err)
       }
     };
 
@@ -732,7 +837,6 @@ class HttpRequest extends window.XMLHttpRequest {
       }
     });
     super.onloadend = async () => {
-      // console.log('onloadend', this)
       if (fn1) {
         if (URL_HOOK[this._url]) await URL_HOOK[this._url](this)
         fn1();

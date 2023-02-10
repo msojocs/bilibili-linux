@@ -379,6 +379,8 @@ console.log("====HOOK===PLAYER====");
     UI.init()
     // 添加按钮到页面
 
+    getScript('https://greasyfork.org/scripts/430412-chinese-conversion-api/code/Chinese%20Conversion%20API.js')
+
   }
   // 1.75倍速
   let rate175check = setInterval(()=>{

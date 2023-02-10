@@ -17,37 +17,37 @@ s.onload = function () {
 };
 
 // 首页搜索iframe
-window.onload = ()=>{
+window.onload = () => {
   console.log('search:', 'hook prepare')
   const appIframe = document.getElementById('bili-app')
-  if(appIframe == null){
+  if (appIframe == null) {
     console.warn('搜索框元素未找到！')
     return
   }
   const targetWindow = appIframe.contentWindow
   console.log('search:', 'appIframe.onload')
-  let t = setInterval(() =>{
+  let t = setInterval(() => {
 
     const searchIframe = targetWindow.document.querySelector("#app > div > div > div.app_layout--content.flex_col > div > div.app_search.i_page_wrapper.app_container--search.p_cover > div > iframe")
-    if(searchIframe){
+    if (searchIframe) {
       console.log('search:', 'searchIframe')
       const win = searchIframe.contentWindow
       console.log(win.location.href)
       const searchDocument = win.document
       var commonJS = searchDocument.createElement('script');
       commonJS.src = URLS.commonJS;
-      if(searchDocument.head || searchDocument.documentElement){
+      if (searchDocument.head || searchDocument.documentElement) {
         (searchDocument.head || searchDocument.documentElement).appendChild(commonJS);
         commonJS.onload = function () {
           commonJS.remove();
         };
         clearInterval(t)
       }
-    }else{
+    } else {
       console.warn('search iframe not found')
     }
   }, 500)
-  
+
 }
 
 var commonJS = document.createElement('script');
