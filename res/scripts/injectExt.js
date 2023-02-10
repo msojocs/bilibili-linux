@@ -37,7 +37,8 @@ const {app, BrowserWindow} = require('electron');
 const originloadURL = BrowserWindow.prototype.loadURL;
 BrowserWindow.prototype.loadURL = function(){
   this.setMinimumSize(300, 300);
-  
+  // 设置UA
+  this.webContents.setUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) bilibili_pc/1.9.1 Chrome/98.0.4758.141 Electron/17.4.11 Safari/537.36')
   console.log('=====loadURL', arguments)
   if(arguments[0].includes('player.html') || arguments[0].includes('index.html')){
     this.webContents.openDevTools()
