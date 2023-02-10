@@ -36,7 +36,7 @@ console.log("====HOOK===PLAYER====");
   }
   const DandanAPI = {
     getComment(epId, withRelated=false){
-      const url = `https://api.acplay.net/api/v2/comment/${epId}?withRelated=${withRelated}`
+      const url = `https://api.dandanplay.net/api/v2/comment/${epId}?withRelated=${withRelated}`
       return HTTP.get(url).then(res=>{
         const resp = JSON.parse(res.responseText || "{}")
         return Promise.resolve(resp.comments || [])
@@ -56,7 +56,8 @@ console.log("====HOOK===PLAYER====");
           let children = []
           if(!bangumi.eps)continue;
           for(let ep of bangumi.eps){
-            const title = ep.title.length < 5 ? `${ep.title}-${ep.long_title.replace(/<.*?>/g, '')}` : ep.title.replace(/<.*?>/g, '')
+            let title = ep.title || ep.org_title
+            title = title.replace(/<.*?>/g, '')
             children.push({
               label: title,
               value: ep.id
@@ -72,7 +73,7 @@ console.log("====HOOK===PLAYER====");
       })
     },
     dandanplay: (str)=>{
-      const url = `https://api.acplay.net/api/v2/search/episodes?anime=${str}`
+      const url = `https://api.dandanplay.net/api/v2/search/episodes?anime=${str}`
       return HTTP.get(url).then(res=>{
         const resp = JSON.parse(res.responseText)
         console.log('dandanplay: ', resp)
@@ -106,8 +107,10 @@ console.log("====HOOK===PLAYER====");
       // 弹幕池操作
       danmakuManage.rootStore.configStore.reload.cid = epDetails.cid
       // danmakuManage.rootStore.configStore.reload.aid = epDetails.aid
-      danmakuManage.danmaku.danmakuArray = []
+      danmakuManage.danmaku.manager.dataBase.timeLine.list = []
+      // 清空当前屏幕的弹幕
       danmakuManage.danmaku.clear()
+      // 重载弹幕
       danmakuManage.danmakuStore.loadDmPbAll(true)
       return Promise.resolve("操作成功")
     },
@@ -153,9 +156,12 @@ console.log("====HOOK===PLAYER====");
        */
       // 弹幕池操作
       danmakuManage.danmaku.reset()
-      if(data.actionMode === "1")
-      danmakuManage.danmaku.danmakuArray = []
-      danmakuManage.danmaku.addAll(result)
+      const list = danmakuManage.danmaku.manager.dataBase.timeLine.list
+      if(data.actionMode === "1") {
+          list.splice(0, list.length)
+      }
+      list.push(...result)
+      // 清空当前屏幕的弹幕
       danmakuManage.danmaku.clear()
       // danmakuManage.danmakuStore.loadDmPbAll(true)
       
@@ -309,7 +315,7 @@ console.log("====HOOK===PLAYER====");
                 type: 'success'
               })
             }).catch(err=>{
-
+              console.error('出现错误:', err)
               this.$message({
                 message: "出现错误",
                 type: 'error'
@@ -327,12 +333,12 @@ console.log("====HOOK===PLAYER====");
           dmTimelineMove: function(time){
             this.moveFactor += time
             console.log('dmTimelineMove: ', time, this.moveFactor)
-            const danmaku = danmakuManage.danmaku
-            danmakuManage.danmaku.danmakuArray.forEach(dm => {
+            const list = danmakuManage.danmaku.manager.dataBase.timeLine.list
+            list.forEach(dm => {
               dm.stime += time
             });
 
-            danmakuManage.danmaku.timeLine.list.forEach(dm => {
+            list.forEach(dm => {
               dm.stime += time
             });
           }
@@ -354,7 +360,7 @@ console.log("====HOOK===PLAYER====");
 
     // 创建菜单元素
     const playerExtPage = document.createElement('span')
-    playerExtPage.innerHTML = `<svg width="26" height="26" style="margin-right:5px" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1305" width="200" height="200"><path d="M1023.8 604.7c0 160.9-129 291.3-287.9 291.3H256.1C113.3 888.5 0.2 781.3 0.2 650.7c0-99.4 65.6-185 159.9-223.5 19.7-8 33.8-25.5 38.2-46.3C224.9 254.9 340.8 160 480 160c102.6 0 192.4 51.5 243.4 129 10 15.3 26.1 25.5 44.2 28.2 145.2 22 256.2 142.1 256.2 287.5z" p-id="1306" fill="#ffffff"></path></svg>弹幕Ext`
+    playerExtPage.innerHTML = `<svg width="26" height="26" style="margin-right:5px" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1305" ><path d="M1023.8 604.7c0 160.9-129 291.3-287.9 291.3H256.1C113.3 888.5 0.2 781.3 0.2 650.7c0-99.4 65.6-185 159.9-223.5 19.7-8 33.8-25.5 38.2-46.3C224.9 254.9 340.8 160 480 160c102.6 0 192.4 51.5 243.4 129 10 15.3 26.1 25.5 44.2 28.2 145.2 22 256.2 142.1 256.2 287.5z" p-id="1306" fill="#ffffff"></path></svg>弹幕Ext`
     playerExtPage.id = "player-ext-settings"
     playerExtPage.className = "app_player--header-home no_drag"
     playerExtPage.onclick = ()=>{
