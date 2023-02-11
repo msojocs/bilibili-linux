@@ -32,6 +32,13 @@ const HttpGet = (url, headers = {})=>{
 
 // HOOK
 const {app, BrowserWindow} = require('electron');
+app.commandLine.appendSwitch('ignore-gpu-blacklist')
+app.commandLine.appendSwitch('enable-gpu-rasterization')
+app.commandLine.appendSwitch('enable-accelerated-video')
+app.commandLine.appendSwitch('enable-accelerated-video-decode')
+// app.commandLine.appendSwitch('use-gl', 'desktop')
+app.commandLine.appendSwitch('enable-features', 'VaapiVideoDecoder')
+
 // app.commandLine.appendSwitch('remote-debugging-port', '8315');
 // app.commandLine.appendSwitch('host-rules', 'MAP * 127.0.0.1');
 const originloadURL = BrowserWindow.prototype.loadURL;
