@@ -1,19 +1,15 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
 name: Build Packages
 
 on:
   release:
     types: [published]
   push:
-    tags:        
+    tags:
       - v*
-    branches: [ master, dev]
+    branches: [master, dev]
   pull_request:
-    branches: [ master ]
-  # # Allows you to run this workflow manually from the Actions tab
-  # workflow_dispatch:
+    branches: [master]
+  workflow_dispatch:
 
 jobs:
   build-src:
@@ -22,16 +18,16 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x]
-        ARCH: ['x86_64']
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        ARCH: ["x86_64"]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
-          submodules: 'recursive'
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+          submodules: "recursive"
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
 
       - name: Prepare
         run: |
@@ -49,14 +45,14 @@ jobs:
             name='${{ github.ref_name }}'
           fi
           echo "tag result: $tag - $name"
-          echo "::set-output name=tag::$tag"
-          echo "::set-output name=name::$name"
-         
+          echo "tag=$tag" >> $GITHUB_OUTPUT
+          echo "name=$name" >> $GITHUB_OUTPUT
+
       - name: Build
         run: |
           ls -l
           tools/setup-bilibili
-  
+
       - name: Compress Resources
         run: |
           ls -l
@@ -66,15 +62,13 @@ jobs:
           tar -zcf tmp/build/extensions-${{ steps.tag.outputs.tag }}.tar.gz extensions
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v2.3.1
+        uses: actions/upload-artifact@v3
         with:
-          # Artifact name
           name: bilibili-${{ matrix.ARCH }}.src
           path: tmp/src
       - name: Upload artifact
-        uses: actions/upload-artifact@v2.3.1
+        uses: actions/upload-artifact@v3
         with:
-          # Artifact name
           name: bilibili-${{ matrix.ARCH }}.build
           path: tmp/build
 
@@ -86,14 +80,12 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x]
-        ARCH: ['x86_64']
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        ARCH: ["x86_64"]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
 
       - name: Prepare
         run: |
@@ -111,9 +103,9 @@ jobs:
             name='${{ github.ref_name }}'
           fi
           echo "tag result: $tag - $name"
-          echo "::set-output name=tag::$tag"
-          echo "::set-output name=name::$name"
-         
+          echo "tag=$tag" >> $GITHUB_OUTPUT
+          echo "name=$name" >> $GITHUB_OUTPUT
+
       - name: Build
         env:
           BUILD_VERSION: ${{ steps.tag.outputs.tag }}
@@ -125,12 +117,10 @@ jobs:
           asar e app/app.asar app/app
           npm run pkg-linux
           rm -rf tmp/build/linux-unpacked
-          # tools/build-appimage.sh ${{ steps.tag.outputs.tag }} ${{ matrix.ARCH }}
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v2.3.1
+        uses: actions/upload-artifact@v3
         with:
-          # Artifact name
           name: bilibili-${{ matrix.ARCH }}.build
           path: tmp/build
 
@@ -138,18 +128,16 @@ jobs:
     name: Build Windows
     needs:
       - build-src
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
 
     strategy:
       matrix:
-        node-version: [16.x]
-        ARCH: ['x86_64']
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        ARCH: ["x86_64"]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
 
       - name: Prepare
         run: |
@@ -172,9 +160,9 @@ jobs:
             name='${{ github.ref_name }}'
           fi
           echo "tag result: $tag - $name"
-          echo "::set-output name=tag::$tag"
-          echo "::set-output name=name::$name"
-         
+          echo "tag=$tag" >> $GITHUB_OUTPUT
+          echo "name=$name" >> $GITHUB_OUTPUT
+
       - name: Build
         env:
           BUILD_VERSION: ${{ steps.tag.outputs.tag }}
@@ -186,12 +174,10 @@ jobs:
           asar e app/app.asar app/app
           npm run pkg-win
           rm -rf tmp/build/win-unpacked
-          # tools/build-appimage.sh ${{ steps.tag.outputs.tag }} ${{ matrix.ARCH }}
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v2.3.1
+        uses: actions/upload-artifact@v3
         with:
-          # Artifact name
           name: bilibili-${{ matrix.ARCH }}.build
           path: tmp/build
 
@@ -199,17 +185,16 @@ jobs:
     name: Build Deepin Package
     needs:
       - build-src
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
 
     strategy:
       matrix:
-        ARCH: ['x86_64', 'ARM64']
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        ARCH: ["x86_64", "ARM64"]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
 
       - name: Prepare
         run: |
@@ -228,9 +213,8 @@ jobs:
             tag="v${BILIBILI_VERSION}-${tag}"
           fi
           echo "tag result: $tag - $name"
-          echo "::set-output name=tag::$tag"
-          echo "::set-output name=name::$name"
-      # https://stackoverflow.com/questions/61096521/how-to-use-gpg-key-in-github-actions
+          echo "tag=$tag" >> $GITHUB_OUTPUT
+          echo "name=$name" >> $GITHUB_OUTPUT
 
       - name: Build Deb Package
         run: |
@@ -249,128 +233,10 @@ jobs:
           tools/build-deepin.sh ${{ steps.tag.outputs.tag }}
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v2.3.1
+        uses: actions/upload-artifact@v3
         with:
-          # Artifact name
           name: bilibili-${{ matrix.ARCH }}.build
           path: tmp/build
-
-  # build-arch:
-  #   name: Build ArchLinux Package
-  #   runs-on: ubuntu-latest
-  #   timeout-minutes: 30
-  #   strategy:
-  #     matrix:
-  #       node-version: [16.x]
-  #       ARCH: ['x86_64']
-  #       # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #       with:
-  #         submodules: 'recursive'
-  #     - name: Use Node.js ${{ matrix.node-version }}
-  #       uses: actions/setup-node@v2
-  #       with:
-  #         node-version: ${{ matrix.node-version }}
-  #         cache: 'npm'
-
-  #     - name: Prepare
-  #       run: |
-  #         cd compiler && npm install
-  #         npm install node-gyp nw-gyp npm -g
-  #         node-gyp install
-  #         cat /etc/passwd
-
-  #     - name: Generate TAG
-  #       id: Tag
-  #       run: |
-  #         tag='continuous'
-  #         name='Continuous Build'
-  #         if [ 'true' == ${{ startsWith(github.ref, 'refs/tags/') }} ];then
-  #           tag='${{ github.ref_name }}'
-  #           name='${{ github.ref_name }}'
-  #         fi
-  #         echo "tag result: $tag - $name"
-  #         echo "::set-output name=tag::$tag"
-  #         echo "::set-output name=name::$name"
-         
-  #     - name: Build ArchLinux Package
-  #       uses: countstarlight/arch-makepkg-action@master
-  #       env:
-  #         BUILD_VERSION: ${{ steps.tag.outputs.tag }}
-  #       with:
-  #         repos: >
-  #           archlinuxcn=https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/$arch
-  #         before: "tools/build-aur.sh && sudo pacman -S --noconfirm archlinuxcn-keyring"
-  #         packages: >
-  #           gconf
-  #           p7zip
-  #           libxkbfile
-  #           python2
-  #           openssl
-  #           gcc
-  #           make
-  #           libssh2
-  #           krb5
-  #           wget
-  #         scripts: "cd tmp/AUR && makepkg && ls -l && cd ../../"
-
-  #     - name: Fix Permissions
-  #       run: |
-  #         sudo chmod -R 0777 tmp
-  #         mkdir -p tmp/build
-  #         mv tmp/AUR/*.pkg.* tmp/build
-  #         cd tmp/build
-  #         for file in `ls *.pkg.*`;do mv $file `echo $file|sed 's/:/-/g'`;done;
-  #         ls -l
-
-  #     - name: Upload artifact
-  #       uses: actions/upload-artifact@v2.3.1
-  #       with:
-  #         # Artifact name
-  #         name: bilibili-${{ matrix.ARCH }}.build
-  #         path: tmp/build
-
-  # build-snap:
-  #   name: Build Snap Package
-  #   runs-on: ubuntu-18.04
-  #   timeout-minutes: 30
-  #   strategy:
-  #     matrix:
-  #       node-version: [16.x]
-  #       ARCH: ['x86_64']
-  #       # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #       with:
-  #         submodules: 'recursive'
-  #     - name: Install Snapcraft
-  #       uses: samuelmeuli/action-snapcraft@v1
-  #       with:
-  #         use_lxd: true
-
-  #     - name: Prepare
-  #       run: |
-  #         cd compiler && npm install
-  #         git --version
-  #         git --help
-
-  #     # You can now run Snapcraft shell commands
-  #     - name: Build snap
-  #       run: sg lxd -c 'snapcraft --use-lxd'
-
-  #     - name: move file
-  #       run: |
-  #         mkdir -p tmp/build
-  #         mv *.snap tmp/build
-  #     - name: Upload artifact
-  #       uses: actions/upload-artifact@v2.3.1
-  #       with:
-  #         # Artifact name
-  #         name: bilibili-${{ matrix.ARCH }}.build
-  #         path: tmp/build
 
   upload:
     name: Create release and upload artifacts
@@ -382,7 +248,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
       - name: Inspect directory after downloading artifacts
         run: ls -alFR
 
@@ -396,8 +262,8 @@ jobs:
             name='${{ github.ref_name }}'
           fi
           echo "tag result: $tag - $name"
-          echo "::set-output name=tag::$tag"
-          echo "::set-output name=name::$name"
+          echo "tag=$tag" >> $GITHUB_OUTPUT
+          echo "name=$name" >> $GITHUB_OUTPUT
 
       - name: Create release and upload artifacts
         if: startsWith(github.ref, 'refs/heads/')
@@ -418,8 +284,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          # note you'll typically need to create a personal access token
-          # with permissions to create releases in the other repo
           name: ${{ steps.tag.outputs.name }}
           tag_name: ${{ steps.tag.outputs.tag }}
           files: |
