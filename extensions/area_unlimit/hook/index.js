@@ -359,8 +359,9 @@
       try {
         const search = targetWindow.document.querySelector("#app > div > div.app_layout.ov_hidden.flex_start.bg_bg1 > div.app_layout--content.flex_col > div > div.app_search.i_page_wrapper.app_container--search.p_cover > div > iframe")
         search.contentWindow.hex_md5 = window.hex_md5
+        search.contentWindow.XMLHttpRequest = window.XMLHttpRequest
       }catch (e){
-        console.error('md5初始化异常', e)
+        console.error('搜索页面md5与XMLHttpRequest初始化异常', e)
       }
     }
   }
