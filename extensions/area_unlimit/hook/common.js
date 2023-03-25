@@ -1273,11 +1273,12 @@ const UTILS = {
       };
       // 填充音频流数据
       origin.data.video_info.dash_audio.forEach((audio) => {
-        // console.log('填充音频流数据:', audio)
-        audio.base_url = audio.backup_url[0] || audio.base_url.replace('http://', 'https://');
-        audio.baseUrl = audio.backup_url[0] || audio.base_url;
-        audio.backupUrl = [];
-        audio.backup_url = [];
+        console.log('填充音频流数据:', audio)
+        const backup_urls = audio.backup_url.filter(e => !e.includes('akamaized.net'))
+        audio.base_url = backup_urls[0] || audio.base_url.replace('http://', 'https://');
+        audio.baseUrl = backup_urls[0] || audio.base_url;
+        audio.backupUrl = audio.backupUrl || [];
+        audio.backup_url = audio.backup_url || [];
         dash.audio.push(audio);
       });
       // 填充视频流数据
@@ -1291,10 +1292,11 @@ const UTILS = {
         accept_description.push(stream.stream_info.new_description);
         // 只加入有视频链接的数据
         if (stream.dash_video && stream.dash_video.base_url) {
-          stream.dash_video.base_url = stream.dash_video.backup_url[0] || stream.dash_video.base_url.replace('http://', 'https://');
-          stream.dash_video.baseUrl = stream.dash_video.backup_url[0] || stream.dash_video.base_url;
-          stream.dash_video.backupUrl = [];
-          stream.dash_video.backup_url = [];
+          const backup_urls = stream.dash_video.backup_url.filter(e => !e.includes('akamaized.net'))
+          stream.dash_video.base_url = backup_urls[0] || stream.dash_video.base_url.replace('http://', 'https://');
+          stream.dash_video.baseUrl = backup_urls[0] || stream.dash_video.base_url;
+          stream.dash_video.backupUrl = stream.dash_video.backupUrl || [];
+          stream.dash_video.backup_url = stream.dash_video.backup_url || [];
           stream.dash_video.id = stream.stream_info.quality;
           dash_video.push(stream.dash_video);
         }
