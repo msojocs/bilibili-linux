@@ -156,15 +156,13 @@ jobs:
           sudo npm install asar -g
           sudo apt update
           sudo apt install wine64
-          sudo dpkg --add-architecture i386 
-          sudo apt-get update
-          sudo apt install gnupg -y
-          sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 86B72ED9
-          sudo apt install -y software-properties-common
-          sudo add-apt-repository 'deb [arch=amd64] https://mirror.mxe.cc/repos/apt focal main'
-          sudo apt -qq update
-          sudo apt install -y --allow-downgrades libpcre2-8-0=10.34-7
-          sudo apt-get install -y libwine wine32
+          sudo dpkg --add-architecture i386
+          sudo mkdir -pm755 /etc/apt/keyrings
+          sudo apt install -y wget
+          sudo wget -O /etc/apt/keyrings/winehq-archive.key https://dl.winehq.org/wine-builds/winehq.key
+          sudo wget -NP /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/ubuntu/dists/focal/winehq-focal.sources
+          sudo apt-get update 
+          sudo apt-get install libwine wine32
           npm install
           echo "$UID, $GID"
 
