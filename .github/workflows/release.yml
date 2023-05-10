@@ -179,7 +179,7 @@ jobs:
           sudo apt install wine32
           sudo npm install asar -g
           npm install
-          echo "$UID, $GID"
+          echo "$UID"
 
       - name: Generate TAG
         id: Tag
