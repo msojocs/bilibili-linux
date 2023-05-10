@@ -172,9 +172,7 @@ jobs:
           sudo apt install -y wine64
           sudo dpkg --add-architecture i386
           dpkg --print-foreign-architectures
-          sudo apt-add-repository -y ppa:ondrej/php
-          sudo apt-get install ppa-purge
-          sudo ppa-purge -y ppa:ondrej/php
+          
           sudo apt update 
           sudo apt install libwine
           echo "install wine32..."
