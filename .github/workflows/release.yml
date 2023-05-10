@@ -138,7 +138,7 @@ jobs:
     name: Build Windows
     needs:
       - build-src
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
 
     strategy:
       matrix:
@@ -199,7 +199,7 @@ jobs:
     name: Build Deepin Package
     needs:
       - build-src
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
 
     strategy:
       matrix:
