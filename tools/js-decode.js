@@ -66,8 +66,8 @@ resultCode = resultCode.replace(
     // 二分法查找异常点
     // 763 ok
     // 764 error
-    if(i === 11798){
-        // if(i === 11798){
+    if(i === 3311){
+        // if(i === 3312){
         //     console.log("--->", $0, $1, $2)
         //     let result = eval('"' + $1 + '"')
         //     console.log("--->", result)
@@ -100,5 +100,12 @@ resultCode = encodeUnicode(resultCode)
 resultCode = parseSubFunc(resultCode)
 resultCode = parseSubFunc(resultCode)
 resultCode = resultCode.replace(/'\+'/g, '')
+i = 0;
+resultCode = resultCode.replace(
+  /警告/g,
+  function ($0, $1, $2) {
+    return $0 + i++
+  }
+)
 fs.writeFileSync(dist, resultCode)
 // fs.writeFileSync(path.resolve(__dirname, '../'), resultCode)

@@ -42,16 +42,16 @@ mv "app/main/temp.js" "app/main/index.js"
 notice "====app.js===="
 
 notice "屏蔽检测"
-grep -lr 'if(!qI' --exclude="app.asar" .
-sed -i 's#if(!qI#if(false\&\&!qI#g' app/main/app.js
+grep -lr 'if(!Dn' --exclude="app.asar" .
+sed -i 's#if(!Dn#if(false\&\&!Dn#g' app/main/app.js
 # ==='win';if(!
-grep -lr 'if(!ao)' --exclude="app.asar" .
-sed -i 's#if(!ao)#if(false\&\&!ao)#' app/main/app.js
+grep -lr 'if(!x5)' --exclude="app.asar" .
+sed -i 's#if(!x5)#if(false\&\&!x5)#' app/main/app.js
 # global['bootstrapApp']();
-grep -lr 'if(qI)' --exclude="app.asar" .
-sed -i 's#if(qI)#if(!qI)#' app/main/app.js
-grep -lr ';}!qI' --exclude="app.asar" .
-sed -i 's#;}!qI#;}false\&\&!qI#' app/main/app.js
+grep -lr 'if(Dn)' --exclude="app.asar" .
+sed -i 's#if(Dn)#if(!Dn)#' app/main/app.js
+grep -lr ';}!Dn' --exclude="app.asar" .
+sed -i 's#;}!Dn#;}false\&\&!Dn#' app/main/app.js
 
 notice "路由"
 grep -lr 'case"SettingsPage":n.push({name:"Settings"});return' --exclude="app.asar" .

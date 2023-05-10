@@ -1,3 +1,8 @@
+# v1.10.1-1 / 2023-05-10
+
+- update: electron to v21.3.3
+- update: bilibili to v1.10.1.2297
+
 # v1.9.2-1 / 2023-03-25
 
 - update: bilibili to v1.9.2.2092
