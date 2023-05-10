@@ -161,10 +161,10 @@ jobs:
           sudo apt install -y wget
           sudo wget -O /etc/apt/keyrings/winehq-archive.key https://dl.winehq.org/wine-builds/winehq.key
           sudo wget -NP /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/ubuntu/dists/focal/winehq-focal.sources
-          sudo apt-get update 
-          sudo apt-get install libwine
+          sudo apt update 
+          sudo apt install libwine
           echo "install wine32..."
-          sudo apt-get install wine32
+          sudo apt install wine32
           npm install
           echo "$UID, $GID"
 
