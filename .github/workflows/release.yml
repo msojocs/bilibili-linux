@@ -158,7 +158,7 @@ jobs:
           sudo apt install wine64
           sudo dpkg --add-architecture i386 
           sudo apt-get update 
-          sudo apt-get install libwine wine32
+          sudo apt-get install libwine # wine32
           npm install
           echo "$UID, $GID"
 
