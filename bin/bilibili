@@ -10,9 +10,10 @@ root_dir="$( cd -P "$( dirname "$SOURCE" )"/.. >/dev/null 2>&1 && pwd )"
 # 启用检查更新 for electron-updater
 export APPIMAGE=1
 
-DEBUG=1
-if [ DEBUG == 1 ]; then
-  ELECTRON_FORCE_IS_PACKAGED=true "$root_dir/electron/electron" "$root_dir/tmp/bili/resources/app" --no-sandbox "$@"
+if [ "$DEBUG" == '1' ]; then
+  echo "Debug Mode"
+  ELECTRON_FORCE_IS_PACKAGED=true "$root_dir/electron/electron" "$root_dir/app/app" --no-sandbox "$@"
 else
+  echo "Release Mode"
   ELECTRON_FORCE_IS_PACKAGED=true "$root_dir/electron/electron" "$root_dir/app/app.asar" --no-sandbox "$@"
 fi
