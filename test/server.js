@@ -1,4 +1,36 @@
 const net = require('net')
+const http = require('http')
+const https = require('https')
+
+const orgiCreateServer = net.createServer 
+net.createServer = function() {
+  console.log('create server:', ...arguments)
+  orgiCreateServer.apply(this, arguments)
+}
+
+const orgiHttpCreateServer = http.createServer
+http.createServer = function() {
+  console.log('http createServer:', ...arguments)
+  return orgiHttpCreateServer.apply(this, arguments)
+}
+
+const orgiHttpsCreateServer = https.createServer
+https.createServer = function() {
+  console.log('https createServer:', ...arguments)
+  return orgiHttpsCreateServer.apply(this, arguments)
+}
+
+const orgiRequest = http.request
+http.request = function() {
+  console.log('http request:', ...arguments)
+  return orgiRequest.apply(this, arguments)
+}
+const orgiHttpsRequest = https.request
+https.request = function() {
+  console.log('https request:', ...arguments)
+  return orgiHttpsRequest.apply(this, arguments)
+}
+
 const serverPort = 22332
 // 有请求就创建一个tcp链接
 net.createServer(client => {

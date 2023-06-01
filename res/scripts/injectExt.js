@@ -32,6 +32,28 @@ const HttpGet = (url, headers = {})=>{
 
 // HOOK
 const {app, BrowserWindow} = require('electron');
+class CustomBrowserWindow extends BrowserWindow {
+  constructor() {
+    // console.log('NewBrowserWindow:', arguments)
+    // arguments[0].webPreferences.devTools = true
+    super(...arguments)
+  }
+}
+// 保存原 require 方法，并重新定义 require 方法
+const modelRequire = require;
+require = (...args) => {
+  // 拦截参数
+  // console.log('params is: ', args);
+  const result = modelRequire(...args)
+  if (args[0] === 'electron') {
+    return {
+      ...result,
+      BrowserWindow: CustomBrowserWindow
+    }
+  }
+  return result;
+}
+
 app.commandLine.appendSwitch('ignore-gpu-blacklist')
 app.commandLine.appendSwitch('enable-gpu-rasterization')
 app.commandLine.appendSwitch('enable-accelerated-video')
