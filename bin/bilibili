@@ -9,7 +9,7 @@ done
 root_dir="$( cd -P "$( dirname "$SOURCE" )"/.. >/dev/null 2>&1 && pwd )"
 # 启用检查更新 for electron-updater
 export APPIMAGE=1
-
+sed -i 's#http://localhost:22331##' ~/.config/bilibili/.runtime
 if [ "$DEBUG" == '1' ]; then
   echo "Debug Mode"
   ELECTRON_FORCE_IS_PACKAGED=true "$root_dir/electron/electron" "$root_dir/app/app" --no-sandbox "$@"
