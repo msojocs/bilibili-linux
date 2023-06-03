@@ -32,13 +32,29 @@ const HttpGet = (url, headers = {})=>{
 
 // HOOK
 const {app, BrowserWindow} = require('electron');
-class CustomBrowserWindow extends BrowserWindow {
-  constructor() {
-    // console.log('NewBrowserWindow:', arguments)
-    // arguments[0].webPreferences.devTools = true
-    super(...arguments)
-  }
-}
+
+const originalBrowserWindow = BrowserWindow;
+
+const hookBrowserWindow = (OriginalBrowserWindow) => {
+    function HookedBrowserWindow(options) {
+        // 修改或增加构造函数的选项
+        // if (options && options.webPreferences)
+        //   options.webPreferences.devTools = true
+
+        // 使用修改后的选项调用原始构造函数
+        return new OriginalBrowserWindow(options);
+    }
+
+    // 复制原始构造函数的原型链并进行替换
+    HookedBrowserWindow.prototype = Object.create(OriginalBrowserWindow.prototype);
+    HookedBrowserWindow.prototype.constructor = HookedBrowserWindow;
+    Object.setPrototypeOf(HookedBrowserWindow, OriginalBrowserWindow);
+
+    return HookedBrowserWindow;
+};
+
+// 使用替换的构造函数
+const HookedBrowserWindow = hookBrowserWindow(originalBrowserWindow);
 // 保存原 require 方法，并重新定义 require 方法
 const modelRequire = require;
 require = (...args) => {
@@ -48,21 +64,12 @@ require = (...args) => {
   if (args[0] === 'electron') {
     return {
       ...result,
-      BrowserWindow: CustomBrowserWindow
+      BrowserWindow: HookedBrowserWindow
     }
   }
   return result;
 }
 
-app.commandLine.appendSwitch('ignore-gpu-blacklist')
-app.commandLine.appendSwitch('enable-gpu-rasterization')
-app.commandLine.appendSwitch('enable-accelerated-video')
-app.commandLine.appendSwitch('enable-accelerated-video-decode')
-// app.commandLine.appendSwitch('use-gl', 'desktop')
-app.commandLine.appendSwitch('enable-features', 'VaapiVideoDecoder')
-
-// app.commandLine.appendSwitch('remote-debugging-port', '8315');
-// app.commandLine.appendSwitch('host-rules', 'MAP * 127.0.0.1');
 const originloadURL = BrowserWindow.prototype.loadURL;
 BrowserWindow.prototype.loadURL = function(){
   this.setMinimumSize(300, 300);

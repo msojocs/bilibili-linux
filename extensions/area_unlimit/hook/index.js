@@ -19,12 +19,15 @@
     // 菜单切换
     const menuDiv = targetWindow.document.querySelector("#app > div > div > div.app_layout--content.flex_col > div > div.app_settings.i_page_wrapper > div.header_slot.flex_start.drag").querySelector('.vui_tabs--nav-link')
     for (let h3 of menuDiv.children) {
-      h3.style.cssText = h3.dataset.hash === hash ? "color:var(--el-text-color-primary)!important" : "color:gray!important";
+      if (h3.dataset.hash === hash)
+        h3.style.setProperty('color', 'var(--el-text-color-primary)', 'important')
+      else
+        h3.style.setProperty('color', 'gray', 'important')
     }
 
     // 界面切换
     const appSettingDiv = targetWindow.document.querySelector("#app > div > div > div.app_layout--content.flex_col > div > div.app_settings.i_page_wrapper")
-    let flag = false
+    
     for (let page of appSettingDiv.children) {
       page.dataset.hash && (page.style.display = page.dataset.hash === hash ? "" : "none")
     }
@@ -41,7 +44,8 @@
     const areaLimitH3 = targetWindow.document.createElement('h3');
     areaLimitH3.textContent = "漫游"
     areaLimitH3.dataset.hash = "#/page/areaLimit"
-    areaLimitH3.style.cssText = "color:gray!important"
+    areaLimitH3.style.setProperty('color', 'gray', 'important')
+    areaLimitH3.style.marginLeft = '5px'
     areaLimitH3.classList.add(...menuDiv.children[0].classList)
     menuDiv.appendChild(areaLimitH3)
     for (let menu of menuDiv.children) {

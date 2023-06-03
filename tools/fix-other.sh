@@ -29,7 +29,6 @@ notice "解密"
 notice "====index.js===="
 # 修复新版不能启动的问题
 notice "修复不能启动的问题 index.js -- $root_dir"
-echo "require('./main/index.js')();" > "app/index.js"
 cat "$root_dir/res/scripts/injectIndex.js" > "app/index.js"
 # 从app.js加载 ok
 # grep -lr '!import_electron2' --exclude="app.asar" .
