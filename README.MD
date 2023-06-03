@@ -72,6 +72,22 @@ https://github.com/msojocs/bilibili-linux/releases/tag/continuous
 
 如果阁下不喜欢电脑多装一个 Electron，可以自行提取发布版的 `app.asar` 并使用已安装 Electron 启动，建议的 Electron 版本是：`17.4.11`
 
+## Flag参数配置
+
+支持的参数列表：
+https://www.electronjs.org/docs/latest/api/command-line-switches
+
+1. 创建 `flags` 文件
+
+   在 `~/.config/bilibili` 目录下创建 `bilibili-flags.conf` 文件
+
+2. 填写配置
+
+   ```
+   --disable-gpu
+   --key=value
+   ```
+
 ## 预览
 
 ![推荐](res/screenshots/1.png)

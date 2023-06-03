@@ -30,10 +30,7 @@ notice "====index.js===="
 # 修复新版不能启动的问题
 notice "修复不能启动的问题 index.js -- $root_dir"
 echo "require('./main/index.js')();" > "app/index.js"
-cat "$root_dir/res/scripts/injectIndex.js" > "app/main/temp.js"
-cat "app/main/index.js" >> "app/main/temp.js"
-rm "app/main/index.js"
-mv "app/main/temp.js" "app/main/index.js"
+cat "$root_dir/res/scripts/injectIndex.js" > "app/index.js"
 # 从app.js加载 ok
 # grep -lr '!import_electron2' --exclude="app.asar" .
 # sed -i 's#!import_electron2#import_electron2#' app/main/index.js
