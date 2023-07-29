@@ -38,16 +38,16 @@ cat "$root_dir/res/scripts/injectIndex.js" > "app/index.js"
 notice "====app.js===="
 
 notice "屏蔽检测"
-grep -lr 'if(!Dn' --exclude="app.asar" .
-sed -i 's#if(!Dn#if(false\&\&!Dn#g' app/main/app.js
+grep -lr 'if(!IA' --exclude="app.asar" .
+sed -i 's#if(!IA#if(false\&\&!IA#g' "app/main/app.js"
 # ==='win';if(!
-grep -lr 'if(!x5)' --exclude="app.asar" .
-sed -i 's#if(!x5)#if(false\&\&!x5)#' app/main/app.js
+grep -lr 'if(!iK)' --exclude="app.asar" .
+sed -i 's#if(!iK)#if(false\&\&!iK)#' "app/main/app.js"
 # global['bootstrapApp']();
-grep -lr 'if(Dn)' --exclude="app.asar" .
-sed -i 's#if(Dn)#if(!Dn)#' app/main/app.js
-grep -lr ';}!Dn' --exclude="app.asar" .
-sed -i 's#;}!Dn#;}false\&\&!Dn#' app/main/app.js
+grep -lr 'if(IA)' --exclude="app.asar" .
+sed -i 's#if(IA)#if(!IA)#' "app/main/app.js"
+grep -lr '};!IA' --exclude="app.asar" .
+sed -i 's#};!IA#};false\&\&!IA#' "app/main/app.js"
 
 notice "路由"
 grep -lr 'case"SettingsPage":n.push({name:"Settings"});return' --exclude="app.asar" .
@@ -55,17 +55,17 @@ sed -i 's#case"SettingsPage":n.push({name:"Settings"});return#case"SettingsPage"
 
 notice "添加主页菜单" # ok
 grep -lr "te'](\[{'label':'设置" --exclude="app.asar" .
-sed -i "s#te'](\[{'label':'设置#te'](\[{'label':'首页','click':()=>this.openMainWindowPage$.next({'page':'Root'})},{'label':'设置#" app/main/app.js
+sed -i "s#te'](\[{'label':'设置#te'](\[{'label':'首页','click':()=>this.openMainWindowPage$.next({'page':'Root'})},{'label':'设置#" "app/main/app.js"
 
 # 任务栏菜单
 notice "去除标题栏"
 # )}});
 grep -lr ')}});this\[' --exclude="app.asar" .
-sed -i "s#)}});this\\[#)},frame:false});this[#g" app/main/app.js
-sed -i "s#)}}),this\\[#)},frame:false}),this[#g" app/main/app.js
-sed -i "s#)}}),#)},frame:false}),#g" app/main/app.js
+sed -i "s#)}});this\\[#)},frame:false});this[#g" "app/main/app.js"
+sed -i "s#)}}),this\\[#)},frame:false}),this[#g" "app/main/app.js"
+sed -i "s#)}}),#)},frame:false}),#g" "app/main/app.js"
 # splash
-sed -i "s#erence']}})#erence']},frame:false})#g" app/main/app.js
+sed -i "s#erence']}})#erence']},frame:false})#g" "app/main/app.js"
 
 notice "检查更新"
 # 检查更新
