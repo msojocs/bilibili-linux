@@ -27,7 +27,7 @@
 
     // 界面切换
     const appSettingDiv = targetWindow.document.querySelector("#app > div > div > div.app_layout--content.flex_col > div > div.app_settings.i_page_wrapper")
-    
+
     for (let page of appSettingDiv.children) {
       page.dataset.hash && (page.style.display = page.dataset.hash === hash ? "" : "none")
     }
@@ -157,9 +157,9 @@
         return {
           message: "Hello Element Plus",
           uposList: [{
-              value: 'none',
-              label: '不替换'
-            },
+            value: 'none',
+            label: '不替换'
+          },
             {
               value: 'ks3',
               label: 'ks3(金山)'
@@ -347,21 +347,24 @@
   }
   // 获取App的Iframe
   const appFrame = document.getElementById('bili-app')
-  const targetWindow = appFrame.contentWindow
+  const appWindow = appFrame.contentWindow
   if(appFrame.attachEvent){
     appFrame.attachEvent('onload', ()=>{
       console.log("appFrame.attachEvent 'onload'")
     })
   }else{
     appFrame.onload = ()=>{
-      console.log('targetWindow.onload')
+      console.log('appWindow.onload')
       // console.log(window.XMLHttpRequest, targetWindow.XMLHttpRequest)
-      targetWindow.XMLHttpRequest = window.XMLHttpRequest
-      // console.log(window.hex_md5)
-      targetWindow.hex_md5 = window.hex_md5
-      targetOnload(targetWindow)
+      appWindow.XMLHttpRequest = window.XMLHttpRequest
+      appWindow.hex_md5 = window.hex_md5
+      targetOnload(appWindow)
       try {
-        const search = targetWindow.document.querySelector("#app > div > div.app_layout.ov_hidden.flex_start.bg_bg1 > div.app_layout--content.flex_col > div > div.app_search.i_page_wrapper.app_container--search.p_cover > div > iframe")
+        const appSearchEle = appWindow.document.querySelector('.app_search')
+        const search = appSearchEle.querySelector('iframe')
+        if (!window.hex_md5) {
+          console.error('md5函数丢失！')
+        }
         search.contentWindow.hex_md5 = window.hex_md5
         search.contentWindow.XMLHttpRequest = window.XMLHttpRequest
       }catch (e){

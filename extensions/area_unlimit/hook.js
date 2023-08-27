@@ -24,11 +24,11 @@ window.onload = () => {
     console.warn('搜索框元素未找到！')
     return
   }
-  const targetWindow = appIframe.contentWindow
+  const appWindow = appIframe.contentWindow
   console.log('search:', 'appIframe.onload')
   let t = setInterval(() => {
 
-    const searchIframe = targetWindow.document.querySelector("#app > div > div > div.app_layout--content.flex_col > div > div.app_search.i_page_wrapper.app_container--search.p_cover > div > iframe")
+    const searchIframe = appWindow.document.querySelector(".app_search").querySelector('iframe')
     if (searchIframe) {
       console.log('search:', 'searchIframe')
       const win = searchIframe.contentWindow

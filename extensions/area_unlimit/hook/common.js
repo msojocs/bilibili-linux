@@ -1341,7 +1341,7 @@ const UTILS = {
     }
     // console.log(plaintext)
     // 生成 sign
-    return window.hex_md5(plaintext)
+    return parent.hex_md5(plaintext)
   },
   genSearchParam(params, area) {
     const result = {
