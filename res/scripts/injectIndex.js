@@ -30,9 +30,9 @@ const pkgHack = {
     true,
     true,
     false,  // .biliapp
-    true, 
     true,
     false,
+    true,
   ]
 }
 Object.defineProperty(app, 'isPackaged', {
@@ -44,4 +44,5 @@ Object.defineProperty(app, 'isPackaged', {
   },
 
 });
-require('./main/index.js')();
+global['isFiredByEntry'] = true;
+require('./main/app.js')();

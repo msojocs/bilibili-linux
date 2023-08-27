@@ -38,16 +38,16 @@ cat "$root_dir/res/scripts/injectIndex.js" > "app/index.js"
 notice "====app.js===="
 
 notice "屏蔽检测"
-grep -lr 'if(!IA' --exclude="app.asar" .
-sed -i 's#if(!IA#if(false\&\&!IA#g' "app/main/app.js"
+grep -lr 'if(!fb' --exclude="app.asar" .
+sed -i 's#if(!fb#if(false\&\&!fb#g' "app/main/app.js"
 # ==='win';if(!
-grep -lr 'if(!iK)' --exclude="app.asar" .
-sed -i 's#if(!iK)#if(false\&\&!iK)#' "app/main/app.js"
+grep -lr 'if(!NY)' --exclude="app.asar" .
+sed -i 's#if(!NY)#if(false\&\&!NY)#' "app/main/app.js"
 # global['bootstrapApp']();
-grep -lr 'if(IA)' --exclude="app.asar" .
-sed -i 's#if(IA)#if(!IA)#' "app/main/app.js"
-grep -lr '};!IA' --exclude="app.asar" .
-sed -i 's#};!IA#};false\&\&!IA#' "app/main/app.js"
+grep -lr 'if(fb)' --exclude="app.asar" .
+sed -i 's#if(fb)#if(!fb)#' "app/main/app.js"
+#grep -lr '};!fb' --exclude="app.asar" .
+#sed -i 's#};!fb#};false\&\&!fb#' "app/main/app.js"
 
 notice "路由"
 grep -lr 'case"SettingsPage":n.push({name:"Settings"});return' --exclude="app.asar" .
@@ -79,6 +79,5 @@ cat "$root_dir/res/scripts/injectBridge.js" > "app/main/assets/temp.js"
 cat "app/main/assets/bili-bridge.js" >> "app/main/assets/temp.js"
 rm "app/main/assets/bili-bridge.js"
 mv "app/main/assets/temp.js" "app/main/assets/bili-bridge.js"
-
 asar p app app.asar
 rm -rf app

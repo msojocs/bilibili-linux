@@ -63,8 +63,8 @@ resultCode = resultCode.replace(
   /'((\\x[a-z0-9]{2,2})+)'/g,
   function ($0, $1, $2) {
     i++;
-    // 二分法查找异常点
-    if(i === 13868){
+    // 查找异常点
+    if(i === 14161 || i === 18405){
         // if(i === 3312){
         //     console.log("--->", $0, $1, $2)
         //     let result = eval('"' + $1 + '"')
