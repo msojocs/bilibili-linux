@@ -10,8 +10,7 @@
         "<all_urls>"
       ],
       "js": [
-        "hook.js",
-        "hook/common.js"
+        "hook.js"
       ],
       "css": [
         "hook/common.css"
@@ -22,8 +21,12 @@
   "web_accessible_resources": [
     {
       "resources": [
+        "hook/load.js",
+        "hook/hook.js",
         "hook/player.js",
         "hook/index.js",
+        "hook/biliapp.js",
+        "hook/search.js",
         "hook/common.css",
         "hook/common.js",
         "utils/md5.js",

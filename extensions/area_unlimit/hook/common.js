@@ -1,3 +1,4 @@
+console.log('[hook]: common', location.href)
 // 简易GET,POST请求封装
 const OriginXMLHttpRequest = XMLHttpRequest
 const HTTP = {
@@ -711,8 +712,13 @@ const URL_HOOK = {
 
 /*请求响应修改器1.0*/
 window.getHookXMLHttpRequest = (win) => {
-
+  if (win.XMLHttpRequest.isHooked) {
+    return win.XMLHttpRequest
+  }
   return class HttpRequest extends win.XMLHttpRequest {
+    get isHooked () {
+      return true
+    }
     constructor() {
       super(...arguments);
       this._url = "";
@@ -739,7 +745,7 @@ window.getHookXMLHttpRequest = (win) => {
       super.onreadystatechange = () => {
         console.log(...arguments)
         if (this.readyState === 4 && this.status === 200) {
-          console.log('onreadystatechange', this, super.responseType)
+          // console.log('onreadystatechange', this, super.responseType)
           switch (super.responseType) {
             case 'text':
             case '': {
@@ -772,13 +778,8 @@ window.getHookXMLHttpRequest = (win) => {
             }
               break;
             default:
-              console.warn('unsupported type:', super.responseType)
+              // console.warn('unsupported type:', super.responseType)
               break;
-          }
-          if (this._url.includes('feed/space'))
-          {
-            console.log(this.response)
-            debugger
           }
         }
         // 用于arraybuffer等
@@ -836,7 +837,7 @@ window.getHookXMLHttpRequest = (win) => {
     open() {
       const arr = [...arguments];
       const url = arr[1];
-      console.log('request for: ', ...arr)
+      // console.log('request for: ', ...arr)
       if (url) {
         const [path, params] = url.split(/\?/);
         this._url = path;

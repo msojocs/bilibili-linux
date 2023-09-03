@@ -1,6 +1,6 @@
 
 (() => {
-  console.log("===HOOK===INDEX===");
+  console.log("[hook]: index.js");
   const HTTP_INDEX = {
     get(url) {
       return new Promise((resolve, reject) => {
@@ -348,28 +348,10 @@
   // 获取App的Iframe
   const appFrame = document.getElementById('bili-app')
   const appWindow = appFrame.contentWindow
-  if(appFrame.attachEvent){
-    appFrame.attachEvent('onload', ()=>{
-      console.log("appFrame.attachEvent 'onload'")
-    })
-  }else{
-    appFrame.onload = ()=>{
-      console.log('appWindow.onload')
-      // console.log(window.XMLHttpRequest, targetWindow.XMLHttpRequest)
-      appWindow.XMLHttpRequest = window.getHookXMLHttpRequest(appWindow)
-      appWindow.hex_md5 = window.hex_md5
-      targetOnload(appWindow)
-      try {
-        const appSearchEle = appWindow.document.querySelector('.app_search')
-        const search = appSearchEle.querySelector('iframe')
-        if (!window.hex_md5) {
-          console.error('md5函数丢失！')
-        }
-        search.contentWindow.hex_md5 = window.hex_md5
-        search.contentWindow.XMLHttpRequest = window.getHookXMLHttpRequest(search.contentWindow)
-      }catch (e){
-        console.error('搜索页面md5与XMLHttpRequest初始化异常', e)
-      }
-    }
+  if (appWindow.document.readyState === 'complete' || appWindow.document.readyState === 'interactive') {
+    targetOnload(appWindow)
+  }
+  else {
+    console.error('页面似乎没有加载完成')
   }
 })();

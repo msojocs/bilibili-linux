@@ -3,7 +3,7 @@ let result = ""
 if(pacLink.length > 0)
   result = biliBridgePc.callNativeSync('config/roamingPAC', pacLink);
 if(result === 'error')localStorage.pacLink = ""
-console.log("====HOOK===PLAYER====");
+console.log("[hook]: player");
 
 const sleep = (ms) => {
   return new Promise((resolve, reject) => {
