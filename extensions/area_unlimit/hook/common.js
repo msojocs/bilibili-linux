@@ -710,158 +710,162 @@ const URL_HOOK = {
 }
 
 /*请求响应修改器1.0*/
-class HttpRequest extends window.XMLHttpRequest {
-  constructor() {
-    super(...arguments);
-    this._url = "";
-    this._params = "";
-    this.onreadystatechange = null;
-    this.onloadend = null;
-    let responseText = "";
-    let response = null
-    let status = 200
-    Object.defineProperty(this, "responseText", {
-      get() {
-        return responseText
-      },
-      set(v) {
-        responseText = v
-      }
-    })
-    Object.defineProperty(this, "response", {
-      get() {
-        return response
-      },
-      set(v) {
-        response = v
-      }
-    })
-    Object.defineProperty(this, "status", {
-      get() {
-        return status
-      },
-      set(v) {
-        status = v
-      }
-    })
-  }
+window.getHookXMLHttpRequest = (win) => {
 
-  send() {
-    const arr = [...arguments];
-    // if (arr[0]) {
+  return class HttpRequest extends win.XMLHttpRequest {
+    constructor() {
+      super(...arguments);
+      this._url = "";
+      this._params = "";
+      this._status = 200
+      this._responseText = ''
+      this._response = null
+
+      this._onreadystatechange = null;
+      this._onloadend = null;
+      super.onloadend = async () => {
+        if (this._onloadend) {
+          if (URL_HOOK[this._url]) await URL_HOOK[this._url](this)
+          this._onloadend();
+        }
+      };
+      super.onload = async () => {
+        if (this._onload) {
+          console.log('onload', this._url)
+          if (URL_HOOK[this._url]) await URL_HOOK[this._url](this)
+          this._onload();
+        }
+      };
+      super.onreadystatechange = () => {
+        console.log(...arguments)
+        if (this.readyState === 4 && this.status === 200) {
+          console.log('onreadystatechange', this, super.responseType)
+          switch (super.responseType) {
+            case 'text':
+            case '': {
+              const responseText = super.responseText;
+              if (responseText) {
+                //   console.log(responseText)
+                //   const res = null;
+                //   if (res !== null) {
+                //     this.responseText = res
+                //   } else {
+                //     this.responseText = super.responseText
+                //   }
+                // } else {
+                this.responseText = responseText
+              }
+            }
+              break;
+            case 'json': {
+              const response = super.response;
+              if (response) {
+                //   const res = null;
+                //   if (res !== null) {
+                //     this.response = res
+                //   } else {
+                //     this.response = super.response
+                //   }
+                // } else {
+                this.response = response
+              }
+            }
+              break;
+            default:
+              console.warn('unsupported type:', super.responseType)
+              break;
+          }
+          if (this._url.includes('feed/space'))
+          {
+            console.log(this.response)
+            debugger
+          }
+        }
+        // 用于arraybuffer等
+        try {
+          if (super.responseType === 'arraybuffer')
+            this.response = super.response
+        }catch (e) {
+          console.error('响应体处理异常：', e)
+        }
+        try {
+          if (this._onreadystatechange) {
+            // debugger
+            if (this.readyState === 4 && URL_HOOK[this._url]) URL_HOOK[this._url](this).then(() => this._onreadystatechange())
+            else
+              this._onreadystatechange();
+          }
+        } catch (err) {
+          console.log('未处理的error: ', err)
+        }
+      };
+    }
+    get response () {
+      if (this._response === null) return super.response
+      return this._response
+    }
+    set response (v) {
+      this._response = v
+    }
+
+    get responseText () {
+      return this._responseText
+    }
+    set responseText (v) {
+      this._responseText = v
+    }
+
+    get status () {
+      return this._status
+    }
+    set status (v) {
+      this._status = v
+    }
+
+    send() {
+      const arr = [...arguments];
+      // if (arr[0]) {
       // const params = null;
       // if (params !== null) {
       //   arr[0] = params
       // }
-    // }
-    return super.send(...arr)
-  }
+      // }
+      return super.send(...arr)
+    }
 
-  open() {
-    const arr = [...arguments];
-    const url = arr[1];
-    // console.log('request for: ', url)
-    if (url) {
-      const [path, params] = url.split(/\?/);
-      this._url = path;
-      this._params = params;
-      // if (this._params) {
+    open() {
+      const arr = [...arguments];
+      const url = arr[1];
+      console.log('request for: ', ...arr)
+      if (url) {
+        const [path, params] = url.split(/\?/);
+        this._url = path;
+        this._params = params;
+        // if (this._params) {
         // const params = null;
         // if (params !== null) {
         //   arr[1] = this._url + "?" + params
         // }
-      // }
+        // }
+      }
+      return super.open(...arr)
     }
-    let fn = this.onreadystatechange;
-    Object.defineProperty(this, "onreadystatechange", {
-      set(v) {
-        fn = v;
-      }
-    });
-    super.onreadystatechange = () => {
-      if (this.readyState === 4 && this.status === 200) {
-        // console.log('onreadystatechange', this)
-        switch (super.responseType) {
-          case 'text':
-          case '': {
-            const responseText = super.responseText;
-            if (responseText) {
-            //   console.log(responseText)
-            //   const res = null;
-            //   if (res !== null) {
-            //     this.responseText = res
-            //   } else {
-            //     this.responseText = super.responseText
-            //   }
-            // } else {
-              this.responseText = responseText
-            }
-          }
-            break;
-          case 'json': {
-            const response = super.response;
-            if (response) {
-            //   const res = null;
-            //   if (res !== null) {
-            //     this.response = res
-            //   } else {
-            //     this.response = super.response
-            //   }
-            // } else {
-              this.response = response
-            }
-          }
-            break;
-          default:
-            break;
-        }
-      }
-      // 用于arraybuffer等
-      if (super.responseType === "arraybuffer")
-        this.response = super.response
-      try {
-        if (fn) {
-          if (this.readyState === 4 && URL_HOOK[this._url]) URL_HOOK[this._url](this).then(() => fn())
-          else
-            fn();
-        }
-      } catch (err) {
-        console.log('未处理的error: ', err)
-      }
-    };
 
-    let fn1 = this.onloadend;
-    Object.defineProperty(this, "onloadend", {
-      set(v) {
-        fn1 = v;
-      }
-    });
-    super.onloadend = async () => {
-      if (fn1) {
-        if (URL_HOOK[this._url]) await URL_HOOK[this._url](this)
-        fn1();
-      }
-    };
+    set onreadystatechange(v) {
+      this._onreadystatechange = v
+    }
+    set onloadend(v) {
+      this._onloadend = v
+    }
+    set onload(v) {
+      this._onload = v
+    }
 
-    let fn2 = this.onload;
-    Object.defineProperty(this, "onload", {
-      set(v) {
-        fn2 = v;
-      }
-    });
-    super.onload = async () => {
-      if (fn2) {
-        console.log('onload', this._url)
-        if (URL_HOOK[this._url]) await URL_HOOK[this._url](this)
-        fn2();
-      }
-    };
-    return super.open(...arr)
+    // onload(){
+    //   console.log('onload', ...arguments)
+    // }
   }
 
-  // onload(){
-  //   console.log('onload', ...arguments)
-  // }
 }
 
 function _deCode(params) {
@@ -873,7 +877,7 @@ function _deCode(params) {
 }
 
 console.log('替换XMLHttpRequest')
-window.XMLHttpRequest = HttpRequest;
+window.XMLHttpRequest = getHookXMLHttpRequest(window);
 
 function __awaiter(thisArg, _arguments, P, generator) {
   function adopt(value) {

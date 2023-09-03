@@ -356,7 +356,7 @@
     appFrame.onload = ()=>{
       console.log('appWindow.onload')
       // console.log(window.XMLHttpRequest, targetWindow.XMLHttpRequest)
-      appWindow.XMLHttpRequest = window.XMLHttpRequest
+      appWindow.XMLHttpRequest = window.getHookXMLHttpRequest(appWindow)
       appWindow.hex_md5 = window.hex_md5
       targetOnload(appWindow)
       try {
@@ -366,7 +366,7 @@
           console.error('md5函数丢失！')
         }
         search.contentWindow.hex_md5 = window.hex_md5
-        search.contentWindow.XMLHttpRequest = window.XMLHttpRequest
+        search.contentWindow.XMLHttpRequest = window.getHookXMLHttpRequest(search.contentWindow)
       }catch (e){
         console.error('搜索页面md5与XMLHttpRequest初始化异常', e)
       }
