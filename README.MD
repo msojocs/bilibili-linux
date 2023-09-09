@@ -70,7 +70,7 @@ https://github.com/msojocs/bilibili-linux/releases/tag/continuous
 
 ### 额外补充
 
-如果阁下不喜欢电脑多装一个 Electron，可以自行提取发布版的 `app.asar` 并使用已安装 Electron 启动，建议的 Electron 版本是：`17.4.11`
+如果阁下不喜欢电脑多装一个 Electron，可以自行提取发布版的 `app.asar` 并使用已安装 Electron 启动，建议的 Electron 版本是：`21.3.3`
 
 ## Flag参数配置
 
