@@ -16,46 +16,6 @@ const URLS = {
   PlayerEnhance: chrome.extension.getURL(`hook/PlayerEnhance.html`),
 }
 
-// 首页搜索iframe
-window.onload = () => {
-
-  // const appIframe = document.getElementById('bili-app')
-  // if (appIframe == null) {
-  //   console.warn('应用主界面元素未找到！')
-  //   return
-  // }
-  // const appWindow = appIframe.contentWindow
-  // console.log('search:', 'appIframe.onload')
-  // let t = setInterval(() => {
-  //   console.log('try to find app_search iframe')
-  //   const searchIframe = appWindow.document.querySelector(".app_search")?.querySelector('iframe')
-  //   if (searchIframe) {
-  //     console.log('search:', 'searchIframe')
-  //     const win = searchIframe.contentWindow
-  //     console.log(win.location.href)
-  //     const searchDocument = win.document
-  //     var commonJS = searchDocument.createElement('script');
-  //     commonJS.src = URLS.commonJS;
-  //     if (searchDocument.head || searchDocument.documentElement) {
-  //       (searchDocument.head || searchDocument.documentElement).appendChild(commonJS);
-  //       commonJS.onload = function () {
-  //         commonJS.remove();
-  //       };
-  //       clearInterval(t)
-  //     }
-  //   } else {
-  //     console.warn('search iframe not found')
-  //   }
-  // }, 500)
-
-}
-
-// var loadJS = document.createElement('script');
-// loadJS.src = URLS.load;
-// (document.head || document.documentElement).appendChild(loadJS);
-// loadJS.onload = function () {
-//   loadJS.remove();
-// };
 var commonJS = document.createElement('script');
 commonJS.src = URLS.commonJS;
 (document.head || document.documentElement).appendChild(commonJS);
@@ -68,18 +28,6 @@ md5JS.src = URLS.md5;
 // md5JS.onload = function () {
 //   md5JS.remove();
 // };
-
-// var s = document.createElement('script');
-// s.src = chrome.extension.getURL(`hook/${fileName}.js`);
-// (document.head || document.documentElement).appendChild(s);
-// s.onload = function () {
-//   s.remove();
-// };
-
-// var css = document.createElement('link');
-// css.rel = "stylesheet"
-// css.href = URLS.commonCSS;
-// (document.head || document.documentElement).appendChild(css);
 
 // Event listener
 document.addEventListener('ROAMING_getURL', function (e) {

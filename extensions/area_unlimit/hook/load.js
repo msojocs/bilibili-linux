@@ -49,9 +49,9 @@
         const loadJS = document.createElement('script');
         loadJS.src = win.URLS[fileName];
         (document.head || document.documentElement).appendChild(loadJS);
-        loadJS.onload = function () {
-          loadJS.remove();
-        };
+        // loadJS.onload = function () {
+        //   loadJS.remove();
+        // };
       }
       else {
         console.warn('[hook]: 未找到脚本', fileName)
