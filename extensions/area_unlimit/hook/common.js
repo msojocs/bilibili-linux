@@ -716,7 +716,7 @@ window.getHookXMLHttpRequest = (win) => {
     return win.XMLHttpRequest
   }
   return class HttpRequest extends win.XMLHttpRequest {
-    get isHooked () {
+    static get isHooked () {
       return true
     }
     constructor() {
@@ -729,13 +729,17 @@ window.getHookXMLHttpRequest = (win) => {
 
       this._onreadystatechange = null;
       this._onloadend = null;
+      this._onload = null;
       super.onloadend = async () => {
         if (this._onloadend) {
           if (URL_HOOK[this._url]) await URL_HOOK[this._url](this)
           this._onloadend();
         }
       };
+      let test = 0
       super.onload = async () => {
+        test++
+        if (test > 10)debugger
         if (this._onload) {
           console.log('onload', this._url)
           if (URL_HOOK[this._url]) await URL_HOOK[this._url](this)

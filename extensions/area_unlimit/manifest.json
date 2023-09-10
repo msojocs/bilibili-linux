@@ -9,13 +9,31 @@
       "matches": [
         "<all_urls>"
       ],
-      "js": [
-        "hook.js"
-      ],
       "css": [
         "hook/common.css"
       ],
       "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "hook.js",
+        "hook/load.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "hook/common.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true
     }
   ],
   "web_accessible_resources": [

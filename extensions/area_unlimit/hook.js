@@ -18,6 +18,7 @@ const URLS = {
 
 // 首页搜索iframe
 window.onload = () => {
+
   // const appIframe = document.getElementById('bili-app')
   // if (appIframe == null) {
   //   console.warn('应用主界面元素未找到！')
@@ -49,24 +50,24 @@ window.onload = () => {
 
 }
 
-var loadJS = document.createElement('script');
-loadJS.src = URLS.load;
-(document.head || document.documentElement).appendChild(loadJS);
-loadJS.onload = function () {
-  loadJS.remove();
-};
+// var loadJS = document.createElement('script');
+// loadJS.src = URLS.load;
+// (document.head || document.documentElement).appendChild(loadJS);
+// loadJS.onload = function () {
+//   loadJS.remove();
+// };
 var commonJS = document.createElement('script');
 commonJS.src = URLS.commonJS;
 (document.head || document.documentElement).appendChild(commonJS);
-commonJS.onload = function () {
-  commonJS.remove();
-};
+// commonJS.onload = function () {
+//   commonJS.remove();
+// };
 var md5JS = document.createElement('script');
 md5JS.src = URLS.md5;
 (document.head || document.documentElement).appendChild(md5JS);
-md5JS.onload = function () {
-  md5JS.remove();
-};
+// md5JS.onload = function () {
+//   md5JS.remove();
+// };
 
 // var s = document.createElement('script');
 // s.src = chrome.extension.getURL(`hook/${fileName}.js`);

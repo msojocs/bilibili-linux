@@ -57,34 +57,6 @@
         console.warn('[hook]: 未找到脚本', fileName)
       }
     }
-    {
-      const list = document.querySelectorAll('iframe')
-      console.log(window)
-      console.log('[hook]:', `${fileName} 下的iframe数量：${list.length}`, document)
-      for (const item of list) {
-        console.log('[hook]: 给元素添加load脚本', item.id, `link->${item.src}<-`, item)
-        const w = item.contentWindow
-        const insertLoad = () => {
-          console.log('插入load脚本')
-          const loadJS = w.document.createElement('script');
-          loadJS.src = win.URLS.load;
-          (w.document.head || w.document.documentElement).appendChild(loadJS);
-          loadJS.onload = () => {
-            console.log(w.document.querySelectorAll('iframe'))
-          }
-          item.removeEventListener('load', insertLoad)
-        }
-        if (w.document.readyState === 'complete' || w.document.readyState === 'interactive') {
-          console.log('iframe已经加载完成')
-          insertLoad()
-        }
-        else {
-          console.log('iframe未加载完', w.document.readyState)
-          item.addEventListener('load', insertLoad)
-        }
-      }
-    }
-
   }
   let interval = setInterval(() => {
     if (document.readyState === 'complete' || document.readyState === 'interactive') {
