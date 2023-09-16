@@ -88,6 +88,16 @@ https://www.electronjs.org/docs/latest/api/command-line-switches
    --key=value
    ```
 
+## 开发者工具
+
+现已支持自行打开开发者工具，方法如下：
+
+1. 关闭哔哩哔哩程序
+2. 执行此命令：`touch ~/.config/bilibili/.devtools`，即在 `~/.config/bilibili` 目录下创建 `.devtools` 文件
+3. 打开哔哩哔哩程序，可以看到自动打开的控制台
+
+关闭控制台：删除 `.devtools` 文件即可
+
 ## 预览
 
 ![推荐](res/screenshots/1.png)

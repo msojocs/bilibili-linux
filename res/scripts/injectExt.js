@@ -36,21 +36,32 @@ const {app, BrowserWindow} = require('electron');
 const originalBrowserWindow = BrowserWindow;
 
 const hookBrowserWindow = (OriginalBrowserWindow) => {
-    function HookedBrowserWindow(options) {
-        // 修改或增加构造函数的选项
-        // if (options && options.webPreferences)
-        //   options.webPreferences.devTools = true
+  function HookedBrowserWindow(options) {
+    // 修改或增加构造函数的选项
+    try {
+      const userDataPath = app.getPath("userData")
+      const devtoolsFlagPath = `${userDataPath}/.devtools`
+      if (require('fs').existsSync(devtoolsFlagPath)) {
+        console.log('启用开发者工具！！！！')
+        if (options && options.webPreferences)
+          options.webPreferences.devTools = true
+      }
+      else {
+        console.log('开发者控制文件不存在：', devtoolsFlagPath)
+      }
+    }catch(e) {
 
-        // 使用修改后的选项调用原始构造函数
-        return new OriginalBrowserWindow(options);
     }
+    // 使用修改后的选项调用原始构造函数
+    return new OriginalBrowserWindow(options);
+  }
 
-    // 复制原始构造函数的原型链并进行替换
-    HookedBrowserWindow.prototype = Object.create(OriginalBrowserWindow.prototype);
-    HookedBrowserWindow.prototype.constructor = HookedBrowserWindow;
-    Object.setPrototypeOf(HookedBrowserWindow, OriginalBrowserWindow);
+  // 复制原始构造函数的原型链并进行替换
+  HookedBrowserWindow.prototype = Object.create(OriginalBrowserWindow.prototype);
+  HookedBrowserWindow.prototype.constructor = HookedBrowserWindow;
+  Object.setPrototypeOf(HookedBrowserWindow, OriginalBrowserWindow);
 
-    return HookedBrowserWindow;
+  return HookedBrowserWindow;
 };
 
 // 使用替换的构造函数
