@@ -1,6 +1,6 @@
 
 (() => {
-  console.log("[hook]: index.js");
+  console.log("[hook]: biliapp.js");
   const HTTP_INDEX = {
     get(url) {
       return new Promise((resolve, reject) => {

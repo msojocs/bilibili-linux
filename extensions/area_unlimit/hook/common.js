@@ -709,6 +709,53 @@ const URL_HOOK = {
     }
   }
 }
+const URL_HOOK_FETCH = {
+  /**
+   * 搜索
+   * @param {{urlInfo: [string, string], config: RequestInit, res: Response }} data 原请求结果
+   * @returns {Promise<Response>}
+   */
+  "https://api.bilibili.com/x/web-interface/search/type": async (data) => {
+    // console.log('===搜索 HOOK: ', req)
+    const params = UTILS._params2obj(data.urlInfo[1])
+    if (params.search_type === 'media_bangumi') {
+      // 搜索番剧
+      const searchResult = await data.res.json()
+      console.log('预期结果：', searchResult)
+      searchResult.data.result = searchResult.data.result || []
+      const api = new BiliBiliApi()
+      const serverList = JSON.parse(localStorage.serverList || "{}")
+      for (let area in serverList) {
+        const server = serverList[area] || ""
+        if (server.length === 0) continue
+
+        api.setServer(server)
+        try {
+          // const buvid3 = await cookieStore.get('buvid3') || {}
+          function sleep(d) {
+            for (var t = Date.now(); Date.now() - t <= d;) {
+            }
+          }
+
+          sleep(500); //当前方法暂停0.5秒
+          // const result = await api.searchBangumi2(req._params, area, buvid3.value || '')
+          const result = await api.searchBangumi(params, area)
+          // console.log('searchResult:', result)
+          result.forEach(s => {
+            s.title = `[${area}]${s.title}`
+          })
+          searchResult.data.result.push(...result)
+          data.res.data = searchResult
+        } catch (err) {
+
+          console.error('搜索异常:', err)
+        }
+      }
+    }
+    return data.res
+  },
+
+}
 
 /*请求响应修改器1.0*/
 window.getHookXMLHttpRequest = (win) => {
@@ -873,6 +920,31 @@ window.getHookXMLHttpRequest = (win) => {
 
 }
 
+const originalFetch = window.fetch
+if (fetch.toString().includes('[native code]')) {
+  window.fetch = async (url, config) => {
+    console.log('fetch:', url, config)
+    const res = await originalFetch(url, config)
+    // const u = new URL(url.startsWith('//') ? `https:${url}` : url)
+    // console.log('u.pathname:', u.pathname)
+    console.log('res:', res)
+    const [path, params] = url.split(/\?/);
+    if (URL_HOOK_FETCH[path]) {
+      // debugger
+      try {
+        return await URL_HOOK_FETCH[path]({
+          urlInfo: [path, params],
+          config,
+          res
+        })
+      }catch (e) {
+        console.error(e)
+      }
+    }
+    return res
+  }
+}
+
 function _deCode(params) {
   return params.split("&").map((a) => {
     const [key, value] = a.split("=");
@@ -882,7 +954,9 @@ function _deCode(params) {
 }
 
 console.log('替换XMLHttpRequest')
-window.XMLHttpRequest = getHookXMLHttpRequest(window);
+if (!location.href.includes('live.bilibili')) {
+  window.XMLHttpRequest = getHookXMLHttpRequest(window);
+}
 
 function __awaiter(thisArg, _arguments, P, generator) {
   function adopt(value) {

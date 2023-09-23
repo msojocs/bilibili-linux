@@ -5,7 +5,6 @@ console.log("[hook]: hook.js", fileName)
 const ext = chrome.extension
 const URLS = {
   md5: chrome.extension.getURL(`utils/md5.js`),
-  load: chrome.extension.getURL(`hook/load.js`),
   index: chrome.extension.getURL(`hook/index.js`),
   search: chrome.extension.getURL(`hook/search.js`),
   player: chrome.extension.getURL(`hook/player.js`),

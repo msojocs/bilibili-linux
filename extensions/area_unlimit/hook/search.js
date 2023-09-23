@@ -1,5 +1,5 @@
 try {
-  console.log('[hook]: search.js', window.getHookXMLHttpRequest)
+  console.log('[hook]: search.js', window.XMLHttpRequest)
   window.hex_md5 = parent?.hex_md5
   if (parent?.getHookXMLHttpRequest)
     window.getHookXMLHttpRequest = parent?.getHookXMLHttpRequest

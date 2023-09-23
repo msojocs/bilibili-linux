@@ -4,6 +4,14 @@
   const fileName = url.pathname.substring(1).split('.')[0]
   console.log("[hook]: load.js", fileName)
 
+  if (!location.href.includes('live.bilibili')) {
+    if (parent?.getHookXMLHttpRequest)
+      window.getHookXMLHttpRequest = parent?.getHookXMLHttpRequest
+    if (window.getHookXMLHttpRequest && undefined === window.XMLHttpRequest.isHooked) {
+      console.log('[hook]: load replace XMLHttpRequest')
+      window.XMLHttpRequest = window.getHookXMLHttpRequest(window)
+    }
+  }
   const getData = (name) => {
     return new Promise((resolve, reject) => {
       document.addEventListener('ROAMING_sendURL', async function (e) {

@@ -29,7 +29,6 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "hook/load.js",
         "hook/hook.js",
         "hook/player.js",
         "hook/index.js",
