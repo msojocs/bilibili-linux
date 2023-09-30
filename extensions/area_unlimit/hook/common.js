@@ -754,6 +754,24 @@ const URL_HOOK_FETCH = {
     }
     return data.res
   },
+  /**
+   * 用户信息
+   * @param {{urlInfo: [string, string], config: RequestInit, res: Response }} data 原请求结果
+   * @returns {Promise<Response>}
+   */
+  "//api.bilibili.com/x/space/acc/info": async (data) => {
+    const resp = await data.res.json()
+    try {
+      if (resp.code !== 0) {
+        const params = UTILS._params2obj(data.urlInfo[1])
+        const userInfo = space_account_info_map[params.mid]
+        if (userInfo) data.res.data = userInfo
+      }
+    }catch (e) {
+      console.error('用户信息替换失败：', e)
+    }
+    return data.res
+  },
 
 }
 
