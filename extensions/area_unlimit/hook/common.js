@@ -33,6 +33,101 @@ const HTTP = {
   }
 }
 
+class DB {
+
+  constructor(name = 'Bvid2DynamicId', version = 2) {
+    this.name = name
+    this.version = version
+    /**
+     *
+     * @type {IDBTransaction}
+     */
+    this.tran = null
+    /**
+     *
+     * @type {IDBDatabase}
+     */
+    this.db = null
+  }
+
+  /**
+   * @returns {Promise<unknown>}
+   */
+  open() {
+    // console.log('open')
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(this.name, this.version);
+      request.onerror = (event) => {
+        // console.error("为什么不允许我的 web 应用使用 IndexedDB！");
+        reject(event)
+      };
+      request.onsuccess = (event) => {
+        // console.log('open success')
+        this.db = event.target.result;
+        resolve(this)
+      };
+      request.onupgradeneeded = (e) => {
+        // console.log('open', 'onupgradeneeded')
+        const db = e.target.result;
+        db.createObjectStore('b2d', { keyPath: 'bvid' })
+      }
+    })
+  }
+
+  /**
+   *
+   * @param {{bvid: string, dynamic_id: string}} b2d
+   */
+  putBvid2DynamicId(b2d) {
+    // console.log('addBvid2DynamicId')
+    return new Promise((resolve, reject) => {
+      if (this.tran == null) {
+        this.tran = this.db.transaction('b2d', 'readwrite')
+      }
+      const store = this.tran.objectStore('b2d')
+
+      const req = store.put(b2d)
+      req.onsuccess = (e) => {
+        // console.log('addBvid2DynamicId', 'success')
+        resolve(e)
+      }
+      req.onerror = (e) => {
+        // console.log('addBvid2DynamicId', 'error', e)
+        reject(e)
+      }
+    })
+  }
+
+  /**
+   *
+   * @param {string} bvid
+   * @returns {Promise<{
+   *  bvid: string,
+   *  dynamic_id: string
+   * }>}
+   */
+  getBvid2DynamicId(bvid) {
+    return new Promise((resolve, reject) => {
+      if (this.db == null) {
+        throw new Error('请先打开数据库！')
+      }
+      if (this.tran == null) {
+        this.tran = this.db.transaction('b2d', 'readwrite')
+      }
+      const store = this.tran.objectStore('b2d')
+
+      const request = store.get(bvid)
+      request.onerror = (e) => {
+        reject(e)
+      }
+      request.onsuccess = (e) => {
+        resolve(request.result)
+      }
+    })
+  }
+
+}
+
 /**
  * 动态添加JavaScript
  * @param {*} url 资源地址
@@ -200,6 +295,40 @@ class BiliBiliApi {
       } catch (e) {
         return Promise.resolve(e)
       }
+    })
+  }
+
+  /**
+   * 获取动态详情
+   *
+   * @param {string} dynamicId
+   */
+  getDynamicDetail(dynamicId) {
+    const url = `https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/get_dynamic_detail?dynamic_id=${dynamicId}`
+    return HTTP.get(url).then(res => {
+      const resp = JSON.parse(res.responseText)
+      // console.log('dynamicDetail:', resp)
+      if (resp.code === 0) {
+        return Promise.resolve(resp)
+      }
+      return Promise.reject(resp)
+    })
+  }
+
+  /**
+   * 获取用户卡片详情
+   *
+   * @param {string} userId
+   */
+  getUserCard(userId) {
+    const url = `https://api.bilibili.com/x/web-interface/card?mid=${userId}`
+    return HTTP.get(url).then(res => {
+      const resp = JSON.parse(res.responseText)
+      // console.log('dynamicDetail:', resp)
+      if (resp.code === 0) {
+        return Promise.resolve(resp)
+      }
+      return Promise.reject(resp)
     })
   }
 }
@@ -588,6 +717,60 @@ const URL_HOOK = {
   },
 
   /**
+   * 动态信息1
+   * @param {XMLHttpRequest} req 原请求结果
+   * @returns {Promise<void>}
+   */
+  "//api.bilibili.com/x/polymer/web-dynamic/v1/feed/all": async (req) => {
+    const resp = JSON.parse(req.responseText)
+    if (resp.code === 0) {
+      try {
+        const db = new DB()
+        await db.open();
+        const { items } = resp.data
+        for (const item of items) {
+          if (item.modules.module_author.mid === 11783021) {
+            await db.putBvid2DynamicId({
+              bvid: item.modules.module_dynamic.major.archive.bvid,
+              dynamic_id: item.id_str
+            })
+          }
+        }
+      }catch (e) {
+        console.error('动态信息1:', e)
+      }
+
+    }
+  },
+
+  /**
+   * 动态信息2
+   * @param {XMLHttpRequest} req 原请求结果
+   * @returns {Promise<void>}
+   */
+  "//api.bilibili.com/x/polymer/web-dynamic/desktop/v1/feed/all": async (req) => {
+    const resp = JSON.parse(req.responseText)
+    if (resp.code === 0) {
+      try {
+        const db = new DB()
+        await db.open();
+        const { items } = resp.data
+        for (const item of items) {
+          if (item.modules[0].module_author.user.mid === 11783021) {
+            await db.putBvid2DynamicId({
+              bvid: item.modules[1].module_dynamic.dyn_archive.bvid,
+              dynamic_id: item.id_str
+            })
+          }
+        }
+      }catch (e) {
+        console.error('动态信息2:', e)
+      }
+
+    }
+  },
+
+  /**
    * 搜索
    * @param {XMLHttpRequest} req 原请求结果
    * @returns {Promise<void>}
@@ -772,6 +955,40 @@ const URL_HOOK_FETCH = {
     }
     return data.res
   },
+
+  /**
+   * 视频信息
+   * @param {{urlInfo: [string, string], config: RequestInit, res: Response }} data 原请求结果
+   * @returns {Promise<Response>}
+   */
+  "https://api.bilibili.com/x/web-interface/view/detail": async (data) => {
+    const resp = await data.res.clone().json()
+    try {
+      if (resp.code !== 0) {
+        const params = UTILS._params2obj(data.urlInfo[1])
+        // 获取dynamic_id
+        const db = new DB()
+        await db.open()
+        const b2d = await db.getBvid2DynamicId(params.bvid)
+        // 获取动态详情
+        const bili = new BiliBiliApi();
+        const detail = await bili.getDynamicDetail(b2d.dynamic_id)
+        // 构造数据
+        const res = await UTILS.genVideoDetailByDynamicDetail(detail.data)
+        console.log('res:', res)
+        data.res.data = {
+          code: 0,
+          message: '',
+          msg: '',
+          data: res
+        }
+      }
+    }catch (e) {
+      console.error('用户信息替换失败：', e)
+    }
+    return data.res
+  },
+
 
 }
 
@@ -1493,6 +1710,38 @@ const UTILS = {
       result[key] = value
     }
     return result
+  },
+  async genVideoDetailByDynamicDetail(dynamicDetail) {
+    const res = {
+      View: {},
+      /**
+       * 作者的信息
+       */
+      Card: {},
+      Tags: [],
+      Reply: {},
+      Related: [],
+      Spec: null,
+      hot_share: {
+        show: false,
+        list: [],
+      },
+      /**
+       * 充电数据
+       */
+      elec: {},
+      recommend: null,
+      view_addit: {},
+      guide: null,
+      query_tags: null,
+      is_old_user: false,
+    }
+    const card = JSON.parse(dynamicDetail.card.card)
+    // console.log('card:', card)
+    res.View = card
+    const resp = await new BiliBiliApi().getUserCard(card.owner.mid)
+    res.Card = resp.data
+    return res
   }
 }
 
