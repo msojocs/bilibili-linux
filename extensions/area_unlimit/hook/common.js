@@ -819,7 +819,7 @@ const URL_HOOK = {
    * @param {XMLHttpRequest} req 原请求结果
    * @returns {Promise<void>}
    */
-  "//api.bilibili.com/x/player/v2": async (req) => {
+  "//api.bilibili.com/x/player/wbi/v2": async (req) => {
     if (!req._params) return;
     const resp = JSON.parse(req.responseText || "{}")
     const serverList = JSON.parse(localStorage.serverList || "{}")
@@ -865,8 +865,8 @@ const URL_HOOK = {
         zhHans.lan_doc = '中文（简体）'
         zhHans.id = 1145141919810
         zhHans.id_str = `${zhHans.id}`
-        zhHans.subtitle_url = `${zhHans.subtitle_url}.translate`
-        URL_HOOK[zhHans.subtitle_url] = URL_HOOK.zhHansSubtitle
+        zhHans.subtitle_url = `${zhHans.subtitle_url}&translate=zh-Hans`
+        URL_HOOK[zhHans.subtitle_url.split('?')[0]] = URL_HOOK.zhHansSubtitle
         resp.data.subtitle.subtitles.push(zhHans)
       }
     }
@@ -880,15 +880,16 @@ const URL_HOOK = {
    * @returns {Promise<void>}
    */
   zhHansSubtitle: async (req) => {
-    // console.log('繁体转简体')
-    const zhHantData = await HTTP.get(req._url.replace('.translate', ''))
-    // console.log('繁体字幕数据: ', zhHantData.responseText)
-    const tc2sc = window?.ChineseConversionAPI?.tc2sc
-    if (!!tc2sc) {
-      req.responseText = tc2sc(zhHantData.responseText)
-      req.response = JSON.parse(req.responseText)
-      req.status = 200
-      // console.log('中文字幕数据: ', req.responseText)
+    // console.log('繁体转简体', req)
+    if (req._params.includes('zh-Hans')) {
+      // console.log('繁体字幕数据: ', req.responseText)
+      const tc2sc = window?.ChineseConversionAPI?.tc2sc
+      if (!!tc2sc) {
+        req.responseText = tc2sc(req.responseText)
+        req.response = JSON.parse(req.responseText)
+        req.status = 200
+        // console.log('中文字幕数据: ', req.responseText)
+      }
     }
   }
 }
@@ -1018,10 +1019,7 @@ window.getHookXMLHttpRequest = (win) => {
           this._onloadend();
         }
       };
-      let test = 0
       super.onload = async () => {
-        test++
-        if (test > 10)debugger
         if (this._onload) {
           console.log('onload', this._url)
           if (URL_HOOK[this._url]) await URL_HOOK[this._url](this)
