@@ -620,6 +620,7 @@ const URL_HOOK = {
       resp.result.episodes.forEach(ep => {
         ep.rights && (ep.rights.area_limit = 0, ep.rights.allow_dm = 0, ep.rights.allow_download = 1)
       })
+      resp.result.rights.allow_download = 1
       req.responseText = JSON.stringify(resp)
     }
   },
@@ -944,12 +945,12 @@ const URL_HOOK_FETCH = {
    * @returns {Promise<Response>}
    */
   "//api.bilibili.com/x/space/acc/info": async (data) => {
-    const resp = await data.res.json()
+    const resp = await data.res.clone().json()
     try {
       if (resp.code !== 0) {
         const params = UTILS._params2obj(data.urlInfo[1])
         const userInfo = space_account_info_map[params.mid]
-        if (userInfo) data.res.data = userInfo
+        if (userInfo) data.res = Response.json(userInfo)
       }
     }catch (e) {
       console.error('用户信息替换失败：', e)
@@ -983,9 +984,13 @@ const URL_HOOK_FETCH = {
           msg: '',
           data: res
         }
+        console.log('修復結果：', JSON.stringify(data.res))
+        return data.res
       }
+      data.res = Response.json(resp)
+      // debugger
     }catch (e) {
-      console.error('用户信息替换失败：', e)
+      console.error('視頻信息修復失败：', e)
     }
     return data.res
   },
@@ -1735,6 +1740,7 @@ const UTILS = {
       is_old_user: false,
     }
     const card = JSON.parse(dynamicDetail.card.card)
+    card.rights.download = 1
     // console.log('card:', card)
     res.View = card
     const resp = await new BiliBiliApi().getUserCard(card.owner.mid)
