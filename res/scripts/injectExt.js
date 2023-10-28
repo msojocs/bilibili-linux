@@ -87,6 +87,12 @@ BrowserWindow.prototype.loadURL = function(){
   // 设置UA，有些番剧播放链接Windows会403
   this.webContents.setUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) bilibili_pc/1.9.1 Chrome/98.0.4758.141 Electron/17.4.11 Safari/537.36')
   console.log('=====loadURL', arguments)
+
+  this.webContents.on("before-input-event", (event, input) => {
+    if (input.key === "F12" && input.type === "keyUp") {
+      this.webContents.toggleDevTools();
+    }
+  });
   if(arguments[0].includes('player.html') || arguments[0].includes('index.html')){
     this.webContents.openDevTools()
     const path = require('path');

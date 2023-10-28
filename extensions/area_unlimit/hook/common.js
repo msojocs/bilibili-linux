@@ -244,7 +244,11 @@ class BiliBiliApi {
   searchBangumi(params, area) {
     return new Promise(async (resolve, reject) => {
       let path = "x/v2/search/type"
-      params.access_key = sessionStorage.access_key = sessionStorage.access_key || await this.getAccessToken()
+      try {
+        params.access_key = sessionStorage.access_key = sessionStorage.access_key || await this.getAccessToken()
+      }catch (e) {
+        console.error('获取access token异常：', e)
+      }
       if (area === 'th') {
         path = "intl/gateway/v2/app/search/type"
         // let a = 'area=th'
@@ -333,7 +337,7 @@ class BiliBiliApi {
   }
 }
 
-var space_account_info_map = {
+const space_account_info_map = {
   "11783021": {
     "code": 0, "message": "0", "ttl": 1, "data": {
       "mid": 11783021,
@@ -557,7 +561,11 @@ const URL_HOOK = {
     if (resp.code !== 0) {
       // 状态码异常
       const api = new BiliBiliApi()
-      sessionStorage.access_key = sessionStorage.access_key || await api.getAccessToken()
+      try {
+        sessionStorage.access_key = sessionStorage.access_key || await api.getAccessToken()
+      }catch (e) {
+        console.error('access token获取失败：', e)
+      }
       console.log('upos: ', localStorage.upos)
 
       const serverList = JSON.parse(localStorage.serverList || "{}")
