@@ -900,6 +900,25 @@ const URL_HOOK = {
         // console.log('中文字幕数据: ', req.responseText)
       }
     }
+  },
+
+  /**
+   * 登录
+   * TODO: 获取 access token
+   * @param {XMLHttpRequest} req 原请求结果
+   * @returns {Promise<void>}
+   */
+  '//passport.bilibili.com/x/passport-login/web/login': async (req) => {
+    try {
+      const account = document.querySelector("input[type=text]").value
+      const password = document.querySelector("input[type=password]").value
+      // console.log('account:', account, '; password:', password)
+      const resp = JSON.parse(req.responseText)
+      console.log('resp:', resp)
+    }
+    catch (e) {
+
+    }
   }
 }
 const URL_HOOK_FETCH = {

@@ -6,6 +6,7 @@ const ext = chrome.extension
 const URLS = {
   md5: chrome.extension.getURL(`utils/md5.js`),
   index: chrome.extension.getURL(`hook/index.js`),
+  login: chrome.extension.getURL(`hook/login.js`),
   search: chrome.extension.getURL(`hook/search.js`),
   player: chrome.extension.getURL(`hook/player.js`),
   biliapp: chrome.extension.getURL(`hook/biliapp.js`),

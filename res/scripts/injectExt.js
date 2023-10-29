@@ -25,13 +25,14 @@ const HttpGet = (url, headers = {})=>{
       // console.error(error);
       reject(error)
     });
-  
+
     req.end();
   })
 }
 
 // HOOK
 const {app, BrowserWindow} = require('electron');
+const path = require("path");
 
 const originalBrowserWindow = BrowserWindow;
 
@@ -39,16 +40,9 @@ const hookBrowserWindow = (OriginalBrowserWindow) => {
   function HookedBrowserWindow(options) {
     // 修改或增加构造函数的选项
     try {
-      const userDataPath = app.getPath("userData")
-      const devtoolsFlagPath = `${userDataPath}/.devtools`
-      if (require('fs').existsSync(devtoolsFlagPath)) {
-        console.log('启用开发者工具！！！！')
-        if (options && options.webPreferences)
-          options.webPreferences.devTools = true
-      }
-      else {
-        console.log('开发者控制文件不存在：', devtoolsFlagPath)
-      }
+      if (options && options.webPreferences)
+        options.webPreferences.devTools = true
+      console.log('======HookedBrowserWindow:', options)
     }catch(e) {
 
     }
@@ -87,15 +81,14 @@ BrowserWindow.prototype.loadURL = function(){
   // 设置UA，有些番剧播放链接Windows会403
   this.webContents.setUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) bilibili_pc/1.9.1 Chrome/98.0.4758.141 Electron/17.4.11 Safari/537.36')
   console.log('=====loadURL', arguments)
-
+  // DevTools切换
   this.webContents.on("before-input-event", (event, input) => {
     if (input.key === "F12" && input.type === "keyUp") {
       this.webContents.toggleDevTools();
     }
   });
   if(arguments[0].includes('player.html') || arguments[0].includes('index.html')){
-    this.webContents.openDevTools()
-    const path = require('path');
+    // this.webContents.openDevTools()
     const extPath = path.join(path.dirname(app.getAppPath()), "extensions");
     console.log('----extPath----', extPath)
     this.webContents.session.loadExtension(extPath + "/area_unlimit").then(({ id }) => {
@@ -117,7 +110,7 @@ BrowserWindow.prototype.loadURL = function(){
               console.log("resolveProxy akamai.net --> ", res)
               event.returnValue = res.length === 0?'error':'ok'
               if(res.length === 0)
-              ses.setProxy({mode:'system'})
+                ses.setProxy({mode:'system'})
             })
 
           })
@@ -130,7 +123,37 @@ BrowserWindow.prototype.loadURL = function(){
   }
   originloadURL.apply(this, arguments)
 };
+
+// 从文件加载页面
+const _loadFile = BrowserWindow.prototype.loadFile;
+BrowserWindow.prototype.loadFile = function(...args){
+  console.log('=====loadFile:', ...args)
+  // DevTools切换
+  this.webContents.on("before-input-event", (event, input) => {
+    if (input.key === "F12" && input.type === "keyUp") {
+      this.webContents.toggleDevTools();
+    }
+  });
+  const extPath = path.join(path.dirname(app.getAppPath()), "extensions");
+  console.log('extension path:', extPath)
+  this.webContents.session.loadExtension(extPath + "/area_unlimit", {
+    allowFileAccess: true,
+  }).then(({ id }) => {
+    // ...
+    console.log('-----Load Extension:', id)
+  }).catch((e) => {
+
+  })
+  _loadFile.apply(this, args)
+  // this.loadURL('http://www.jysafe.cn')
+}
 app.on('ready', ()=>{
+  // const path = require('path');
+  // const extPath = path.join(path.dirname(app.getAppPath()), "extensions");
+  // session.defaultSession.loadExtension(extPath + "/area_unlimit").then(({ id }) => {
+  //   // ...
+  //   console.log('-----Load Extension:', id)
+  // })
   // 自定义协议的具体实现
   protocol.registerStringProtocol('roaming', (req, cb) => {
     // console.log('registerHttpProtocol', req)
@@ -145,11 +168,11 @@ app.on('ready', ()=>{
       })
     })
   })
-  
+
   protocol.registerHttpProtocol('roaming-thpic', (req, cb) => {
     cb({
       url: req.url.replace('roaming-thpic', 'https')
     })
   })
-  
+
 });

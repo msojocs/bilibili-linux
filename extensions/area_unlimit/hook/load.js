@@ -1,7 +1,8 @@
 (() => {
 
   const url = new URL(location.href)
-  const fileName = url.pathname.substring(1).split('.')[0]
+  let fileName = url.pathname.substring(1).split('.')[0]
+  fileName = fileName.substring(fileName.lastIndexOf('/') + 1)
   console.log("[hook]: load.js", fileName)
 
   if (!location.href.includes('live.bilibili')) {
