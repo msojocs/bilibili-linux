@@ -10,7 +10,7 @@ try {
     for (let flag of flags) {
       if (flag.startsWith('--'))
         flag = flag.substring(2)
-      
+
       const kv = flag.split('=')
       if (kv.length > 1) {
         console.log('append flag:', `${kv[0]}=${kv[1]}`)
@@ -45,4 +45,4 @@ Object.defineProperty(app, 'isPackaged', {
 
 });
 global['isFiredByEntry'] = true;
-require('./main/app.js')();
+require('./main/app.js');

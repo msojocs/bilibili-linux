@@ -33,6 +33,7 @@ const HttpGet = (url, headers = {})=>{
 // HOOK
 const {app, BrowserWindow} = require('electron');
 const path = require("path");
+const { Module } = require("module")
 
 const originalBrowserWindow = BrowserWindow;
 
@@ -60,19 +61,26 @@ const hookBrowserWindow = (OriginalBrowserWindow) => {
 
 // 使用替换的构造函数
 const HookedBrowserWindow = hookBrowserWindow(originalBrowserWindow);
-// 保存原 require 方法，并重新定义 require 方法
-const modelRequire = require;
-require = (...args) => {
-  // 拦截参数
-  // console.log('params is: ', args);
-  const result = modelRequire(...args)
-  if (args[0] === 'electron') {
+
+const ModuleLoadHook = {
+  electron: (module) => {
     return {
-      ...result,
+      ...module,
       BrowserWindow: HookedBrowserWindow
     }
+  },
+}
+const original_load = Module._load;
+// console.log('Module:', Module)
+Module._load = (...args) => {
+  const loaded_module = original_load(...args);
+  // console.log('load', args[0])
+  if (ModuleLoadHook[args[0]]) {
+    return ModuleLoadHook[args[0]](loaded_module)
   }
-  return result;
+  else {
+    return loaded_module;
+  }
 }
 
 const originloadURL = BrowserWindow.prototype.loadURL;
