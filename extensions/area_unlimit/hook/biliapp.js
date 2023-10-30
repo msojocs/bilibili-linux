@@ -156,10 +156,11 @@
       data() {
         return {
           message: "Hello Element Plus",
-          uposList: [{
-            value: 'none',
-            label: '不替换'
-          },
+          uposList: [
+            {
+              value: 'none',
+              label: '不替换'
+            },
             {
               value: 'ks3',
               label: 'ks3(金山)'
@@ -215,7 +216,13 @@
               validator: this.checkDomain,
               trigger: 'blur',
             }, ]
-          }
+          },
+          hdLogin: {
+            qrCode: '',
+            tokenInfo: {
+              access_token: '',
+            },
+          },
         };
       },
       created() {
@@ -223,6 +230,30 @@
         const serverList = JSON.parse(localStorage.serverList || "{}")
         for (let area in serverList) {
           this.serverList[area] = serverList[area]
+        }
+        this.hdLogin.tokenInfo = JSON.parse(localStorage.getItem('bili_accessToken_hd') || '{}')
+
+      },
+      computed: {
+        tokenInfo: function () {
+          const tokenInfo = this.hdLogin.tokenInfo
+          const ret = {
+            msg: '',
+            expired: true,
+          }
+          if (!tokenInfo) ret.msg = '本地没有token数据！'
+          if (tokenInfo && tokenInfo.expires_at) {
+            const expiredAt = new Date(tokenInfo.expires_at * 1000)
+            if (expiredAt.getTime() < Date.now()) {
+              ret.msg = `token已过期`
+              ret.expired = true
+            }
+            else {
+              ret.expired = false
+              ret.msg = `过期时间：${expiredAt.toLocaleString()}`
+            }
+          }
+          return ret
         }
       },
       methods: {
@@ -297,6 +328,31 @@
           // console.log('resetForm: ', formEl)
           if (!formEl) return
           formEl.resetFields()
+        },
+        startHDLogin: async function() {
+          const login = new BiliBiliApi()
+          const qr = await login.TV_getLoginQrCode()
+          this.hdLogin.qrCode = qr.data.url
+          let t = setInterval(async () => {
+            const ret = await login.TV_pollCheckLogin(qr.data.auth_code)
+            console.log('扫码结果：', ret)
+            if (ret.code === 0) {
+              this.hdLogin.qrCode = ''
+              ret.data.token_info.expires_at = parseInt(Date.now()/1000) + ret.data.token_info.expires_in
+              localStorage.setItem('bili_accessToken_hd', JSON.stringify(ret.data.token_info))
+              this.hdLogin.tokenInfo = ret.data.token_info
+              clearInterval(t)
+            }
+          }, 2000)
+        },
+        deleteHDLogin: function() {
+          localStorage.removeItem('bili_accessToken_hd')
+          this.hdLogin.tokenInfo = {}
+        },
+        biliTest: async function () {
+          const login = new BiliBiliApi()
+          const ret = await login.TV_pollCheckLogin(this.hdLogin.authCode)
+          console.log('test ret:', ret)
         }
       }
     };

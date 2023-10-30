@@ -19,11 +19,23 @@ const HTTP = {
       Http.onerror = e => reject
     })
   },
-  post(url, body = null) {
+  /**
+   *
+   * @param {string} url 访问的URL
+   * @param {string | null} body 请求体
+   * @param headers
+   * @return {Promise<XMLHttpRequest>}
+   */
+  post(url, body = null, headers = {}) {
     return new Promise((resolve, reject) => {
       const Http = new OriginXMLHttpRequest()
       Http.timeout = 5000;
       Http.open('POST', url)
+      if (headers) {
+        for (let key in headers) {
+          Http.setRequestHeader(key, headers[key])
+        }
+      }
       Http.send(body)
       Http.onloadend = e => {
         resolve(Http)
@@ -158,7 +170,27 @@ function getScript(url, callback) {
 // 哔哩哔哩API
 class BiliBiliApi {
   constructor(server = 'api.bilibili.com') {
+    this.appKey = 'dfca71928277209b'
+    this.appSecret = 'b5475a8825547a4fc26c7d518eaaa02e'
     this.server = server;
+  }
+
+  genSignParam(p) {
+    let pList = []
+    p.appkey = this.appKey
+    for (const k in p) {
+      pList.push({
+        key: k,
+        value: p[k]
+      })
+    }
+    pList = pList.sort((a, b) => a.key > b.key ? 1 : -1)
+    console.log(pList)
+
+    const str = pList.map(e => `${e.key}=${encodeURIComponent(e.value)}`).join('&')
+    console.log(str + this.appSecret)
+    const sign = hex_md5(str + this.appSecret)
+    return `${str}&sign=${sign}`
   }
 
   setServer(server) {
@@ -212,6 +244,36 @@ class BiliBiliApi {
     });
   }
 
+  getPlayURLApp(req, ak, area) {
+    const _p = req._params.split('&')
+    const p = {}
+    for (const _pp of _p) {
+      const t = _pp.split('=')
+      p[t[0]] = t[1]
+    }
+    console.log('origin param:', p)
+    const url = `https://${this.server}/pgc/player/api/playurl`
+    const param = {
+      access_key: ak,
+      area: area,
+      build: 1442100,
+      cid: p.cid,
+      device: 'android',
+      ep_id: p.ep_id,
+      fnval: 464,
+      fnver: 0,
+      force_host: 0,
+      fourk: 0,
+      mobi_app: 'android_hd',
+      platform: 'android',
+      qn: 80,
+      ts: (Date.now()/1000).toFixed(0),
+    }
+    const queryParam = this.genSignParam(param)
+    return HTTP.get(`${url}?${queryParam}`).then(res => {
+      return Promise.resolve(JSON.parse(res.responseText || "{}"))
+    });
+  }
   getPlayURLThailand(req, ak, area) {
     const params = `?${req._params}&mobi_app=bstar_a&s_locale=zh_SG`;
     const newParams = UTILS.generateMobiPlayUrlParams(params, 'th');
@@ -227,25 +289,11 @@ class BiliBiliApi {
     })
   }
 
-  getAccessToken() {
-    const url = "https://passport.bilibili.com/login/app/third?appkey=27eb53fc9058f8c3&api=https%3A%2F%2Fwww.mcbbs.net%2Ftemplate%2Fmcbbs%2Fimage%2Fspecial_photo_bg.png&sign=04224646d1fea004e79606d3b038c84a"
-    return HTTP.get(url).then(res => {
-      const resp = JSON.parse(res.responseText)
-      console.log("passport: ", resp)
-      return HTTP.get(resp.data.confirm_uri)
-    }).then(res => {
-      console.log('URL: ', res)
-      const access_key = new URL(res.responseURL).searchParams.get('access_key')
-      console.log("---hook--AT", access_key)
-      return Promise.resolve(access_key)
-    })
-  }
-
   searchBangumi(params, area) {
     return new Promise(async (resolve, reject) => {
       let path = "x/v2/search/type"
       try {
-        params.access_key = sessionStorage.access_key = sessionStorage.access_key || await this.getAccessToken()
+        params.access_key = UTILS.getAccessToken()
       }catch (e) {
         console.error('获取access token异常：', e)
       }
@@ -335,6 +383,109 @@ class BiliBiliApi {
       return Promise.reject(resp)
     })
   }
+
+  /**
+   * 获取登录二维码
+   * @return {Promise<any>}
+   * @constructor
+   */
+  async TV_getLoginQrCode() {
+    const url = 'https://passport.bilibili.com/x/passport-tv-login/qrcode/auth_code'
+    // const url = 'https://passport.snm0516.aisee.tv/x/passport-tv-login/qrcode/auth_code'
+    const deviceId = (await cookieStore.get('device_id')).value
+    const fingerprint = (await cookieStore.get('fingerprint')).value
+    const buvid = deviceId + deviceId.substring(0, 5)
+    const param = {
+      bili_local_id: deviceId,
+      build: 1442100,
+      buvid: buvid,
+      c_locale: 'zh_CN',
+      channel: 'yingyongbao',
+      code: '',
+      device: 'phone',
+      device_id: deviceId,
+      device_name: 'OnePlus7TPro',
+      device_platform: 'Android10OnePlusHD1910',
+      disable_rcmd: 0,
+      fingerprint: fingerprint,
+      guid: buvid,
+      local_fingerprint: fingerprint,
+      local_id: buvid,
+      mobi_app: 'android_hd',
+      networkstate: 'wifi',
+      platform: 'android',
+      s_locale: 'zh_CN',
+      spm_id: 'from_spmid',
+      statistics: '{"appId":5,"platform":3,"version":"1.44.2","abtest":""}',
+      sys_ver: '29',
+      ts: (Date.now()/1000).toFixed(0)
+    }
+    console.log(this.genSignParam(param))
+    const _resp = await HTTP.post(url, this.genSignParam(param), {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'app-key': 'android_hd',
+      env: 'prod',
+      buvid: buvid,
+      'User-Agent': '',
+    })
+    const resp = JSON.parse(_resp.responseText)
+    if (resp.code === 0) {
+      return resp
+    }
+    else {
+      return Promise.reject(resp)
+    }
+  }
+
+  /**
+   * 检查登录结果
+   * @param authCode
+   * @return {Promise<any>}
+   * @constructor
+   */
+  async TV_pollCheckLogin(authCode) {
+    const url = 'https://passport.bilibili.com/x/passport-tv-login/qrcode/poll'
+    const deviceId = (await cookieStore.get('device_id')).value
+    const fingerprint = (await cookieStore.get('fingerprint')).value
+    // const buvid = 'XU3F09733CCAC87B9FFD6CFFCA30259095661'
+    const buvid = fingerprint + fingerprint.substring(0, 5)
+    const param = {
+      auth_code: authCode,
+      bili_local_id: deviceId,
+      build: 1442100,
+      buvid: buvid,
+      c_locale: 'zh_CN',
+      channel: 'yingyongbao',
+      device: 'phone',
+      device_id: deviceId,
+      device_name: 'OnePlus7TPro',
+      device_platform: 'Android10OnePlusHD1910',
+      disable_rcmd: 0,
+      extend: '',
+      local_id: buvid,
+      mobi_app: 'android_hd',
+      platform: 'android',
+      s_locale: 'zh_CN',
+      spm_id: 'from_spmid',
+      statistics: '{"appId":5,"platform":3,"version":"1.44.2","abtest":""}',
+      ts: (Date.now()/1000).toFixed(0),
+    }
+    const _resp = await HTTP.post(url, this.genSignParam(param), {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'app-key': 'android_hd',
+      env: 'prod',
+      buvid: buvid,
+    })
+    const resp = JSON.parse(_resp.responseText)
+    if (resp.code >= 0) {
+      return resp
+    }
+    else {
+      return Promise.reject(resp)
+    }
+
+  }
+
 }
 
 const space_account_info_map = {
@@ -561,11 +712,6 @@ const URL_HOOK = {
     if (resp.code !== 0) {
       // 状态码异常
       const api = new BiliBiliApi()
-      try {
-        sessionStorage.access_key = sessionStorage.access_key || await api.getAccessToken()
-      }catch (e) {
-        console.error('access token获取失败：', e)
-      }
       console.log('upos: ', localStorage.upos)
 
       const serverList = JSON.parse(localStorage.serverList || "{}")
@@ -649,29 +795,28 @@ const URL_HOOK = {
    */
   "//api.bilibili.com/pgc/player/web/playurl": async (req) => {
     const resp = JSON.parse(req.responseText)
+
+    // 默认pc，要referer
+    UTILS.enableReferer()
+
     if (resp.code !== 0) {
       const params = UTILS._params2obj(req._params)
       const serverList = JSON.parse(localStorage.serverList || "{}")
       const upos = localStorage.upos || ""
       const isReplaceAkamai = localStorage.replaceAkamai === "true"
+      const accessKey = UTILS.getAccessToken()
 
-      /**
-       * 港澳台：替换 - 要referer
-       * 东南亚：替换 - 不要referer
-       */
-      if (AREA_MARK_CACHE[params.ep_id] === 'th') {
-        UTILS.disableReferer()
-      } else {
-        UTILS.enableReferer()
-      }
+      // android，不要referer
+      UTILS.disableReferer()
+
       const api = new BiliBiliApi()
       if (serverList[AREA_MARK_CACHE[params.ep_id]] && serverList[AREA_MARK_CACHE[params.ep_id]].length > 0) {
         api.setServer(serverList[AREA_MARK_CACHE[params.ep_id]])
         let playURL;
         if (AREA_MARK_CACHE[params.ep_id] !== "th")
-          playURL = await api.getPlayURL(req, sessionStorage.access_key || "", AREA_MARK_CACHE[params.ep_id])
+          playURL = await api.getPlayURLApp(req, accessKey || "", AREA_MARK_CACHE[params.ep_id])
         else
-          playURL = await api.getPlayURLThailand(req, sessionStorage.access_key || "", AREA_MARK_CACHE[params.ep_id])
+          playURL = await api.getPlayURLThailand(req, accessKey || "", AREA_MARK_CACHE[params.ep_id])
         playURL.result.is_preview = 0
         playURL.result.status = 2
         if (playURL.code === 0) {
@@ -681,7 +826,7 @@ const URL_HOOK = {
           return;
         }
       }
-      // 没有从cache的区域中取到播放链接
+      // 没有从cache的区域中取到播放链接，遍历漫游服务器
       for (let area in serverList) {
         const server = serverList[area] || ""
         console.log('getPlayURL from ', area, ' - ', server)
@@ -691,12 +836,12 @@ const URL_HOOK = {
         let playURL
         if (area !== "th") {
           UTILS.enableReferer()
-          playURL = await api.getPlayURL(req, sessionStorage.access_key || "", area)
+          playURL = await api.getPlayURLApp(req, accessKey || "", area)
         } else {
           UTILS.disableReferer()
-          playURL = await api.getPlayURLThailand(req, sessionStorage.access_key || "", area)
+          playURL = await api.getPlayURLThailand(req, accessKey || "", area)
         }
-        console.log("已获取播放链接")
+        console.log("已获取播放链接", playURL)
         if (playURL.code !== 0) continue
         playURL.result.is_preview = 0
         playURL.result.status = 2
@@ -709,6 +854,16 @@ const URL_HOOK = {
         break
       }
     }
+  },
+
+  /**
+   * 获取播放链接
+   * @param {XMLHttpRequest} req 原请求结果
+   * @returns {Promise<void>}
+   */
+  "//api.bilibili.com/x/player/playurl": async (req) => {
+    // 默认pc，要referer
+    UTILS.enableReferer()
   },
 
   /**
@@ -902,24 +1057,6 @@ const URL_HOOK = {
     }
   },
 
-  /**
-   * 登录
-   * TODO: 获取 access token
-   * @param {XMLHttpRequest} req 原请求结果
-   * @returns {Promise<void>}
-   */
-  '//passport.bilibili.com/x/passport-login/web/login': async (req) => {
-    try {
-      const account = document.querySelector("input[type=text]").value
-      const password = document.querySelector("input[type=password]").value
-      // console.log('account:', account, '; password:', password)
-      const resp = JSON.parse(req.responseText)
-      console.log('resp:', resp)
-    }
-    catch (e) {
-
-    }
-  }
 }
 const URL_HOOK_FETCH = {
   /**
@@ -1256,6 +1393,10 @@ function __awaiter(thisArg, _arguments, P, generator) {
 }
 
 const UTILS = {
+  getAccessToken() {
+    const tokenInfo = JSON.parse(localStorage.bili_accessToken_hd || '{}')
+    return tokenInfo.access_token
+  },
   enableReferer() {
     const referrerEle = document.getElementById('referrerMark')
     if (!referrerEle) return;
@@ -1367,7 +1508,7 @@ const UTILS = {
       theRequest[key] = value;
     }
     // 追加 mobi api 需要的参数
-    theRequest.access_key = sessionStorage.access_key;
+    theRequest.access_key = UTILS.getAccessToken();
     if (area === 'th') {
       theRequest.area = 'th';
       theRequest.appkey = '7d089525d3611b1c';
