@@ -38,20 +38,20 @@ cat "$root_dir/res/scripts/injectIndex.js" > "app/index.js"
 notice "====app.js===="
 
 notice "屏蔽检测"
-grep -lr 'if(!dE' --exclude="app.asar" .
-sed -i 's#if(!dE#if(false\&\&!dE#g' "app/main/app.js"
+grep -lr 'if(!v5' --exclude="app.asar" .
+sed -i 's#if(!v5#if(false\&\&!v5#g' "app/main/app.js"
 # ==='win';if(!
-grep -lr 'if(!Rq)' --exclude="app.asar" .
-sed -i 's#if(!Rq)#if(false\&\&!Rq)#' "app/main/app.js"
+grep -lr 'if(!Vp)' --exclude="app.asar" .
+sed -i 's#if(!Vp)#if(false\&\&!Vp)#' "app/main/app.js"
 # global['bootstrapApp']();
-grep -lr 'if(dE)' --exclude="app.asar" .
-sed -i 's#if(dE)#if(!dE)#' "app/main/app.js"
+grep -lr 'if(v5)' --exclude="app.asar" .
+sed -i 's#if(v5)#if(!v5)#' "app/main/app.js"
 #grep -lr '};!fb' --exclude="app.asar" .
 #sed -i 's#};!fb#};false\&\&!fb#' "app/main/app.js"
 
 notice "路由"
-grep -lr 'case"SettingsPage":n.push({name:"Settings"});return' --exclude="app.asar" .
-sed -i 's#case"SettingsPage":n.push({name:"Settings"});return#case"SettingsPage":n.push({name:"Settings"});return;default:if(n)return n.push({name:y.page});return#' app/render/assets/biliapp.*.js
+grep -lr 'case"SettingsPage":s.push({name:"Settings"});return' --exclude="app.asar" .
+sed -i 's#case"SettingsPage":s.push({name:"Settings"});return#case"SettingsPage":s.push({name:"Settings"});return;default:if(s)return s.push({name:y.page});return#' app/render/assets/biliapp.*.js
 
 notice "添加主页菜单" # ok
 grep -lr "te'](\[{'label':'设置" --exclude="app.asar" .

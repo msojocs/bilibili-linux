@@ -1,9 +1,10 @@
-# 🌈 v1.12.1-4 / 2023-10-
+# 🌈 v1.12.3-1 / 2023-10-
 
 ## 🐞 修复
 - 启动：处理总有个不影响使用的报错 `require(...) is not a function` 
 
 ## 🚀 功能
+- bilibili: update to v1.12.3.3068
 - 开发者控制台: 使用<kbd>F12</kbd>，而不是配置文件
 - hook: 对 `Module` 进行hook，替换 `require`
 - 外区番剧：新增HD扫码获取AccessToken，旧的获取方法已被官方禁用 (感谢 @cxw620 提供的帮助) #91
