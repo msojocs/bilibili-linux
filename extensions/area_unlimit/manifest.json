@@ -31,7 +31,6 @@
       "resources": [
         "hook/hook.js",
         "hook/player.js",
-        "hook/index.js",
         "hook/login.js",
         "hook/biliapp.js",
         "hook/search.js",

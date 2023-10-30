@@ -1,4 +1,11 @@
-console.log('[hook]: common', location.href)
+window.log = window.log || {
+  log: console.log,
+  warn: console.warn,
+  error: console.error,
+  info: console.info,
+  trace: console.trace,
+}
+log.log('[hook]: common', location.href)
 // 简易GET,POST请求封装
 const OriginXMLHttpRequest = XMLHttpRequest
 const HTTP = {
@@ -44,7 +51,6 @@ const HTTP = {
     })
   }
 }
-
 class DB {
 
   constructor(name = 'Bvid2DynamicId', version = 2) {
@@ -66,7 +72,7 @@ class DB {
    * @returns {Promise<unknown>}
    */
   open() {
-    // console.log('open')
+    // log.log('open')
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(this.name, this.version);
       request.onerror = (event) => {
@@ -74,12 +80,12 @@ class DB {
         reject(event)
       };
       request.onsuccess = (event) => {
-        // console.log('open success')
+        // log.log('open success')
         this.db = event.target.result;
         resolve(this)
       };
       request.onupgradeneeded = (e) => {
-        // console.log('open', 'onupgradeneeded')
+        // log.log('open', 'onupgradeneeded')
         const db = e.target.result;
         db.createObjectStore('b2d', { keyPath: 'bvid' })
       }
@@ -91,7 +97,7 @@ class DB {
    * @param {{bvid: string, dynamic_id: string}} b2d
    */
   putBvid2DynamicId(b2d) {
-    // console.log('addBvid2DynamicId')
+    // log.log('addBvid2DynamicId')
     return new Promise((resolve, reject) => {
       if (this.tran == null) {
         this.tran = this.db.transaction('b2d', 'readwrite')
@@ -100,11 +106,11 @@ class DB {
 
       const req = store.put(b2d)
       req.onsuccess = (e) => {
-        // console.log('addBvid2DynamicId', 'success')
+        // log.log('addBvid2DynamicId', 'success')
         resolve(e)
       }
       req.onerror = (e) => {
-        // console.log('addBvid2DynamicId', 'error', e)
+        // log.log('addBvid2DynamicId', 'error', e)
         reject(e)
       }
     })
@@ -150,7 +156,7 @@ function getScript(url, callback) {
   script.type = "text/javascript"; // 定义script元素的类型(可省略)
   if (typeof (callback) != "undefined") { // 判断是否使用回调方法(第二个参数)
     if (script.readyState) {// js状态
-      console.log(script.onreadystatechange); // onreadystatechange：js状态改变时执行下方函数
+      log.log(script.onreadystatechange); // onreadystatechange：js状态改变时执行下方函数
       script.onreadystatechange = function () {
         if (script.readyState == "loaded" || script.readyState == "complete") { // loaded：是否下载完成 complete：js执行完毕
           script.onreadystatechange = null;
@@ -185,10 +191,10 @@ class BiliBiliApi {
       })
     }
     pList = pList.sort((a, b) => a.key > b.key ? 1 : -1)
-    console.log(pList)
+    log.log(pList)
 
     const str = pList.map(e => `${e.key}=${encodeURIComponent(e.value)}`).join('&')
-    console.log(str + this.appSecret)
+    log.log(str + this.appSecret)
     const sign = hex_md5(str + this.appSecret)
     return `${str}&sign=${sign}`
   }
@@ -251,7 +257,7 @@ class BiliBiliApi {
       const t = _pp.split('=')
       p[t[0]] = t[1]
     }
-    console.log('origin param:', p)
+    log.log('origin param:', p)
     const url = `https://${this.server}/pgc/player/api/playurl`
     const param = {
       access_key: ak,
@@ -311,7 +317,7 @@ class BiliBiliApi {
         try {
 
           const resp = JSON.parse(res.responseText)
-          console.log("searchBangumi: ", resp)
+          log.log("searchBangumi: ", resp)
           if (area === "th")
             resolve(UTILS.handleTHSearchResult(resp.data?.items || []))
           else {
@@ -334,12 +340,12 @@ class BiliBiliApi {
     const url = `roaming://${this.server}/${path}?${params}&area=${area}${area === "th" ? '&type=7' : ''}`
 
     return HTTP.get(url, {'x-cookie': `buvid3=${buvid3}`}).then(res => {
-      console.log('search result:', res)
-      console.log(res.responseText)
+      log.log('search result:', res)
+      log.log(res.responseText)
       try {
 
         const resp = JSON.parse(res.responseText)
-        console.log("searchBangumi: ", resp)
+        log.log("searchBangumi: ", resp)
         if (area === "th")
           return Promise.resolve(UTILS.handleTHSearchResult(resp.data.items || []))
         else
@@ -359,7 +365,7 @@ class BiliBiliApi {
     const url = `https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/get_dynamic_detail?dynamic_id=${dynamicId}`
     return HTTP.get(url).then(res => {
       const resp = JSON.parse(res.responseText)
-      // console.log('dynamicDetail:', resp)
+      // log.log('dynamicDetail:', resp)
       if (resp.code === 0) {
         return Promise.resolve(resp)
       }
@@ -376,7 +382,7 @@ class BiliBiliApi {
     const url = `https://api.bilibili.com/x/web-interface/card?mid=${userId}`
     return HTTP.get(url).then(res => {
       const resp = JSON.parse(res.responseText)
-      // console.log('dynamicDetail:', resp)
+      // log.log('dynamicDetail:', resp)
       if (resp.code === 0) {
         return Promise.resolve(resp)
       }
@@ -420,7 +426,7 @@ class BiliBiliApi {
       sys_ver: '29',
       ts: (Date.now()/1000).toFixed(0)
     }
-    console.log(this.genSignParam(param))
+    log.log(this.genSignParam(param))
     const _resp = await HTTP.post(url, this.genSignParam(param), {
       'Content-Type': 'application/x-www-form-urlencoded',
       'app-key': 'android_hd',
@@ -707,21 +713,21 @@ const URL_HOOK = {
    */
   "https://api.bilibili.com/pgc/view/pc/season": async (req) => {
     UTILS.enableReferer();
-    console.log('HOOK', req)
+    log.log('HOOK', req)
     const resp = JSON.parse(req.responseText || "{}")
     if (resp.code !== 0) {
       // 状态码异常
       const api = new BiliBiliApi()
-      console.log('upos: ', localStorage.upos)
+      log.log('upos: ', localStorage.upos)
 
       const serverList = JSON.parse(localStorage.serverList || "{}")
-      console.log('serverList: ', serverList)
+      log.log('serverList: ', serverList)
 
       let seasonInfo = null;
       const params = UTILS._params2obj(req._params)
-      console.log('params: ', params)
+      log.log('params: ', params)
       seasonInfo = await api.getSeasonInfoByEpSsIdOnBangumi(params.ep_id || "", params.season_id || "")
-      console.log('getSeasonInfoByEpSsIdOnBangumi:', seasonInfo)
+      log.log('getSeasonInfoByEpSsIdOnBangumi:', seasonInfo)
       if (seasonInfo.code === 0) {
         // title id
         seasonInfo.result.episodes.forEach(ep => {
@@ -735,7 +741,7 @@ const URL_HOOK = {
         // 处理部分番剧存在平台限制
         seasonInfo.result.rights.watch_platform = 0
         seasonInfo.result.rights.allow_download = 1
-        console.log('seasonInfo1: ', seasonInfo)
+        log.log('seasonInfo1: ', seasonInfo)
         req.responseText = JSON.stringify(seasonInfo)
         return;
       }
@@ -745,7 +751,7 @@ const URL_HOOK = {
       api.setServer(server)
 
       seasonInfo = await api.getSeasonInfoByEpSsIdOnThailand(params.ep_id || "", params.season_id || "")
-      console.log('去th找:', seasonInfo)
+      log.log('去th找:', seasonInfo)
       if (seasonInfo.code !== 0 || seasonInfo.result.modules.length === 0) return;
       AREA_MARK_CACHE[params.ep_id] = 'th'
       seasonInfo.result.episodes = seasonInfo.result.episodes || seasonInfo.result.modules[0].data.episodes
@@ -766,7 +772,7 @@ const URL_HOOK = {
       seasonInfo.result.rights.watch_platform = 0
       seasonInfo.result.rights.allow_download = 1
       seasonInfo.result.seasons = []
-      console.log('seasonInfo2: ', seasonInfo)
+      log.log('seasonInfo2: ', seasonInfo)
       req.responseText = JSON.stringify(seasonInfo)
 
     } else {
@@ -779,13 +785,13 @@ const URL_HOOK = {
     }
   },
   "https://api.bilibili.com/pgc/view/web/season/user/status": async (req) => {
-    // console.log("解除区域限制")
+    // log.log("解除区域限制")
     const resp = JSON.parse(req.responseText)
     resp.result && (resp.result.area_limit = 0,resp.result.follow = 0)
     req.responseText = JSON.stringify(resp)
   },
   "https://api.bilibili.com/pgc/season/episode/web/info": async (req) => {
-    // console.log("解除区域限制")
+    // log.log("解除区域限制")
   },
 
   /**
@@ -800,11 +806,13 @@ const URL_HOOK = {
     UTILS.enableReferer()
 
     if (resp.code !== 0) {
+      log.warn('[player]: 播放链接获取出现问题')
       const params = UTILS._params2obj(req._params)
       const serverList = JSON.parse(localStorage.serverList || "{}")
       const upos = localStorage.upos || ""
       const isReplaceAkamai = localStorage.replaceAkamai === "true"
       const accessKey = UTILS.getAccessToken()
+      log.info('serverList:', serverList)
 
       // android，不要referer
       UTILS.disableReferer()
@@ -820,7 +828,7 @@ const URL_HOOK = {
         playURL.result.is_preview = 0
         playURL.result.status = 2
         if (playURL.code === 0) {
-          console.log('playURL:', playURL)
+          log.log('playURL:', playURL)
           // 从cache的区域中取到了播放链接
           req.responseText = UTILS.replaceUpos(JSON.stringify(playURL), uposMap[upos], isReplaceAkamai, AREA_MARK_CACHE[params.ep_id])
           return;
@@ -829,7 +837,7 @@ const URL_HOOK = {
       // 没有从cache的区域中取到播放链接，遍历漫游服务器
       for (let area in serverList) {
         const server = serverList[area] || ""
-        console.log('getPlayURL from ', area, ' - ', server)
+        log.log('getPlayURL from ', area, ' - ', server)
         if (server.length === 0) continue;
         api.setServer(server)
 
@@ -841,11 +849,11 @@ const URL_HOOK = {
           UTILS.disableReferer()
           playURL = await api.getPlayURLThailand(req, accessKey || "", area)
         }
-        console.log("已获取播放链接", playURL)
+        log.log("已获取播放链接", playURL)
         if (playURL.code !== 0) continue
         playURL.result.is_preview = 0
         playURL.result.status = 2
-        console.log('playURL:', playURL)
+        log.log('playURL:', playURL)
         // 解析成功
         AREA_MARK_CACHE[params.ep_id] = area
 
@@ -940,12 +948,12 @@ const URL_HOOK = {
    * @returns {Promise<void>}
    */
   "https://api.bilibili.com/x/web-interface/search/type": async (req) => {
-    // console.log('===搜索 HOOK: ', req)
+    // log.log('===搜索 HOOK: ', req)
     const params = UTILS._params2obj(req._params)
     if (params.search_type === 'media_bangumi') {
       // 搜索番剧
       const searchResult = JSON.parse(req.responseText)
-      console.log('预期结果：', searchResult)
+      log.log('预期结果：', searchResult)
       searchResult.data.result = searchResult.data.result || []
       const api = new BiliBiliApi()
       const serverList = JSON.parse(localStorage.serverList || "{}")
@@ -964,7 +972,7 @@ const URL_HOOK = {
           sleep(500); //当前方法暂停0.5秒
           // const result = await api.searchBangumi2(req._params, area, buvid3.value || '')
           const result = await api.searchBangumi(params, area)
-          // console.log('searchResult:', result)
+          // log.log('searchResult:', result)
           result.forEach(s => {
             s.title = `[${area}]${s.title}`
           })
@@ -988,7 +996,7 @@ const URL_HOOK = {
     const resp = JSON.parse(req.responseText || "{}")
     const serverList = JSON.parse(localStorage.serverList || "{}")
     if ((resp.code === -400 || resp.code === -404 || resp.data.subtitle.subtitles.length === 0) && serverList.th) {
-      console.log('处理字幕')
+      log.log('处理字幕')
       // 字幕请求失败
       const api = new BiliBiliApi(serverList.th);
       const subtitles = await api.getSubtitleOnThailand(req._params);
@@ -1034,7 +1042,7 @@ const URL_HOOK = {
         resp.data.subtitle.subtitles.push(zhHans)
       }
     }
-    // console.log('subtitle result:', resp)
+    // log.log('subtitle result:', resp)
     req.responseText = JSON.stringify(resp)
   },
 
@@ -1044,15 +1052,15 @@ const URL_HOOK = {
    * @returns {Promise<void>}
    */
   zhHansSubtitle: async (req) => {
-    // console.log('繁体转简体', req)
+    // log.log('繁体转简体', req)
     if (req._params.includes('zh-Hans')) {
-      // console.log('繁体字幕数据: ', req.responseText)
+      // log.log('繁体字幕数据: ', req.responseText)
       const tc2sc = window?.ChineseConversionAPI?.tc2sc
       if (!!tc2sc) {
         req.responseText = tc2sc(req.responseText)
         req.response = JSON.parse(req.responseText)
         req.status = 200
-        // console.log('中文字幕数据: ', req.responseText)
+        // log.log('中文字幕数据: ', req.responseText)
       }
     }
   },
@@ -1065,12 +1073,12 @@ const URL_HOOK_FETCH = {
    * @returns {Promise<Response>}
    */
   "https://api.bilibili.com/x/web-interface/search/type": async (data) => {
-    // console.log('===搜索 HOOK: ', req)
+    // log.log('===搜索 HOOK: ', req)
     const params = UTILS._params2obj(data.urlInfo[1])
     if (params.search_type === 'media_bangumi') {
       // 搜索番剧
       const searchResult = await data.res.json()
-      console.log('预期结果：', searchResult)
+      log.log('预期结果：', searchResult)
       searchResult.data.result = searchResult.data.result || []
       const api = new BiliBiliApi()
       const serverList = JSON.parse(localStorage.serverList || "{}")
@@ -1089,7 +1097,7 @@ const URL_HOOK_FETCH = {
           sleep(500); //当前方法暂停0.5秒
           // const result = await api.searchBangumi2(req._params, area, buvid3.value || '')
           const result = await api.searchBangumi(params, area)
-          // console.log('searchResult:', result)
+          // log.log('searchResult:', result)
           result.forEach(s => {
             s.title = `[${area}]${s.title}`
           })
@@ -1141,14 +1149,14 @@ const URL_HOOK_FETCH = {
         const detail = await bili.getDynamicDetail(b2d.dynamic_id)
         // 构造数据
         const res = await UTILS.genVideoDetailByDynamicDetail(detail.data)
-        console.log('res:', res)
+        log.log('res:', res)
         data.res.data = {
           code: 0,
           message: '',
           msg: '',
           data: res
         }
-        console.log('修復結果：', JSON.stringify(data.res))
+        log.log('修復結果：', JSON.stringify(data.res))
         return data.res
       }
       data.res = Response.json(resp)
@@ -1190,21 +1198,21 @@ window.getHookXMLHttpRequest = (win) => {
       };
       super.onload = async () => {
         if (this._onload) {
-          console.log('onload', this._url)
+          // log.log('onload', this._url)
           if (URL_HOOK[this._url]) await URL_HOOK[this._url](this)
           this._onload();
         }
       };
       super.onreadystatechange = () => {
-        console.log(...arguments)
+        log.log(...arguments)
         if (this.readyState === 4 && this.status === 200) {
-          // console.log('onreadystatechange', this, super.responseType)
+          // log.log('onreadystatechange', this, super.responseType)
           switch (super.responseType) {
             case 'text':
             case '': {
               const responseText = super.responseText;
               if (responseText) {
-                //   console.log(responseText)
+                //   log.log(responseText)
                 //   const res = null;
                 //   if (res !== null) {
                 //     this.responseText = res
@@ -1250,7 +1258,7 @@ window.getHookXMLHttpRequest = (win) => {
               this._onreadystatechange();
           }
         } catch (err) {
-          console.log('未处理的error: ', err)
+          log.log('未处理的error: ', err)
         }
       };
     }
@@ -1277,6 +1285,7 @@ window.getHookXMLHttpRequest = (win) => {
     }
 
     send() {
+      // log.log('send:', ...arguments)
       const arr = [...arguments];
       // if (arr[0]) {
       // const params = null;
@@ -1290,7 +1299,7 @@ window.getHookXMLHttpRequest = (win) => {
     open() {
       const arr = [...arguments];
       const url = arr[1];
-      // console.log('request for: ', ...arr)
+      // log.log('request for: ', ...arr)
       if (url) {
         const [path, params] = url.split(/\?/);
         this._url = path;
@@ -1316,7 +1325,7 @@ window.getHookXMLHttpRequest = (win) => {
     }
 
     // onload(){
-    //   console.log('onload', ...arguments)
+    //   log.log('onload', ...arguments)
     // }
   }
 
@@ -1325,11 +1334,11 @@ window.getHookXMLHttpRequest = (win) => {
 const originalFetch = window.fetch
 if (fetch.toString().includes('[native code]')) {
   window.fetch = async (url, config) => {
-    console.log('fetch:', url, config)
+    log.log('fetch:', url, config)
     const res = await originalFetch(url, config)
     // const u = new URL(url.startsWith('//') ? `https:${url}` : url)
-    // console.log('u.pathname:', u.pathname)
-    console.log('res:', res)
+    // log.log('u.pathname:', u.pathname)
+    log.log('res:', res)
     const [path, params] = url.split(/\?/);
     if (URL_HOOK_FETCH[path]) {
       // debugger
@@ -1355,7 +1364,7 @@ function _deCode(params) {
   })
 }
 
-console.log('替换XMLHttpRequest')
+log.log('替换XMLHttpRequest')
 if (!location.href.includes('live.bilibili')) {
   window.XMLHttpRequest = getHookXMLHttpRequest(window);
 }
@@ -1416,7 +1425,7 @@ const UTILS = {
     }
   },
   replaceUpos(playURL, host, replaceAkamai = false, area = "") {
-    console.log('replaceUpos:', host, replaceAkamai)
+    log.log('replaceUpos:', host, replaceAkamai)
     if (host && (!playURL.includes("akamaized.net") || replaceAkamai)) {
       playURL = playURL.replace(/:\\?\/\\?\/[^\/]+\\?\//g, `://${host}/`);
 
@@ -1424,7 +1433,7 @@ const UTILS = {
     return playURL
   },
   handleTHSearchResult(itemList) {
-    console.log('th:', itemList)
+    log.log('th:', itemList)
     const result = []
     for (let item of itemList) {
       result.push({
@@ -1626,7 +1635,7 @@ const UTILS = {
           // 从 window 中读取已有的值
           if (window.__segment_base_map__) {
             if (window.__segment_base_map__.hasOwnProperty(id)) {
-              // console.log('SegmentBase read from cache ', window.__segment_base_map__[id], 'id=', id)
+              // log.log('SegmentBase read from cache ', window.__segment_base_map__[id], 'id=', id)
               return resolve(window.__segment_base_map__[id]);
             }
           }
@@ -1649,7 +1658,7 @@ const UTILS = {
               window.__segment_base_map__ = {};
               window.__segment_base_map__[id] = result;
             }
-            // console.log('get SegmentBase ', result, 'id=', id);
+            // log.log('get SegmentBase ', result, 'id=', id);
             resolve(result);
           };
           xhr.send(null); // 发送请求
@@ -1683,7 +1692,7 @@ const UTILS = {
         segmentBaseMap = window.__segment_base_map__;
       // 填充视频流数据
       result.dash.video.forEach((video) => {
-        // console.log('video: ', video)
+        // log.log('video: ', video)
         let video_id = getId(video.baseUrl, '30280');
         if (!codecsMap.hasOwnProperty(video_id)) {
           // https://github.com/ipcjs/bilibili-helper/issues/775
@@ -1762,7 +1771,7 @@ const UTILS = {
       };
       // 填充音频流数据
       origin.data.video_info.dash_audio.forEach((audio) => {
-        console.log('填充音频流数据:', audio)
+        log.log('填充音频流数据:', audio)
         const backup_urls = audio.backup_url.filter(e => !e.includes('akamaized.net'))
         audio.base_url = backup_urls[0] || audio.base_url.replace('http://', 'https://');
         audio.baseUrl = backup_urls[0] || audio.base_url;
@@ -1828,7 +1837,7 @@ const UTILS = {
     } else {
       plaintext = mobi_api_params.slice(0, -1) + `560c52ccd288fed045859ed18bffd973`;
     }
-    // console.log(plaintext)
+    // log.log(plaintext)
     // 生成 sign
     return parent.hex_md5(plaintext)
   },
@@ -1909,7 +1918,7 @@ const UTILS = {
     }
     const card = JSON.parse(dynamicDetail.card.card)
     card.rights.download = 1
-    // console.log('card:', card)
+    // log.log('card:', card)
     res.View = card
     const resp = await new BiliBiliApi().getUserCard(card.owner.mid)
     res.Card = resp.data

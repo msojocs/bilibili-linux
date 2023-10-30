@@ -1,6 +1,12 @@
-
+window.log = window.log ||{
+  log: console.log,
+  warn: console.warn,
+  error: console.error,
+  info: console.info,
+  trace: console.trace,
+};
 (() => {
-  console.log("[hook]: biliapp.js");
+  log.log("[hook]: biliapp.js");
   const HTTP_INDEX = {
     get(url) {
       return new Promise((resolve, reject) => {
@@ -15,7 +21,7 @@
     }
   }
   function switchPage(hash, targetWindow = window) {
-    console.log('switch to:', hash)
+    log.log('switch to:', hash)
     // 菜单切换
     const menuDiv = targetWindow.document.querySelector("#app > div > div > div.app_layout--content.flex_col > div > div.app_settings.i_page_wrapper > div.header_slot.flex_start.drag").querySelector('.vui_tabs--nav-link')
     for (let h3 of menuDiv.children) {
@@ -34,7 +40,7 @@
   }
 
   function addAreaLimit(targetWindow = window) {
-    console.log("addAreaLimit", targetWindow)
+    log.log("addAreaLimit", targetWindow)
     const url = new URL(targetWindow.location.href)
 
     // 菜单
@@ -51,7 +57,7 @@
     for (let menu of menuDiv.children) {
       menu.classList.add('area_limit')
       menu.onclick = (e) => {
-        console.log('click: ', e)
+        log.log('click: ', e)
         switchPage(e.target.dataset.hash, targetWindow)
       }
     }
@@ -116,7 +122,7 @@
       loadStatus.append(reload)
     }
     vue.onload = (e) => {
-      console.log('vue.onload', e)
+      log.log('vue.onload', e)
       loadStatus.textContent = "[2/2]加载element-plus"
       loadStatus.children.length === 1 && loadStatus.children[0].remove()
       ele.onerror()
@@ -127,7 +133,7 @@
       // e.detail contains the transferred data (can be anything, ranging
       // from JavaScript objects to strings).
       // Do something, for example:
-      console.log('index ROAMING_sendURL:', e.detail);
+      log.log('index ROAMING_sendURL:', e.detail);
       if(e.detail.includes("RoamingPage")){
         // 判断HTML为漫游页面
         const roamingHTML = await HTTP_INDEX.get(e.detail)
@@ -143,7 +149,7 @@
       }
     });
     // 获取漫游HTML
-    console.log('获取漫游HTML')
+    log.log('获取漫游HTML')
     document.dispatchEvent(new CustomEvent('ROAMING_getURL', {
       detail: 'RoamingPage' // Some variable from Gmail.
     }));
@@ -151,7 +157,7 @@
 
   // vue
   function createRoamingPage(targetWindow = window) {
-    console.log('RoamingPage HTML')
+    log.log('RoamingPage HTML')
     const App = {
       data() {
         return {
@@ -226,7 +232,7 @@
         };
       },
       created() {
-        console.log('vue created')
+        log.log('vue created')
         const serverList = JSON.parse(localStorage.serverList || "{}")
         for (let area in serverList) {
           this.serverList[area] = serverList[area]
@@ -258,7 +264,7 @@
       },
       methods: {
         changeUPOS: function (upos) {
-          // console.log('upos change: ', upos)
+          // log.log('upos change: ', upos)
           localStorage.upos = upos
           this.$notify({
             title: 'Success',
@@ -299,10 +305,10 @@
         },
         saveServer: function (formEl) {
           if (!formEl) return
-          console.log('saveServer: ', formEl, this.$refs)
+          log.log('saveServer: ', formEl, this.$refs)
           this.$refs.serverFormRef.validate((valid) => {
             if (valid) {
-              // console.log(this.serverList)
+              // log.log(this.serverList)
               this.$notify({
                 title: 'Success',
                 message: "成功",
@@ -310,13 +316,13 @@
               })
               localStorage.serverList = JSON.stringify(this.serverList)
             } else {
-              console.log('error submit!')
+              log.log('error submit!')
               return false
             }
           })
         },
         checkDomain: (rule, value, callback) => {
-          // console.log(rule, value)
+          // log.log(rule, value)
           if ((value || "") === "")
             callback()
           else if (!/^(?=^.{3,255}$)[a-zA-Z0-9\u4e00-\u9fa5][-a-zA-Z0-9\u4e00-\u9fa5]{0,62}(\.[a-zA-Z0-9\u4e00-\u9fa5][-a-zA-Z0-9\u4e00-\u9fa5]{0,62})+$/.test(value)) {
@@ -325,7 +331,7 @@
           callback()
         },
         resetForm: function (formEl) {
-          // console.log('resetForm: ', formEl)
+          // log.log('resetForm: ', formEl)
           if (!formEl) return
           formEl.resetFields()
         },
@@ -335,7 +341,7 @@
           this.hdLogin.qrCode = qr.data.url
           let t = setInterval(async () => {
             const ret = await login.TV_pollCheckLogin(qr.data.auth_code)
-            console.log('扫码结果：', ret)
+            log.log('扫码结果：', ret)
             if (ret.code === 0) {
               this.hdLogin.qrCode = ''
               ret.data.token_info.expires_at = parseInt(Date.now()/1000) + ret.data.token_info.expires_in
@@ -352,7 +358,7 @@
         biliTest: async function () {
           const login = new BiliBiliApi()
           const ret = await login.TV_pollCheckLogin(this.hdLogin.authCode)
-          console.log('test ret:', ret)
+          log.log('test ret:', ret)
         }
       }
     };
@@ -361,7 +367,7 @@
     app.mount("#roamingApp");
   }
   // window.addEventListener('replaceState', function (e) {
-  //   // console.log('change replaceState', e);
+  //   // log.log('change replaceState', e);
   //   if(e.arguments[0].current === "/page/settings"){
   //     addAreaLimit()
   //   }
@@ -390,7 +396,7 @@
      * replaceState：无响应，但之后的切换都有响应且能直接取到元素
      */
     targetWindow.addEventListener('pushState', function (e) {
-      console.log('change pushState', e);
+      log.log('change pushState', e);
       if (e.arguments[0].current === "/page/settings") {
         // 延时，太快取不到页面元素
         setTimeout(addAreaLimit, 500, targetWindow)
@@ -402,7 +408,7 @@
     }
   }
 
-  console.log('hook state change')
+  log.log('hook state change')
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
     targetOnload(window)
   }
