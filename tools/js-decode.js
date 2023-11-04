@@ -64,13 +64,21 @@ resultCode = resultCode.replace(
   function ($0, $1, $2) {
     i++;
     // 查找异常点
-    if(i === 5445){
+    if(i === 17244){
         // if(i === 3312){
         //     console.log("--->", $0, $1, $2)
         //     let result = eval('"' + $1 + '"')
         //     console.log("--->", result)
         // }
         return $0
+    }
+    if(i === 22551){
+      // if(i === 3312){
+      //     console.log("--->", $0, $1, $2)
+      //     let result = eval('"' + $1 + '"')
+      //     console.log("--->", result)
+      // }
+      return $0
     }
 
     let result = eval('"' + $1 + '"')

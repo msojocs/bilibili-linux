@@ -29,7 +29,7 @@ const pkgHack = {
   data: [
     true,
     true,
-    false,  // .biliapp
+    true,  // .biliapp
     true,
     false,
     true,
