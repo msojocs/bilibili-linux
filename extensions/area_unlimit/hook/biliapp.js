@@ -336,20 +336,28 @@ window.log = window.log ||{
           formEl.resetFields()
         },
         startHDLogin: async function() {
+          log.info('HD Login')
           const login = new BiliBiliApi()
-          const qr = await login.TV_getLoginQrCode()
-          this.hdLogin.qrCode = qr.data.url
-          let t = setInterval(async () => {
-            const ret = await login.TV_pollCheckLogin(qr.data.auth_code)
-            log.log('扫码结果：', ret)
-            if (ret.code === 0) {
-              this.hdLogin.qrCode = ''
-              ret.data.token_info.expires_at = parseInt(Date.now()/1000) + ret.data.token_info.expires_in
-              localStorage.setItem('bili_accessToken_hd', JSON.stringify(ret.data.token_info))
-              this.hdLogin.tokenInfo = ret.data.token_info
-              clearInterval(t)
-            }
-          }, 2000)
+          try {
+            log.info('获取登录二维码')
+            const qr = await login.HD_getLoginQrCode()
+            this.hdLogin.qrCode = qr.data.url
+            let t = setInterval(async () => {
+              log.info('获取扫码结果')
+              const ret = await login.HD_pollCheckLogin(qr.data.auth_code)
+              log.log('扫码结果：', ret)
+              if (ret.code === 0) {
+                this.hdLogin.qrCode = ''
+                ret.data.token_info.expires_at = parseInt(Date.now() / 1000) + ret.data.token_info.expires_in
+                localStorage.setItem('bili_accessToken_hd', JSON.stringify(ret.data.token_info))
+                this.hdLogin.tokenInfo = ret.data.token_info
+                clearInterval(t)
+              }
+            }, 2000)
+          }
+          catch (e) {
+            log.error('HD Login Error:', e)
+          }
         },
         deleteHDLogin: function() {
           localStorage.removeItem('bili_accessToken_hd')

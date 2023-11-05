@@ -191,10 +191,8 @@ class BiliBiliApi {
       })
     }
     pList = pList.sort((a, b) => a.key > b.key ? 1 : -1)
-    log.log(pList)
 
     const str = pList.map(e => `${e.key}=${encodeURIComponent(e.value)}`).join('&')
-    log.log(str + this.appSecret)
     const sign = hex_md5(str + this.appSecret)
     return `${str}&sign=${sign}`
   }
@@ -395,7 +393,7 @@ class BiliBiliApi {
    * @return {Promise<any>}
    * @constructor
    */
-  async TV_getLoginQrCode() {
+  async HD_getLoginQrCode() {
     const url = 'https://passport.bilibili.com/x/passport-tv-login/qrcode/auth_code'
     // const url = 'https://passport.snm0516.aisee.tv/x/passport-tv-login/qrcode/auth_code'
     const deviceId = (await cookieStore.get('device_id')).value
@@ -426,13 +424,11 @@ class BiliBiliApi {
       sys_ver: '29',
       ts: (Date.now()/1000).toFixed(0)
     }
-    log.log(this.genSignParam(param))
     const _resp = await HTTP.post(url, this.genSignParam(param), {
       'Content-Type': 'application/x-www-form-urlencoded',
       'app-key': 'android_hd',
       env: 'prod',
       buvid: buvid,
-      'User-Agent': '',
     })
     const resp = JSON.parse(_resp.responseText)
     if (resp.code === 0) {
@@ -449,7 +445,7 @@ class BiliBiliApi {
    * @return {Promise<any>}
    * @constructor
    */
-  async TV_pollCheckLogin(authCode) {
+  async HD_pollCheckLogin(authCode) {
     const url = 'https://passport.bilibili.com/x/passport-tv-login/qrcode/poll'
     const deviceId = (await cookieStore.get('device_id')).value
     const fingerprint = (await cookieStore.get('fingerprint')).value
