@@ -388,6 +388,14 @@ class BiliBiliApi {
     })
   }
 
+  genDeviceId(){
+    let deviceId = localStorage.getItem('device_id')
+    if (deviceId != null) return deviceId
+    deviceId = hex_md5(`${Math.random()}`) + hex_md5(`${Math.random()}`)
+    localStorage.setItem('device_id', deviceId)
+    return deviceId
+  }
+
   /**
    * 获取登录二维码
    * @return {Promise<any>}
@@ -396,8 +404,7 @@ class BiliBiliApi {
   async HD_getLoginQrCode() {
     const url = 'https://passport.bilibili.com/x/passport-tv-login/qrcode/auth_code'
     // const url = 'https://passport.snm0516.aisee.tv/x/passport-tv-login/qrcode/auth_code'
-    const deviceId = (await cookieStore.get('device_id')).value
-    const fingerprint = (await cookieStore.get('fingerprint')).value
+    const deviceId = this.genDeviceId()
     const buvid = deviceId + deviceId.substring(0, 5)
     const param = {
       bili_local_id: deviceId,
@@ -411,9 +418,7 @@ class BiliBiliApi {
       device_name: 'OnePlus7TPro',
       device_platform: 'Android10OnePlusHD1910',
       disable_rcmd: 0,
-      fingerprint: fingerprint,
       guid: buvid,
-      local_fingerprint: fingerprint,
       local_id: buvid,
       mobi_app: 'android_hd',
       networkstate: 'wifi',
@@ -447,10 +452,8 @@ class BiliBiliApi {
    */
   async HD_pollCheckLogin(authCode) {
     const url = 'https://passport.bilibili.com/x/passport-tv-login/qrcode/poll'
-    const deviceId = (await cookieStore.get('device_id')).value
-    const fingerprint = (await cookieStore.get('fingerprint')).value
-    // const buvid = 'XU3F09733CCAC87B9FFD6CFFCA30259095661'
-    const buvid = fingerprint + fingerprint.substring(0, 5)
+    const deviceId = this.genDeviceId()
+    const buvid = deviceId + deviceId.substring(0, 5)
     const param = {
       auth_code: authCode,
       bili_local_id: deviceId,
