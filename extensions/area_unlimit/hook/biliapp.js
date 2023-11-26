@@ -463,7 +463,7 @@ window.log = window.log || {
   }
 
   log.log('hook state change')
-  addEventListener('DOMContentLoaded ', (event) => {
+  addEventListener('DOMContentLoaded', (event) => {
     window.onload = targetOnload(window)
   });
 })();
