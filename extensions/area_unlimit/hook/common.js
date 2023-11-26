@@ -205,50 +205,46 @@ class BiliBiliApi {
     return HTTP.get(`//${this.server}/pgc/view/web/season?ep_id=${ep_id}`);
   }
 
-  getSeasonInfo(season_id) {
-    return HTTP.get(`//${this.server}/pgc/view/web/season?season_id=${season_id}`);
+  getSeasonInfo(season_id, headers = {}) {
+    return HTTP.get(`//${this.server}/pgc/view/web/season?season_id=${season_id}`, headers);
   }
 
-  getSeasonInfoByEpSsIdOnBangumi(ep_id, season_id) {
-    return HTTP.get('//bangumi.bilibili.com/view/web_api/season?' + (ep_id != '' ? `ep_id=${ep_id}` : `season_id=${season_id}`)).then(res => {
-      return Promise.resolve(JSON.parse(res.responseText))
-    });
+  async getSeasonInfoByEpSsIdOnBangumi(ep_id, season_id) {
+    const res = await HTTP.get('//bangumi.bilibili.com/view/web_api/season?' + (ep_id != '' ? `ep_id=${ep_id}` : `season_id=${season_id}`))
+    return await Promise.resolve(JSON.parse(res.responseText))
   }
 
-  getSeasonInfoByEpSsIdOnThailand(ep_id, season_id) {
+  async getSeasonInfoByEpSsIdOnThailand(ep_id, season_id) {
     const params = '?' + (ep_id !== '' ? `ep_id=${ep_id}` : `season_id=${season_id}`) + `&mobi_app=bstar_a&s_locale=zh_SG`;
     const newParams = UTILS.generateMobiPlayUrlParams(params, 'th');
-    return HTTP.get(`//${this.server}/intl/gateway/v2/ogv/view/app/season?` + newParams).then(res => {
-      return Promise.resolve(JSON.parse(res.responseText || "{}"))
-    });
+    const res = await HTTP.get(`//${this.server}/intl/gateway/v2/ogv/view/app/season?` + newParams)
+    return await Promise.resolve(JSON.parse(res.responseText || "{}"))
   }
 
-  getSubtitleOnThailand(params) {
-    return HTTP.get(`//${this.server}/intl/gateway/v2/app/subtitle?${params}`).then(res => {
-      const resp = JSON.parse(res.responseText || "{}")
-      const subtitles = []
-      if (resp.code === 0 && resp.data.subtitles) {
-        for (let subtitle of resp.data.subtitles) {
-          subtitles.push({
-            id: subtitle.id,
-            is_str: subtitle.id.toString(),
-            lan: subtitle.key,
-            lan_doc: subtitle.title,
-            subtitle_url: subtitle.url.replace(/https?:\/\//, '//')//.replace('s.bstarstatic.com', this.server)
-          })
-        }
+  async getSubtitleOnThailand(params) {
+    const res = await HTTP.get(`//${this.server}/intl/gateway/v2/app/subtitle?${params}`)
+    const resp = JSON.parse(res.responseText || "{}")
+    const subtitles = []
+    if (resp.code === 0 && resp.data.subtitles) {
+      for (let subtitle of resp.data.subtitles) {
+        subtitles.push({
+          id: subtitle.id,
+          is_str: subtitle.id.toString(),
+          lan: subtitle.key,
+          lan_doc: subtitle.title,
+          subtitle_url: subtitle.url.replace(/https?:\/\//, '//') //.replace('s.bstarstatic.com', this.server)
+        })
       }
-      return Promise.resolve(subtitles)
-    });
+    }
+    return await Promise.resolve(subtitles)
   }
 
-  getPlayURL(req, ak, area) {
-    return HTTP.get(`//${this.server}/pgc/player/web/playurl?${req._params}&access_key=${ak}&area=${area}`).then(res => {
-      return Promise.resolve(JSON.parse(res.responseText || "{}"))
-    });
+  async getPlayURL(req, ak, area) {
+    const res = await HTTP.get(`//${this.server}/pgc/player/web/playurl?${req._params}&access_key=${ak}&area=${area}`)
+    return await Promise.resolve(JSON.parse(res.responseText || "{}"))
   }
 
-  getPlayURLApp(req, ak, area) {
+  async getPlayURLApp(req, ak, area) {
     const _p = req._params.split('&')
     const p = {}
     for (const _pp of _p) {
@@ -264,33 +260,31 @@ class BiliBiliApi {
       cid: p.cid,
       device: 'android',
       ep_id: p.ep_id,
-      fnval: 464,
-      fnver: 0,
+      fnval: p.fnval,
+      fnver: p.fnver,
       force_host: 0,
-      fourk: 0,
+      fourk: p.fourk,
       mobi_app: 'android_hd',
       platform: 'android',
-      qn: 80,
-      ts: (Date.now()/1000).toFixed(0),
+      qn: p.qn,
+      ts: (Date.now() / 1000).toFixed(0),
     }
     const queryParam = this.genSignParam(param)
-    return HTTP.get(`${url}?${queryParam}`).then(res => {
-      return Promise.resolve(JSON.parse(res.responseText || "{}"))
-    });
+    const res = await HTTP.get(`${url}?${queryParam}`)
+    return await Promise.resolve(JSON.parse(res.responseText || "{}"))
   }
-  getPlayURLThailand(req, ak, area) {
+  async getPlayURLThailand(req, ak, area) {
     const params = `?${req._params}&mobi_app=bstar_a&s_locale=zh_SG`;
     const newParams = UTILS.generateMobiPlayUrlParams(params, 'th');
-    return HTTP.get(`//${this.server}/intl/gateway/v2/ogv/playurl?${newParams}`).then(res => {
-      // 参考：哔哩漫游 油猴插件
-      // const upos = localStorage.upos||""
-      // const isReplaceAkamai = localStorage.replaceAkamai === "true"
-      // const _params = UTILS._params2obj(req._params)
-      // const responseText = UTILS.replaceUpos(res.responseText, uposMap[upos], isReplaceAkamai, 'th')
-      let result = JSON.parse(res.responseText || "{}")
-      if (result.code !== 0) return Promise.reject(result);
-      return Promise.resolve(UTILS.fixThailandPlayUrlJson(result));
-    })
+    const res = await HTTP.get(`//${this.server}/intl/gateway/v2/ogv/playurl?${newParams}`)
+    // 参考：哔哩漫游 油猴插件
+    // const upos = localStorage.upos||""
+    // const isReplaceAkamai = localStorage.replaceAkamai === "true"
+    // const _params = UTILS._params2obj(req._params)
+    // const responseText = UTILS.replaceUpos(res.responseText, uposMap[upos], isReplaceAkamai, 'th')
+    let result = JSON.parse(res.responseText || "{}")
+    if (result.code !== 0) return Promise.reject(result)
+    return await Promise.resolve(UTILS.fixThailandPlayUrlJson(result))
   }
 
   searchBangumi(params, area) {
@@ -298,7 +292,7 @@ class BiliBiliApi {
       let path = "x/v2/search/type"
       try {
         params.access_key = UTILS.getAccessToken()
-      }catch (e) {
+      } catch (e) {
         console.error('获取access token异常：', e)
       }
       if (area === 'th') {
@@ -332,26 +326,26 @@ class BiliBiliApi {
     })
   }
 
-  searchBangumi2(params, area, buvid3 = '') {
+  async searchBangumi2(params, area, buvid3 = '') {
     let path = "x/web-interface/search/type"
     if (area === "th") path = "intl/gateway/v2/app/search/type"
     const url = `roaming://${this.server}/${path}?${params}&area=${area}${area === "th" ? '&type=7' : ''}`
 
-    return HTTP.get(url, {'x-cookie': `buvid3=${buvid3}`}).then(res => {
-      log.log('search result:', res)
-      log.log(res.responseText)
-      try {
+    const res = await HTTP.get(url, { 'x-cookie': `buvid3=${buvid3}` })
+    log.log('search result:', res)
+    log.log(res.responseText)
+    try {
 
-        const resp = JSON.parse(res.responseText)
-        log.log("searchBangumi: ", resp)
-        if (area === "th")
-          return Promise.resolve(UTILS.handleTHSearchResult(resp.data.items || []))
-        else
-          return Promise.resolve(resp.data?.result || [])
-      } catch (e) {
-        return Promise.resolve(e)
-      }
-    })
+      const resp = JSON.parse(res.responseText)
+      log.log("searchBangumi: ", resp)
+      if (area === "th")
+        return Promise.resolve(UTILS.handleTHSearchResult(resp.data.items || []))
+
+      else
+        return Promise.resolve(resp.data?.result || [])
+    } catch (e) {
+      return Promise.resolve(e)
+    }
   }
 
   /**
@@ -359,16 +353,15 @@ class BiliBiliApi {
    *
    * @param {string} dynamicId
    */
-  getDynamicDetail(dynamicId) {
+  async getDynamicDetail(dynamicId) {
     const url = `https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/get_dynamic_detail?dynamic_id=${dynamicId}`
-    return HTTP.get(url).then(res => {
-      const resp = JSON.parse(res.responseText)
-      // log.log('dynamicDetail:', resp)
-      if (resp.code === 0) {
-        return Promise.resolve(resp)
-      }
-      return Promise.reject(resp)
-    })
+    const res = await HTTP.get(url)
+    const resp = JSON.parse(res.responseText)
+    // log.log('dynamicDetail:', resp)
+    if (resp.code === 0) {
+      return Promise.resolve(resp)
+    }
+    return await Promise.reject(resp)
   }
 
   /**
@@ -376,19 +369,18 @@ class BiliBiliApi {
    *
    * @param {string} userId
    */
-  getUserCard(userId) {
+  async getUserCard(userId) {
     const url = `https://api.bilibili.com/x/web-interface/card?mid=${userId}`
-    return HTTP.get(url).then(res => {
-      const resp = JSON.parse(res.responseText)
-      // log.log('dynamicDetail:', resp)
-      if (resp.code === 0) {
-        return Promise.resolve(resp)
-      }
-      return Promise.reject(resp)
-    })
+    const res = await HTTP.get(url)
+    const resp = JSON.parse(res.responseText)
+    // log.log('dynamicDetail:', resp)
+    if (resp.code === 0) {
+      return Promise.resolve(resp)
+    }
+    return await Promise.reject(resp)
   }
 
-  genDeviceId(){
+  genDeviceId() {
     let deviceId = localStorage.getItem('device_id')
     if (deviceId != null) return deviceId
     deviceId = hex_md5(`${Math.random()}`) + hex_md5(`${Math.random()}`)
@@ -427,7 +419,7 @@ class BiliBiliApi {
       spm_id: 'from_spmid',
       statistics: '{"appId":5,"platform":3,"version":"1.44.2","abtest":""}',
       sys_ver: '29',
-      ts: (Date.now()/1000).toFixed(0)
+      ts: (Date.now() / 1000).toFixed(0)
     }
     const _resp = await HTTP.post(url, this.genSignParam(param), {
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -473,7 +465,7 @@ class BiliBiliApi {
       s_locale: 'zh_CN',
       spm_id: 'from_spmid',
       statistics: '{"appId":5,"platform":3,"version":"1.44.2","abtest":""}',
-      ts: (Date.now()/1000).toFixed(0),
+      ts: (Date.now() / 1000).toFixed(0),
     }
     const _resp = await HTTP.post(url, this.genSignParam(param), {
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -508,8 +500,8 @@ const space_account_info_map = {
       "silence": 0,
       "coins": 0,
       "fans_badge": false,
-      "fans_medal": {"show": false, "wear": false, "medal": null},
-      "official": {"role": 3, "title": "哔哩哔哩番剧出差 官方账号", "desc": "", "type": 1},
+      "fans_medal": { "show": false, "wear": false, "medal": null },
+      "official": { "role": 3, "title": "哔哩哔哩番剧出差 官方账号", "desc": "", "type": 1 },
       "vip": {
         "type": 0,
         "status": 0,
@@ -530,9 +522,9 @@ const space_account_info_map = {
         "role": 0,
         "avatar_subscript_url": ""
       },
-      "pendant": {"pid": 0, "name": "", "image": "", "expire": 0, "image_enhance": "", "image_enhance_frame": ""},
-      "nameplate": {"nid": 0, "name": "", "image": "", "image_small": "", "level": "", "condition": ""},
-      "user_honour_info": {"mid": 0, "colour": null, "tags": []},
+      "pendant": { "pid": 0, "name": "", "image": "", "expire": 0, "image_enhance": "", "image_enhance_frame": "" },
+      "nameplate": { "nid": 0, "name": "", "image": "", "image_small": "", "level": "", "condition": "" },
+      "user_honour_info": { "mid": 0, "colour": null, "tags": [] },
       "is_followed": true,
       "top_photo": "http://i2.hdslb.com/bfs/space/cb1c3ef50e22b6096fde67febe863494caefebad.png",
       "theme": {},
@@ -549,10 +541,10 @@ const space_account_info_map = {
         "broadcast_type": 0
       },
       "birthday": "",
-      "school": {"name": ""},
-      "profession": {"name": ""},
+      "school": { "name": "" },
+      "profession": { "name": "" },
       "tags": null,
-      "series": {"user_upgrade_status": 3, "show_upgrade_window": false}
+      "series": { "user_upgrade_status": 3, "show_upgrade_window": false }
     }
   },
   "1988098633": {
@@ -569,8 +561,8 @@ const space_account_info_map = {
       "silence": 0,
       "coins": 0,
       "fans_badge": false,
-      "fans_medal": {"show": false, "wear": false, "medal": null},
-      "official": {"role": 0, "title": "", "desc": "", "type": -1},
+      "fans_medal": { "show": false, "wear": false, "medal": null },
+      "official": { "role": 0, "title": "", "desc": "", "type": -1 },
       "vip": {
         "type": 0,
         "status": 0,
@@ -591,9 +583,9 @@ const space_account_info_map = {
         "role": 0,
         "avatar_subscript_url": ""
       },
-      "pendant": {"pid": 0, "name": "", "image": "", "expire": 0, "image_enhance": "", "image_enhance_frame": ""},
-      "nameplate": {"nid": 0, "name": "", "image": "", "image_small": "", "level": "", "condition": ""},
-      "user_honour_info": {"mid": 0, "colour": null, "tags": []},
+      "pendant": { "pid": 0, "name": "", "image": "", "expire": 0, "image_enhance": "", "image_enhance_frame": "" },
+      "nameplate": { "nid": 0, "name": "", "image": "", "image_small": "", "level": "", "condition": "" },
+      "user_honour_info": { "mid": 0, "colour": null, "tags": [] },
       "is_followed": true,
       "top_photo": "http://i0.hdslb.com/bfs/space/cb1c3ef50e22b6096fde67febe863494caefebad.png",
       "theme": {},
@@ -610,10 +602,10 @@ const space_account_info_map = {
         "broadcast_type": 0
       },
       "birthday": "01-01",
-      "school": {"name": ""},
-      "profession": {"name": ""},
+      "school": { "name": "" },
+      "profession": { "name": "" },
       "tags": null,
-      "series": {"user_upgrade_status": 3, "show_upgrade_window": false}
+      "series": { "user_upgrade_status": 3, "show_upgrade_window": false }
     }
   },
   "2042149112": {
@@ -630,8 +622,8 @@ const space_account_info_map = {
       "silence": 0,
       "coins": 0,
       "fans_badge": false,
-      "fans_medal": {"show": false, "wear": false, "medal": null},
-      "official": {"role": 0, "title": "", "desc": "", "type": -1},
+      "fans_medal": { "show": false, "wear": false, "medal": null },
+      "official": { "role": 0, "title": "", "desc": "", "type": -1 },
       "vip": {
         "type": 0,
         "status": 0,
@@ -652,9 +644,9 @@ const space_account_info_map = {
         "role": 0,
         "avatar_subscript_url": ""
       },
-      "pendant": {"pid": 0, "name": "", "image": "", "expire": 0, "image_enhance": "", "image_enhance_frame": ""},
-      "nameplate": {"nid": 0, "name": "", "image": "", "image_small": "", "level": "", "condition": ""},
-      "user_honour_info": {"mid": 0, "colour": null, "tags": []},
+      "pendant": { "pid": 0, "name": "", "image": "", "expire": 0, "image_enhance": "", "image_enhance_frame": "" },
+      "nameplate": { "nid": 0, "name": "", "image": "", "image_small": "", "level": "", "condition": "" },
+      "user_honour_info": { "mid": 0, "colour": null, "tags": [] },
       "is_followed": true,
       "top_photo": "http://i0.hdslb.com/bfs/space/cb1c3ef50e22b6096fde67febe863494caefebad.png",
       "theme": {},
@@ -671,10 +663,10 @@ const space_account_info_map = {
         "broadcast_type": 0
       },
       "birthday": "",
-      "school": {"name": ""},
-      "profession": {"name": ""},
+      "school": { "name": "" },
+      "profession": { "name": "" },
       "tags": null,
-      "series": {"user_upgrade_status": 3, "show_upgrade_window": false}
+      "series": { "user_upgrade_status": 3, "show_upgrade_window": false }
     }
   },
 };
@@ -702,6 +694,7 @@ const uposMap = {
   akamai: 'upos-hz-mirrorakam.akamaized.net',
 };
 const AREA_MARK_CACHE = {}
+let SEASON_CACHE = null
 // HOOK
 const URL_HOOK = {
 
@@ -714,41 +707,49 @@ const URL_HOOK = {
     UTILS.enableReferer();
     log.log('HOOK', req)
     const resp = JSON.parse(req.responseText || "{}")
+    log.log('season info resp: ', resp)
     if (resp.code !== 0) {
       // 状态码异常
       const api = new BiliBiliApi()
-      log.log('upos: ', localStorage.upos)
-
       const serverList = JSON.parse(localStorage.serverList || "{}")
-      log.log('serverList: ', serverList)
 
       let seasonInfo = null;
       const params = UTILS._params2obj(req._params)
-      log.log('params: ', params)
       seasonInfo = await api.getSeasonInfoByEpSsIdOnBangumi(params.ep_id || "", params.season_id || "")
-      log.log('getSeasonInfoByEpSsIdOnBangumi:', seasonInfo)
       if (seasonInfo.code === 0) {
         // title id
         seasonInfo.result.episodes.forEach(ep => {
-          ep.title = ep.title || `第${ep.index}话 ${ep.index_title}`
+          ep.title = ep.title || `${ep.index}`
           ep.id = ep.id || ep.ep_id
-          ep.status = ep.status || 2
-          ep.rights && (ep.rights.area_limit = 0)
+          ep.status = ep.episode_status
+          ep.rights = { allow_download: 1, area_limit: 0 }
+          ep.long_title = ep.index_title
         })
+        seasonInfo.result.new_ep = seasonInfo.result.newest_ep
         seasonInfo.result.status = seasonInfo.result.status || 2
         seasonInfo.result.user_status && (seasonInfo.result.user_status.login = seasonInfo.result.user_status?.login || 1)
         // 处理部分番剧存在平台限制
         seasonInfo.result.rights.watch_platform = 0
         seasonInfo.result.rights.allow_download = 1
+        seasonInfo.result.status = 13
+        seasonInfo.result.total = seasonInfo.result.total_ep
+        seasonInfo.result.type = 1
+        const user_status = SEASON_CACHE
+        seasonInfo.result['user_status'] = {
+          area_limit: user_status.area_limit,
+          ban_area_show: user_status.ban_area_show, follow: user_status.follow,
+          follow_status: user_status.follow_status, login: user_status.login,
+          pay: user_status.pay, pay_pack_paid: user_status.pay_pack_paid,
+          sponsor: user_status.sponsor,
+        }
         log.log('seasonInfo1: ', seasonInfo)
         req.responseText = JSON.stringify(seasonInfo)
         return;
       }
-      const server = serverList['th'] || ""
+
+      let server = serverList['th'] || ""
       if (server.length === 0) return;
-
       api.setServer(server)
-
       seasonInfo = await api.getSeasonInfoByEpSsIdOnThailand(params.ep_id || "", params.season_id || "")
       log.log('去th找:', seasonInfo)
       if (seasonInfo.code !== 0 || seasonInfo.result.modules.length === 0) return;
@@ -757,14 +758,13 @@ const URL_HOOK = {
       delete seasonInfo.result.modules
       // title id
       seasonInfo.result.episodes.forEach(ep => {
-        ep.title = ep.title || `第${ep.index}话 ${ep.index_title}`
+        ep.title = ep.title || `${ep.index}`
         ep.id = ep.id || ep.ep_id
         ep.ep_id = ep.ep_id || ep.id
         ep.episode_type = 0
         ep.status = 2
         ep.duration = ep.duration || 0
         ep.index_title = ep.long_title
-        delete ep.long_title
       })
       seasonInfo.result.status = seasonInfo.result.status || 2
       seasonInfo.result.user_status && (seasonInfo.result.user_status.login = seasonInfo.result.user_status?.login || 1)
@@ -786,12 +786,13 @@ const URL_HOOK = {
   "https://api.bilibili.com/pgc/view/web/season/user/status": async (req) => {
     // log.log("解除区域限制")
     const resp = JSON.parse(req.responseText)
-    resp.result && (resp.result.area_limit = 0,resp.result.follow = 0)
+    resp.result && (resp.result.area_limit = 0)
+    SEASON_CACHE = resp.result
     req.responseText = JSON.stringify(resp)
   },
-  "https://api.bilibili.com/pgc/season/episode/web/info": async (req) => {
-    // log.log("解除区域限制")
-  },
+  // "https://api.bilibili.com/pgc/season/episode/web/info": async (req) => {
+  //   // log.log("解除区域限制")
+  // },
 
   /**
    * 获取播放链接
@@ -822,11 +823,14 @@ const URL_HOOK = {
         let playURL;
         if (AREA_MARK_CACHE[params.ep_id] !== "th")
           playURL = await api.getPlayURLApp(req, accessKey || "", AREA_MARK_CACHE[params.ep_id])
-        else
+        else {
           playURL = await api.getPlayURLThailand(req, accessKey || "", AREA_MARK_CACHE[params.ep_id])
-        playURL.result.is_preview = 0
-        playURL.result.status = 2
+          playURL.result.is_preview = 0
+          playURL.result.status = 2
+        }
         if (playURL.code === 0) {
+          const playURLNew = { code: playURL.code, message: "success", result: playURL }
+          playURL = playURLNew
           log.log('playURL:', playURL)
           // 从cache的区域中取到了播放链接
           req.responseText = UTILS.replaceUpos(JSON.stringify(playURL), uposMap[upos], isReplaceAkamai, AREA_MARK_CACHE[params.ep_id])
@@ -848,6 +852,8 @@ const URL_HOOK = {
         }
         log.log("已获取播放链接", playURL)
         if (playURL.code !== 0) continue
+        const playURLNew = { code: playURL.code, message: "success", result: playURL }
+        playURL = playURLNew
         playURL.result.is_preview = 0
         playURL.result.status = 2
         log.log('playURL:', playURL)
@@ -905,7 +911,7 @@ const URL_HOOK = {
             })
           }
         }
-      }catch (e) {
+      } catch (e) {
         console.error('动态信息1:', e)
       }
 
@@ -932,7 +938,7 @@ const URL_HOOK = {
             })
           }
         }
-      }catch (e) {
+      } catch (e) {
         console.error('动态信息2:', e)
       }
 
@@ -1018,16 +1024,16 @@ const URL_HOOK = {
     }
     // 删除旧的规则
     for (const key in URL_HOOK) {
-      if (key && key.endsWith('json.translate')){
+      if (key && key.endsWith('json.translate')) {
         delete URL_HOOK[key]
       }
     }
     // 查找简体
-    const zhHans = resp.data.subtitle?.subtitles?.find(e=>e.lan === 'zh-Hans')
-    if (!zhHans){
+    const zhHans = resp.data.subtitle?.subtitles?.find(e => e.lan === 'zh-Hans')
+    if (!zhHans) {
       // 没有简体，查找繁体
-      const zhHant = resp.data.subtitle.subtitles.find(e=>e.lan === 'zh-Hant')
-      if (!!zhHant){
+      const zhHant = resp.data.subtitle.subtitles.find(e => e.lan === 'zh-Hant')
+      if (!!zhHant) {
         // 有繁体，构造简体拦截器
         const zhHans = JSON.parse(JSON.stringify(zhHant))
         zhHans.lan = 'zh-Hans'
@@ -1121,7 +1127,7 @@ const URL_HOOK_FETCH = {
         const userInfo = space_account_info_map[params.mid]
         if (userInfo) data.res = Response.json(userInfo)
       }
-    }catch (e) {
+    } catch (e) {
       console.error('用户信息替换失败：', e)
     }
     return data.res
@@ -1158,7 +1164,7 @@ const URL_HOOK_FETCH = {
       }
       data.res = Response.json(resp)
       // debugger
-    }catch (e) {
+    } catch (e) {
       console.error('視頻信息修復失败：', e)
     }
     return data.res
@@ -1173,7 +1179,7 @@ window.getHookXMLHttpRequest = (win) => {
     return win.XMLHttpRequest
   }
   return class HttpRequest extends win.XMLHttpRequest {
-    static get isHooked () {
+    static get isHooked() {
       return true
     }
     constructor() {
@@ -1244,7 +1250,7 @@ window.getHookXMLHttpRequest = (win) => {
         try {
           if (super.responseType === 'arraybuffer')
             this.response = super.response
-        }catch (e) {
+        } catch (e) {
           console.error('响应体处理异常：', e)
         }
         try {
@@ -1259,25 +1265,25 @@ window.getHookXMLHttpRequest = (win) => {
         }
       };
     }
-    get response () {
+    get response() {
       if (this._response === null) return super.response
       return this._response
     }
-    set response (v) {
+    set response(v) {
       this._response = v
     }
 
-    get responseText () {
+    get responseText() {
       return this._responseText
     }
-    set responseText (v) {
+    set responseText(v) {
       this._responseText = v
     }
 
-    get status () {
+    get status() {
       return this._status
     }
-    set status (v) {
+    set status(v) {
       this._status = v
     }
 
@@ -1297,22 +1303,27 @@ window.getHookXMLHttpRequest = (win) => {
         const [path, params] = url.split(/\?/);
         this._url = path;
         this._params = params;
-        // if (this._params) {
-        // const params = null;
-        // if (params !== null) {
-        //   arr[1] = this._url + "?" + params
-        // }
-        // }
       }
-      return super.open(...arr)
+      if (arr)
+        return super.open(...arr)
+      else return super.open()
     }
 
+    /**
+     * @param {any} v
+     */
     set onreadystatechange(v) {
       this._onreadystatechange = v
     }
+    /**
+     * @param {any} v
+     */
     set onloadend(v) {
       this._onloadend = v
     }
+    /**
+     * @param {any} v
+     */
     set onload(v) {
       this._onload = v
     }
@@ -1341,7 +1352,7 @@ if (fetch.toString().includes('[native code]')) {
           config,
           res
         })
-      }catch (e) {
+      } catch (e) {
         console.error(e)
       }
     }
@@ -1862,10 +1873,10 @@ const UTILS = {
       type: 7,
       sign: ''
     }
-    if(area === 'th'){
+    if (area === 'th') {
       result.access_key = params.access_key
       result.sign = UTILS.genSearchSign(result, area)
-    }else{
+    } else {
       result.area = area
     }
     let a = ''

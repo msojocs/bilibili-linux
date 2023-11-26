@@ -1,4 +1,4 @@
-window.log = window.log ||{
+window.log = window.log || {
   log: console.log,
   warn: console.warn,
   error: console.error,
@@ -134,7 +134,7 @@ window.log = window.log ||{
       // from JavaScript objects to strings).
       // Do something, for example:
       log.log('index ROAMING_sendURL:', e.detail);
-      if(e.detail.includes("RoamingPage")){
+      if (e.detail.includes("RoamingPage")) {
         // 判断HTML为漫游页面
         const roamingHTML = await HTTP_INDEX.get(e.detail)
         const container = targetWindow.document.createElement('div')
@@ -169,15 +169,32 @@ window.log = window.log ||{
             },
             {
               value: 'ks3',
-              label: 'ks3(金山)'
+              label: 'ks3 (金山)'
+            }, {
+              value: 'ks3b',
+              label: 'ks3b (金山)'
+            }, {
+              value: 'ks3c',
+              label: 'ks3c (金山)'
+            }, {
+              value: 'ks32',
+              label: 'ks32 (金山)'
             },
             {
               value: 'kodo',
               label: 'kodo（七牛）'
             },
             {
+              value: 'kodob',
+              label: 'kodob（七牛）'
+            },
+            {
               value: 'cos',
               label: 'cos（腾讯）'
+            },
+            {
+              value: 'cosb',
+              label: 'cosb（腾讯）'
             },
             {
               value: 'bos',
@@ -188,8 +205,37 @@ window.log = window.log ||{
               label: 'wcs（网宿）'
             },
             {
+              value: 'wcsb',
+              label: 'wcsb（网宿）'
+            },
+            {
               value: 'hw',
               label: 'hw（251）'
+            },
+            {
+              value: 'hwb',
+              label: 'hwb（251）'
+            }, {
+              value: 'upbda2',
+              label: 'upbda2'
+            }, {
+              value: 'upws',
+              label: 'upws'
+            }, {
+              value: 'uptx',
+              label: 'uptx'
+            }, {
+              value: 'uphw',
+              label: 'uphw'
+            }, {
+              value: 'js',
+              label: 'js'
+            }, {
+              value: 'hk',
+              label: 'hk_bcache（Bilibili 海外）'
+            }, {
+              value: 'akamai',
+              label: 'akamai（Akamai ）'
             },
           ],
           uposKey: localStorage.upos || 'none',
@@ -206,22 +252,22 @@ window.log = window.log ||{
             default: [{
               validator: this.checkDomain,
               trigger: 'blur',
-            }, ],
+            },],
             mainLand: [{
               validator: this.checkDomain,
-            }, ],
+            },],
             hk: [{
               validator: this.checkDomain,
               trigger: 'blur',
-            }, ],
+            },],
             tw: [{
               validator: this.checkDomain,
               trigger: 'blur',
-            }, ],
+            },],
             th: [{
               validator: this.checkDomain,
               trigger: 'blur',
-            }, ]
+            },]
           },
           hdLogin: {
             qrCode: '',
@@ -335,7 +381,7 @@ window.log = window.log ||{
           if (!formEl) return
           formEl.resetFields()
         },
-        startHDLogin: async function() {
+        startHDLogin: async function () {
           log.info('HD Login')
           const login = new BiliBiliApi()
           try {
@@ -359,7 +405,7 @@ window.log = window.log ||{
             log.error('HD Login Error:', e)
           }
         },
-        deleteHDLogin: function() {
+        deleteHDLogin: function () {
           localStorage.removeItem('bili_accessToken_hd')
           this.hdLogin.tokenInfo = {}
         },
@@ -380,7 +426,7 @@ window.log = window.log ||{
   //     addAreaLimit()
   //   }
   // });
-  const targetOnload = (targetWindow = window)=>{
+  const targetOnload = (targetWindow = window) => {
     const url = new URL(targetWindow.location.href)
 
     // 监听hash值变动
@@ -417,13 +463,9 @@ window.log = window.log ||{
   }
 
   log.log('hook state change')
-  if (document.readyState === 'complete' || document.readyState === 'interactive') {
-    targetOnload(window)
-  }
-  else {
-    console.error('页面似乎没有加载完成')
-    window.onload = targetOnload
-  }
+  addEventListener('DOMContentLoaded ', (event) => {
+    window.onload = targetOnload(window)
+  });
 })();
 
 try {

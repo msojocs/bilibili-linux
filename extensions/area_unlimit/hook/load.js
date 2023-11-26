@@ -67,16 +67,5 @@
       }
     }
   }
-  let interval = setInterval(() => {
-    if (document.readyState === 'complete' || document.readyState === 'interactive') {
-      // 渲染完成
-      console.log('[hook]: 渲染完成，直接执行')
-      // loadAction().then(_ => {})
-      loadAction().then(_ => {})
-      clearInterval(interval)
-    }
-    else {
-      console.log('[hook]: 渲染未完成，监听执行', performance, performance.now(), performance.timing.domComplete, new Date(performance.timing.domComplete))
-    }
-  }, 500)
+  loadAction().then(_ => { })
 })()
