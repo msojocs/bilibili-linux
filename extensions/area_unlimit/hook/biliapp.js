@@ -182,39 +182,39 @@ window.log = window.log || {
             },
             {
               value: 'kodo',
-              label: 'kodo（七牛）'
+              label: 'kodo (七牛)'
             },
             {
               value: 'kodob',
-              label: 'kodob（七牛）'
+              label: 'kodob (七牛)'
             },
             {
               value: 'cos',
-              label: 'cos（腾讯）'
+              label: 'cos (腾讯)'
             },
             {
               value: 'cosb',
-              label: 'cosb（腾讯）'
+              label: 'cosb (腾讯)'
             },
             {
               value: 'bos',
-              label: 'bos（百度）'
+              label: 'bos (百度)'
             },
             {
               value: 'wcs',
-              label: 'wcs（网宿）'
+              label: 'wcs (网宿)'
             },
             {
               value: 'wcsb',
-              label: 'wcsb（网宿）'
+              label: 'wcsb (网宿)'
             },
             {
               value: 'hw',
-              label: 'hw（251）'
+              label: 'hw (251)'
             },
             {
               value: 'hwb',
-              label: 'hwb（251）'
+              label: 'hwb (251)'
             }, {
               value: 'upbda2',
               label: 'upbda2'
@@ -232,10 +232,10 @@ window.log = window.log || {
               label: 'js'
             }, {
               value: 'hk',
-              label: 'hk_bcache（Bilibili 海外）'
+              label: 'hk_bcache (Bilibili 海外)'
             }, {
               value: 'akamai',
-              label: 'akamai（Akamai ）'
+              label: 'akamai (Akamai)'
             },
           ],
           uposKey: localStorage.upos || 'none',
