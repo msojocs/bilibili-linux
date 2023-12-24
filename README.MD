@@ -117,8 +117,6 @@ https://www.electronjs.org/docs/latest/api/command-line-switches
 
 哔哩哔哩客户端版权归上海宽娱数码科技有限公司所有；
 
-本项目旨在交流学习之用，请使用者在下载后24小时内删除相关程序。
-
 对于使用本项目产生的额外问题，如账户封禁被盗等，维护者不对此负责，请谨慎使用；
 
 如有不当之处，请联系本人，邮箱：jiyecafe@gmail.com
