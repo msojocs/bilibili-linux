@@ -33,7 +33,7 @@ const sleep = (ms) => {
         console.log('seasonInfo: ', seasonInfo)
         if(seasonInfo.code !==0)return Promise.reject(seasonInfo)
 
-        const ep = seasonInfo.result.episodes.filter(ep=>ep.ep_id===parseInt(epId))
+        const ep = seasonInfo.result.main_section.episodes.filter(ep=>ep.ep_id === parseInt(epId))
         if(ep.length === 0)return Promise.reject("剧集查找失败, target:", epId)
         return Promise.resolve(ep[0])
       })

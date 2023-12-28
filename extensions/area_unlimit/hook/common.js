@@ -210,7 +210,7 @@ class BiliBiliApi {
   }
 
   getSeasonInfoByEpSsIdOnBangumi(ep_id, season_id) {
-    return HTTP.get('//bangumi.bilibili.com/view/web_api/season?' + (ep_id != '' ? `ep_id=${ep_id}` : `season_id=${season_id}`)).then(res => {
+    return HTTP.get('https://api.bilibili.com/pgc/web/season/section?' + (ep_id != '' ? `ep_id=${ep_id}` : `season_id=${season_id}`)).then(res => {
       return Promise.resolve(JSON.parse(res.responseText))
     });
   }
@@ -714,6 +714,7 @@ const URL_HOOK = {
     UTILS.enableReferer();
     log.log('HOOK', req)
     const resp = JSON.parse(req.responseText || "{}")
+    log.info('season result:', resp)
     if (resp.code !== 0) {
       // 状态码异常
       const api = new BiliBiliApi()
@@ -729,15 +730,18 @@ const URL_HOOK = {
       log.log('getSeasonInfoByEpSsIdOnBangumi:', seasonInfo)
       if (seasonInfo.code === 0) {
         // title id
-        seasonInfo.result.episodes.forEach(ep => {
+        seasonInfo.result.main_section.episodes.forEach(ep => {
           ep.title = ep.title || `第${ep.index}话 ${ep.index_title}`
           ep.id = ep.id || ep.ep_id
           ep.status = ep.status || 2
+          ep.rights = ep.rights || {}
           ep.rights && (ep.rights.area_limit = 0)
         })
+        seasonInfo.result.episodes = seasonInfo.result.main_section.episodes
         seasonInfo.result.status = seasonInfo.result.status || 2
         seasonInfo.result.user_status && (seasonInfo.result.user_status.login = seasonInfo.result.user_status?.login || 1)
         // 处理部分番剧存在平台限制
+        seasonInfo.result.rights = seasonInfo.result.rights || {}
         seasonInfo.result.rights.watch_platform = 0
         seasonInfo.result.rights.allow_download = 1
         log.log('seasonInfo1: ', seasonInfo)
