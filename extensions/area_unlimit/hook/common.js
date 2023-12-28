@@ -892,7 +892,8 @@ const URL_HOOK = {
    * @param {XMLHttpRequest} req 原请求结果
    * @returns {Promise<void>}
    */
-  "//api.bilibili.com/x/polymer/web-dynamic/v1/feed/all": async (req) => {
+  "https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/all": async (req) => {
+    log.info('动态处理1...')
     const resp = JSON.parse(req.responseText)
     if (resp.code === 0) {
       try {
@@ -920,6 +921,7 @@ const URL_HOOK = {
    * @returns {Promise<void>}
    */
   "//api.bilibili.com/x/polymer/web-dynamic/desktop/v1/feed/all": async (req) => {
+    log.info('动态处理2...')
     const resp = JSON.parse(req.responseText)
     if (resp.code === 0) {
       try {
