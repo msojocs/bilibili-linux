@@ -280,6 +280,38 @@ class BiliBiliApi {
       return Promise.resolve(JSON.parse(res.responseText || "{}"))
     });
   }
+  getSeasonInfoPgcByEpId(seasonId, epId, ak) {
+    const url = `https://${this.server}/pgc/view/v2/app/season`
+    const param = {
+      access_key: ak,
+      auto_play: 0,
+      build: 1442100,
+      c_locale: 'zh_CN',
+      channel: 'alifenfa',
+      disable_rcmd: 0,
+      from_av: '',
+      from_spmid: '0.0.0.0',
+      is_show_all_series: 0,
+      mobi_app: 'android_hd',
+      platform: 'android',
+      s_locale: 'zh_CN',
+      spmid: 'pgc.pgc-video-detail.0.0',
+      track_patch: 0,
+      trackid: '',
+      ts: (Date.now()/1000).toFixed(0),
+      ugc_ogv_unity_exp: 1
+    }
+    if (seasonId) {
+      param.season_id = seasonId
+    }
+    else if (epId) {
+      param.ep_id = epId
+    }
+    const queryParam = this.genSignParam(param)
+    return HTTP.get(`${url}?${queryParam}`).then(res => {
+      return Promise.resolve(JSON.parse(res.responseText || "{}"))
+    });
+  }
   getPlayURLThailand(req, ak, area) {
     const params = `?${req._params}&mobi_app=bstar_a&s_locale=zh_SG`;
     const newParams = UTILS.generateMobiPlayUrlParams(params, 'th');
@@ -729,36 +761,96 @@ const URL_HOOK = {
       let seasonInfo = null;
       const params = UTILS._params2obj(req._params)
       log.log('params: ', params)
-      seasonInfo = await api.getSeasonInfoByEpSsIdOnBangumi(params.ep_id || "", params.season_id || "")
+
+      seasonInfo = await api.getSeasonInfoPgcByEpId(params.season_id, params.ep_id, UTILS.getAccessToken())
+      log.info('seasonTest:', seasonInfo)
+
+      // seasonInfo = await api.getSeasonInfoByEpSsIdOnBangumi(params.ep_id || "", params.season_id || "")
       log.log('getSeasonInfoByEpSsIdOnBangumi:', seasonInfo)
       if (seasonInfo.code === 0) {
-        // title id
-        for (const ep of seasonInfo.result.main_section.episodes) {
-          ep.title = ep.title || `第${ep.index}话 ${ep.index_title}`
-          if (!ep.ep_id) {
-            const epInfo = ep.share_url.match(/ep(\d+)/)
-            if (epInfo) {
-              ep.ep_id = epInfo[1]
-              if (params.season_id)
-                window.epId2seasonId[ep.ep_id] = params.season_id
-            }
-          }
-          ep.link = ep.link || `https://www.bilibili.com/bangumi/play/ep${ep.ep_id}`
-          ep.id = ep.id || ep.ep_id
-          ep.status = ep.status || 2
-          ep.rights = ep.rights || {}
-          ep.rights && (ep.rights.area_limit = 0)
+        seasonInfo = seasonInfo.data
+        const eps = seasonInfo.modules[0].data.episodes
+        for (const ep of eps) {
+          ep.rights.area_limit = 0
+          ep.badge_info.text = ''
+          ep.rights.allow_dm = 1
         }
-        log.info('epId2seasonId:', window.epId2seasonId)
-        seasonInfo.result.episodes = seasonInfo.result.main_section.episodes
-        seasonInfo.result.status = seasonInfo.result.status || 2
-        seasonInfo.result.user_status && (seasonInfo.result.user_status.login = seasonInfo.result.user_status?.login || 1)
-        // 处理部分番剧存在平台限制
-        seasonInfo.result.rights = seasonInfo.result.rights || {}
-        seasonInfo.result.rights.watch_platform = 0
-        seasonInfo.result.rights.allow_download = 1
-        log.log('seasonInfo1: ', seasonInfo)
-        req.responseText = JSON.stringify(seasonInfo)
+        const result = {
+          code: 0,
+          message: 'success',
+          result: {
+            activity: {
+              head_bg_url: "",
+              id: 0,
+              title: ""
+            },
+            actors: '角色声优',
+            alias: seasonInfo.alias,
+            areas: seasonInfo.areas,
+            bkg_cover: '',
+            cover: seasonInfo.cover,
+            enable_vt: seasonInfo.enable_vt,
+            episodes: eps,
+            evaluate: seasonInfo.evaluate,
+            freya: {
+              bubble_desc: "ta给你说了悄悄话",
+              bubble_show_cnt: 10000,
+              icon_show: 1
+            },
+            hide_ep_vv_vt_dm: seasonInfo.test_switch.hide_ep_vv_vt_dm,
+            icon_font: seasonInfo.icon_font,
+            jp_title: '',
+            link: seasonInfo.link.replace('bilibili://pgc/media/', 'http://www.bilibili.com/bangumi/media/md'),
+            media_id: seasonInfo.media_id,
+            mode: seasonInfo.mode,
+            new_ep: seasonInfo.new_ep,
+            payment: seasonInfo.payment,
+            play_strategy: seasonInfo.play_strategy,
+            // 没找到来源
+            positive: {
+              id: 97921,
+              title: "正片"
+            },
+            publish: seasonInfo.publish,
+            rating: {
+              "count": 15773,
+              "score": 100
+            },
+            record: seasonInfo.record,
+            rights: seasonInfo.rights,
+            season_id: seasonInfo.season_id,
+            season_title: seasonInfo.season_title,
+            // 缺失
+            seasons: [],
+            // 缺失
+            section: [],
+            series: seasonInfo.series,
+            share_copy: seasonInfo.share_copy,
+            share_sub_title: seasonInfo.dynamic_subtitle,
+            share_url: seasonInfo.share_url,
+            show: {
+              wide_screen: 0
+            },
+            show_season_type: seasonInfo.show_season_type,
+            square_cover: seasonInfo.square_cover,
+            staff: '制作信息',
+            stat: seasonInfo.stat,
+            status: seasonInfo.status,
+            styles: seasonInfo.styles.map(e => e.name),
+            subtitle: seasonInfo.subtitle,
+            title: seasonInfo.title,
+            total: seasonInfo.total,
+            type: seasonInfo.type,
+            // 缺失
+            up_info: {},
+            user_status: {
+              ...seasonInfo.user_status,
+              area_limit: 0,
+              ban_area_show: 0,
+            },
+          }
+        }
+        req.responseText = JSON.stringify(result)
         return;
       }
       const server = serverList['th'] || ""
