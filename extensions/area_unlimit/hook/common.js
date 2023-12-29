@@ -209,8 +209,10 @@ class BiliBiliApi {
     return HTTP.get(`//${this.server}/pgc/view/web/season?season_id=${season_id}`);
   }
 
-  getSeasonInfoByEpSsIdOnBangumi(ep_id, season_id) {
-    return HTTP.get('https://api.bilibili.com/pgc/web/season/section?' + (ep_id != '' ? `ep_id=${ep_id}` : `season_id=${season_id}`)).then(res => {
+  getSeasonInfoByEpSsIdOnBangumi(epId, seasonId) {
+    log.info('get season info: ', epId, seasonId)
+    const sId = window.epId2seasonId[epId]
+    return HTTP.get(`https://api.bilibili.com/pgc/web/season/section?season_id=${seasonId || sId}`).then(res => {
       return Promise.resolve(JSON.parse(res.responseText))
     });
   }
@@ -702,6 +704,7 @@ const uposMap = {
   akamai: 'upos-hz-mirrorakam.akamaized.net',
 };
 const AREA_MARK_CACHE = {}
+window.epId2seasonId = window.epId2seasonId || {}
 // HOOK
 const URL_HOOK = {
 
@@ -730,13 +733,23 @@ const URL_HOOK = {
       log.log('getSeasonInfoByEpSsIdOnBangumi:', seasonInfo)
       if (seasonInfo.code === 0) {
         // title id
-        seasonInfo.result.main_section.episodes.forEach(ep => {
+        for (const ep of seasonInfo.result.main_section.episodes) {
           ep.title = ep.title || `第${ep.index}话 ${ep.index_title}`
+          if (!ep.ep_id) {
+            const epInfo = ep.share_url.match(/ep(\d+)/)
+            if (epInfo) {
+              ep.ep_id = epInfo[1]
+              if (params.season_id)
+                window.epId2seasonId[ep.ep_id] = params.season_id
+            }
+          }
+          ep.link = ep.link || `https://www.bilibili.com/bangumi/play/ep${ep.ep_id}`
           ep.id = ep.id || ep.ep_id
           ep.status = ep.status || 2
           ep.rights = ep.rights || {}
           ep.rights && (ep.rights.area_limit = 0)
-        })
+        }
+        log.info('epId2seasonId:', window.epId2seasonId)
         seasonInfo.result.episodes = seasonInfo.result.main_section.episodes
         seasonInfo.result.status = seasonInfo.result.status || 2
         seasonInfo.result.user_status && (seasonInfo.result.user_status.login = seasonInfo.result.user_status?.login || 1)
