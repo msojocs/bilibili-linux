@@ -763,10 +763,9 @@ const URL_HOOK = {
       log.log('params: ', params)
 
       seasonInfo = await api.getSeasonInfoPgcByEpId(params.season_id, params.ep_id, UTILS.getAccessToken())
-      log.info('seasonTest:', seasonInfo)
 
       // seasonInfo = await api.getSeasonInfoByEpSsIdOnBangumi(params.ep_id || "", params.season_id || "")
-      log.log('getSeasonInfoByEpSsIdOnBangumi:', seasonInfo)
+      log.log('getSeasonInfo:', seasonInfo)
       if (seasonInfo.code === 0) {
         seasonInfo = seasonInfo.data
         const eps = seasonInfo.modules[0].data.episodes
@@ -784,7 +783,7 @@ const URL_HOOK = {
               id: 0,
               title: ""
             },
-            actors: '角色声优',
+            actors: seasonInfo.actor.info,
             alias: seasonInfo.alias,
             areas: seasonInfo.areas,
             bkg_cover: '',
@@ -812,8 +811,8 @@ const URL_HOOK = {
               title: "正片"
             },
             publish: seasonInfo.publish,
-            rating: {
-              "count": 15773,
+            rating: seasonInfo.rating || {
+              "count": 1,
               "score": 100
             },
             record: seasonInfo.record,
@@ -833,7 +832,7 @@ const URL_HOOK = {
             },
             show_season_type: seasonInfo.show_season_type,
             square_cover: seasonInfo.square_cover,
-            staff: '制作信息',
+            staff: seasonInfo.staff.info,
             stat: seasonInfo.stat,
             status: seasonInfo.status,
             styles: seasonInfo.styles.map(e => e.name),
