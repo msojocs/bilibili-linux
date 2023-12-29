@@ -209,6 +209,7 @@ class BiliBiliApi {
     return HTTP.get(`//${this.server}/pgc/view/web/season?season_id=${season_id}`);
   }
 
+
   getSeasonInfoByEpSsIdOnBangumi(epId, seasonId) {
     log.info('get season info: ', epId, seasonId)
     const sId = window.epId2seasonId[epId]
@@ -736,7 +737,7 @@ const uposMap = {
   akamai: 'upos-hz-mirrorakam.akamaized.net',
 };
 const AREA_MARK_CACHE = {}
-window.epId2seasonId = window.epId2seasonId || {}
+
 // HOOK
 const URL_HOOK = {
 
@@ -894,7 +895,7 @@ const URL_HOOK = {
   "https://api.bilibili.com/pgc/view/web/season/user/status": async (req) => {
     // log.log("解除区域限制")
     const resp = JSON.parse(req.responseText)
-    resp.result && (resp.result.area_limit = 0,resp.result.follow = 0)
+    resp.result && (resp.result.area_limit = 0)
     req.responseText = JSON.stringify(resp)
   },
   "https://api.bilibili.com/pgc/season/episode/web/info": async (req) => {

@@ -3,7 +3,7 @@ let result = ""
 if(pacLink.length > 0)
   result = biliBridgePc.callNativeSync('config/roamingPAC', pacLink);
 if(result === 'error')localStorage.pacLink = ""
-console.log("[hook]: player");
+log.info("[hook]: player.js");
 
 const sleep = (ms) => {
   return new Promise((resolve, reject) => {
@@ -28,12 +28,12 @@ const sleep = (ms) => {
   const BilibiliAPI = {
     getEpDetails: (seasonId, epId)=>{
       const api = new BiliBiliApi()
-      return api.getSeasonInfoByEpSsIdOnBangumi(epId || "", seasonId || "")
+      return api.getSeasonInfoPgcByEpId(seasonId || "", epId || "", UTILS.getAccessToken())
       .then(seasonInfo=>{
         console.log('seasonInfo: ', seasonInfo)
         if(seasonInfo.code !==0)return Promise.reject(seasonInfo)
 
-        const ep = seasonInfo.result.main_section.episodes.filter(ep=>ep.ep_id === parseInt(epId))
+        const ep = seasonInfo.data.modules[0].data.episodes.filter(ep=>ep.ep_id === parseInt(epId))
         if(ep.length === 0)return Promise.reject("剧集查找失败, target:", epId)
         return Promise.resolve(ep[0])
       })
@@ -360,13 +360,13 @@ const sleep = (ms) => {
   })()
 
   window.onload = async ()=>{
-    console.log("====onload====")
+    log.info("====plarer===onload====")
     let headerLeft = null
 
     for (let i = 0; true; i++) {
       headerLeft = document.querySelector("#app > div > div.app_player--header.flex_between.draggable.db_click_max > div.app_player--header-left")
       if (headerLeft !== null) break
-      console.error('头部元素未找到！', i)
+      log.info('头部元素未找到！', i)
       await sleep(1000)
       if (i > 20) {
         return

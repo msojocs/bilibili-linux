@@ -21,10 +21,12 @@
         // Do something, for example:
         console.log('player ROAMING_sendURL: ', e.detail);
         document.removeEventListener('ROAMING_sendURL', this)
-        if (e.detail)
+        if (e.detail) {
           resolve(e.detail)
-        else
+        }
+        else {
           reject(e)
+        }
       });
       document.dispatchEvent(new CustomEvent('ROAMING_getURL', {
         detail: name // Some variable from Gmail.
@@ -67,16 +69,7 @@
       }
     }
   }
-  let interval = setInterval(() => {
-    if (document.readyState === 'complete' || document.readyState === 'interactive') {
-      // 渲染完成
-      console.log('[hook]: 渲染完成，直接执行')
-      // loadAction().then(_ => {})
-      loadAction().then(_ => {})
-      clearInterval(interval)
-    }
-    else {
-      console.log('[hook]: 渲染未完成，监听执行', performance, performance.now(), performance.timing.domComplete, new Date(performance.timing.domComplete))
-    }
-  }, 500)
+  // load.js应该直接执行，而不是等待页面加载完成在执行
+  // 是否在页面加载后执行逻辑，由具体脚本自行决定
+  loadAction().then(_ => {})
 })()

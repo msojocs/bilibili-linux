@@ -421,8 +421,8 @@ window.log = window.log ||{
     targetOnload(window)
   }
   else {
-    console.error('页面似乎没有加载完成')
-    window.onload = targetOnload
+    log.warn('页面似乎没有加载完成')
+    window.onload = () => targetOnload(window)
   }
 })();
 
