@@ -304,7 +304,7 @@ jobs:
 
     strategy:
       matrix:
-        ARCH: ['x64', 'arm64']
+        ARCH: ['x64', 'arm64', 'loong64', 'loongarch64']
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
