@@ -202,7 +202,7 @@ jobs:
           tools/build-prepare.sh
           asar e app/app.asar app/app
           npm run pkg-linux
-          rm -rf tmp/build/linux-${{ matrix.ARCH }}-unpacked
+          rm -rf tmp/build/*-unpacked
           # tools/build-appimage.sh ${{ steps.tag.outputs.tag }} ${{ matrix.ARCH }}
 
       - name: Upload artifact
@@ -286,7 +286,7 @@ jobs:
           tools/build-prepare.sh
           asar e app/app.asar app/app
           npm run pkg-win
-          rm -rf tmp/build/win-${{ matrix.ARCH }}-unpacked
+          rm -rf tmp/build/*-unpacked
           # tools/build-appimage.sh ${{ steps.tag.outputs.tag }} ${{ matrix.ARCH }}
 
       - name: Upload artifact
