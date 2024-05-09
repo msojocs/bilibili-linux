@@ -53,6 +53,8 @@ jobs:
           echo "::set-output name=name::$name"
          
       - name: Build
+        env:
+          BUILD_ARCH: ${{ matrix.ARCH }}
         run: |
           ls -l
           tools/setup-bilibili
