@@ -151,7 +151,7 @@ jobs:
   build-appimage:
     name: Build AppImage
     needs:
-      - build-src
+      - build-app
     runs-on: ubuntu-latest
 
     strategy:
@@ -210,7 +210,7 @@ jobs:
   build-win:
     name: Build Windows
     needs:
-      - build-src
+      - build-app
     runs-on: ubuntu-20.04
 
     strategy:
@@ -293,7 +293,7 @@ jobs:
   build-deepin:
     name: Build Deepin Package
     needs:
-      - build-src
+      - build-app
     runs-on: ubuntu-20.04
 
     strategy:
