@@ -30,5 +30,5 @@ tmp_dir="$root_dir/tmp"
 store_dir="$tmp_dir/build"
 mkdir -p $store_dir
 rm -rf app electron
-tar -zxf bilibili-*.src/bilibili-*.tar.gz -C .
+tar -zxf "bilibili-${BUILD_ARCH}.src/bilibili-${BUILD_ARCH}.tar.gz" -C .
  

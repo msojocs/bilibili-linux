@@ -23,7 +23,7 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x]
-        ARCH: ['x86_64']
+        ARCH: ['x64', 'arm64',  'loong64', 'loongarch64']
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -222,13 +222,16 @@ jobs:
 
     strategy:
       matrix:
-        ARCH: ['x86_64', 'ARM64']
+        ARCH: ['amd64', 'arm64']
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
       - uses: actions/checkout@v2
       - name: Download artifacts
         uses: actions/download-artifact@v2
+        with:
+          name: bilibili-${{ matrix.ARCH }}.build
+          path: tmp/src
 
       - name: Prepare
         run: |
@@ -252,18 +255,16 @@ jobs:
       # https://stackoverflow.com/questions/61096521/how-to-use-gpg-key-in-github-actions
 
       - name: Build Deb Package
+        env:
+          BUILD_ARCH: ${{ matrix.ARCH }}
         run: |
           export BUILD_VERSION=${{ steps.tag.outputs.tag }}
           ls -l
           mkdir -p tmp/build
           tools/build-prepare.sh
           echo "${{ matrix.ARCH }}"
-          if [ "${{ matrix.ARCH }}" == "ARM64" ];then
-            export BUILD_ARCH="arm64"
+          if [ "${{ matrix.ARCH }}" == "arm64" ];then
             export LD_LIBRARY_PATH="/usr/aarch64-linux-gnu/lib"
-            tools/update-electron
-          else
-            export BUILD_ARCH="amd64"
           fi
           tools/build-deepin.sh ${{ steps.tag.outputs.tag }}
 
