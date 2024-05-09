@@ -67,8 +67,8 @@ jobs:
           ls -l
           mkdir -p tmp/src
           mkdir -p tmp/build
-          tar -zcf tmp/src/bilibili-${{ steps.tag.outputs.tag }}-${{ matrix.ARCH }}.tar.gz bin app # electron
-          cp tmp/src/bilibili-${{ steps.tag.outputs.tag }}-${{ matrix.ARCH }}.tar.gz tmp/build/bilibili-${{ steps.tag.outputs.tag }}-app.tar.gz
+          tar -zcf tmp/src/bilibili-asar-${{ steps.tag.outputs.tag }}.tar.gz bin app # electron
+          cp tmp/src/bilibili-asar-${{ steps.tag.outputs.tag }}.tar.gz tmp/build/bilibili-asar-${{ steps.tag.outputs.tag }}.tar.gz
           tar -zcf tmp/build/extensions-${{ steps.tag.outputs.tag }}.tar.gz extensions
 
       - name: Upload artifact
@@ -109,10 +109,13 @@ jobs:
         uses: actions/setup-node@v2
 
       - name: Prepare
+        env:
+          BUILD_ARCH: ${{ matrix.ARCH }}
         run: |
           sudo apt install wget exiftool
           sudo npm install asar -g
           echo "$UID, $GID"
+          tools/build-prepare.sh
 
       - name: Generate TAG
         id: Tag
@@ -191,6 +194,7 @@ jobs:
         env:
           BUILD_VERSION: ${{ steps.tag.outputs.tag }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BUILD_ARCH: ${{ matrix.ARCH }}
         run: |
           ls -l
           mkdir -p tmp/build
@@ -274,6 +278,7 @@ jobs:
         env:
           BUILD_VERSION: ${{ steps.tag.outputs.tag }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BUILD_ARCH: ${{ matrix.ARCH }}
         run: |
           ls -l
           mkdir -p tmp/build
