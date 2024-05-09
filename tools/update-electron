@@ -26,7 +26,8 @@ if [ "$BUILD_ARCH" == "loong64" ];then
 elif [ "$BUILD_ARCH" == "loongarch64" ];then
   # 旧世界
   electron_version="22.3.27"
-  download_url="http://ftp.loongnix.cn/electron/LoongArch/v22.3.27/electron-v22.3.27-linux-loong64.zip"
+  # download_url="http://ftp.loongnix.cn/electron/LoongArch/v22.3.27/electron-v22.3.27-linux-loong64.zip"
+  download_url="https://github.com/msojocs/electron-loongarch/releases/download/v${electron_version}/electron-v${electron_version}-linux-loongarch64.zip"
 fi
 
 mkdir -p "$root_dir/cache" "$root_dir/tmp"
