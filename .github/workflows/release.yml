@@ -115,6 +115,8 @@ jobs:
           sudo apt install wget exiftool
           sudo npm install asar -g
           echo "$UID, $GID"
+          ls -l
+          ls -l bilibili-app.src
           tools/build-prepare.sh
 
       - name: Generate TAG
