@@ -348,6 +348,7 @@ jobs:
           if [ "${{ matrix.ARCH }}" == "arm64" ];then
             export LD_LIBRARY_PATH="/usr/aarch64-linux-gnu/lib"
           fi
+          tools/update-electron
           tools/build-deepin.sh ${{ steps.tag.outputs.tag }}
 
       - name: Upload artifact
