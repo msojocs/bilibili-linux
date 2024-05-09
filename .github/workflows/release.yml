@@ -161,7 +161,7 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x]
-        ARCH: ['x64']
+        ARCH: ['x64', 'loong64', 'loongarch64']
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -173,8 +173,17 @@ jobs:
           path: tmp/src
 
       - name: Prepare
+        env:
+          BUILD_ARCH: ${{ matrix.ARCH }}
         run: |
           sudo npm install asar -g
+          if [ "$BUILD_ARCH" == "loong64" ];then
+            # 新世界
+            npm config set registry https://registry.loongnix.cn:5873/
+          elif [ "$BUILD_ARCH" == "loongarch64" ];then
+            # 旧世界
+            npm config set registry https://registry.loongnix.cn:4873/
+          fi
           npm install
           echo "$UID, $GID"
 
@@ -201,7 +210,11 @@ jobs:
           mkdir -p tmp/build
           tools/build-prepare.sh
           asar e app/app.asar app/app
-          npm run pkg-linux
+          if [ "$BUILD_ARCH" == loong* ];then
+            npm run pkg-loongarch
+          else
+            npm run pkg-linux
+          fi
           rm -rf tmp/build/*-unpacked
           # tools/build-appimage.sh ${{ steps.tag.outputs.tag }} ${{ matrix.ARCH }}
 

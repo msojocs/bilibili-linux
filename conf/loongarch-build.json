@@ -1,0 +1,57 @@
+{
+  "buildVersion": "1",
+  "directories": {
+    "output": "tmp/build",
+    "app": "app/app"
+  },
+  "asar": true,
+  "files": [
+    "**/*",
+    {
+      "from": "node_modules",
+      "to": "node_modules"
+    }
+  ],
+  "extraResources": [
+    "extensions",
+    "app/app-update.yml"
+  ],
+  "electronVersion": "21.3.3",
+  "appId": "com.bilibili.app",
+  "mac": {
+    "target": [
+      "dmg",
+      "zip"
+    ],
+    "icon": "res/icons/bilibili.icns"
+  },
+  "win": {
+    "target": [
+      "nsis"
+    ],
+    "icon": "res/icons/bilibili.ico"
+  },
+  "nsis": {
+    "oneClick": false,
+    "installerIcon": "res/icons/bilibili.ico",
+    "uninstallerIcon": "res/icons/bilibili.ico",
+    "installerHeaderIcon": "res/icons/bilibili.ico",
+    "allowToChangeInstallationDirectory": true
+  },
+  "linux": {
+    "target": [
+      "AppImage",
+      "deb",
+      "rpm"
+    ],
+    "maintainer": "msojocs <jiyecafe@gmail.com> (https://www.jysafe.cn)",
+    "icon": "res/icons",
+    "synopsis": "BiliBili client for Linux.",
+    "description": "BiliBili client for Linux with roaming.",
+    "category": "AudioVideo"
+  },
+  "electronDownload": {
+    "mirror": "https://github.com/msojocs/electron-loongarch/",
+    "customDir": "v22.3.27"
+  }
+}
