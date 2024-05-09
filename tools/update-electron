@@ -15,6 +15,9 @@ notice() {
 }
 
 electron_version="21.3.3"
+if [ "$BUILD_ARCH" == "amd64" ];then
+  BUILD_ARCH="x64"
+fi
 download_url="https://npmmirror.com/mirrors/electron/${electron_version}/electron-v${electron_version}-linux-${BUILD_ARCH}.zip"
 if [ "$BUILD_ARCH" == "loong64" ];then
   # 新世界
