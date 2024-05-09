@@ -11,20 +11,41 @@ root_dir="$( cd -P "$( dirname "$SOURCE" )"/.. >/dev/null 2>&1 && pwd )"
 set -e
 
 notice() {
-    echo -e "\033[36m $1 \033[0m "
+  echo -e "\033[36m $1 \033[0m "
 }
 
 electron_version="21.3.3"
-download_url="https://npmmirror.com/mirrors/electron/${electron_version}/electron-v${electron_version}-linux-x64.zip"
-if [ "$BUILD_ARCH" == "arm64" ];then
-  download_url=$(echo "${download_url}" | sed "s/x64/${BUILD_ARCH}/")
+if [ "$BUILD_ARCH" == "amd64" ];then
+  BUILD_ARCH="x64"
+fi
+download_url="https://npmmirror.com/mirrors/electron/${electron_version}/electron-v${electron_version}-linux-${BUILD_ARCH}.zip"
+if [ "$BUILD_ARCH" == "loong64" ];then
+  # 新世界
+  electron_version="22.3.27"
+  download_url="https://mirrors.wsyu.edu.cn/loongarch/archlinux/laur/os/loong64/electron22-bin-22.3.27-1-loong64.pkg.tar.zst"
+elif [ "$BUILD_ARCH" == "loongarch64" ];then
+  # 旧世界
+  electron_version="22.3.27"
+  # download_url="http://ftp.loongnix.cn/electron/LoongArch/v22.3.27/electron-v22.3.27-linux-loong64.zip"
+  download_url="https://github.com/msojocs/electron-loongarch/releases/download/v${electron_version}/electron-v${electron_version}-linux-loongarch64.zip"
 fi
 
-mkdir -p "$root_dir/cache"
-if [[ ! -f "$root_dir/cache/electron-v${electron_version}-linux-x64.zip" ]];then
-    wget -c "$download_url" -O "$root_dir/cache/electron-v${electron_version}-linux-x64.zip.tmp"
-    mv "$root_dir/cache/electron-v${electron_version}-linux-x64.zip.tmp" "$root_dir/cache/electron-v${electron_version}-linux-x64.zip"
+mkdir -p "$root_dir/cache" "$root_dir/tmp"
+if [[ ! -f "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.zip" ]];then
+  if [ "$BUILD_ARCH" == "loong64" ];then
+    # 龙芯新世界
+    wget -c "$download_url" -O "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.pkg.tar.zst"
+    unzstd -f -d "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.pkg.tar.zst" -o "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.pkg.tar"
+    tar -xf "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.pkg.tar" -C "$root_dir/tmp" usr/lib/electron22
+    rm -rf "$root_dir/tmp/electron22"
+    mv "$root_dir/tmp/usr/lib/electron22" "$root_dir/tmp/electron22"
+    cd "$root_dir/tmp/electron22"
+    zip -r "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.zip" ./*
+  else
+    wget -c "$download_url" -O "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.zip.tmp"
+    mv "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.zip.tmp" "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.zip"
+  fi
 fi
 rm -rf "$root_dir/electron"
 mkdir -p "$root_dir/electron"
-unzip -o -d "$root_dir/electron" "$root_dir/cache/electron-v${electron_version}-linux-x64.zip"
+unzip -o -d "$root_dir/electron" "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.zip"

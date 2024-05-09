@@ -9,21 +9,21 @@ on:
   push:
     tags:        
       - v*
-    branches: [ master, dev]
+    branches: [ master, dev, ci]
   pull_request:
     branches: [ master ]
   # # Allows you to run this workflow manually from the Actions tab
   # workflow_dispatch:
 
 jobs:
-  build-src:
+  build-app:
     name: Build Base Packages
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         node-version: [16.x]
-        ARCH: ['x86_64']
+        ARCH: ['x64']
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -53,24 +53,98 @@ jobs:
           echo "::set-output name=name::$name"
          
       - name: Build
+        env:
+          BUILD_ARCH: ${{ matrix.ARCH }}
         run: |
           ls -l
-          tools/setup-bilibili
+          tools/update-bilibili
+          tools/fix-other.sh
+          tools/area-unlimit.sh
+          mv tmp/bili/resources/* app
   
       - name: Compress Resources
         run: |
           ls -l
           mkdir -p tmp/src
           mkdir -p tmp/build
-          tar -zcf tmp/src/bilibili-${{ steps.tag.outputs.tag }}-${{ matrix.ARCH }}.tar.gz bin app electron
+          tar -zcf tmp/src/bilibili-asar-${{ steps.tag.outputs.tag }}.tar.gz bin app # electron
+          cp tmp/src/bilibili-asar-${{ steps.tag.outputs.tag }}.tar.gz tmp/build/bilibili-asar-${{ steps.tag.outputs.tag }}.tar.gz
           tar -zcf tmp/build/extensions-${{ steps.tag.outputs.tag }}.tar.gz extensions
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2.3.1
         with:
           # Artifact name
-          name: bilibili-${{ matrix.ARCH }}.src
+          name: bilibili-app.src
           path: tmp/src
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2.3.1
+        with:
+          # Artifact name
+          name: bilibili-app.build
+          path: tmp/build
+
+  build-linux:
+    name: Build Linux Packages
+    needs:
+      - build-app
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+        ARCH: ['x64', 'arm64', 'loong64', 'loongarch64']
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: bilibili-app.src
+          path: tmp/src
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+
+      - name: Prepare
+        env:
+          BUILD_ARCH: ${{ matrix.ARCH }}
+        run: |
+          sudo apt install wget exiftool
+          sudo npm install asar -g
+          echo "$UID, $GID"
+          ls -l
+          tools/build-prepare.sh
+
+      - name: Generate TAG
+        id: Tag
+        run: |
+          tag='continuous'
+          name='Continuous Build'
+          if [ 'true' == ${{ startsWith(github.ref, 'refs/tags/') }} ];then
+            tag='${{ github.ref_name }}'
+            name='${{ github.ref_name }}'
+          fi
+          echo "tag result: $tag - $name"
+          echo "::set-output name=tag::$tag"
+          echo "::set-output name=name::$name"
+         
+      - name: Build
+        env:
+          BUILD_ARCH: ${{ matrix.ARCH }}
+        run: |
+          ls -l
+          tools/update-electron
+  
+      - name: Compress Resources
+        run: |
+          ls -l
+          mkdir -p tmp/src
+          mkdir -p tmp/build
+          tar -zcf tmp/build/bilibili-${{ steps.tag.outputs.tag }}-${{ matrix.ARCH }}.tar.gz bin app electron
+          
       - name: Upload artifact
         uses: actions/upload-artifact@v2.3.1
         with:
@@ -78,22 +152,25 @@ jobs:
           name: bilibili-${{ matrix.ARCH }}.build
           path: tmp/build
 
-  build-linux:
-    name: Build Linux
+  build-appimage:
+    name: Build AppImage
     needs:
-      - build-src
+      - build-app
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         node-version: [16.x]
-        ARCH: ['x86_64']
+        ARCH: ['x64']
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
       - uses: actions/checkout@v2
       - name: Download artifacts
         uses: actions/download-artifact@v2
+        with:
+          name: bilibili-app.src
+          path: tmp/src
 
       - name: Prepare
         run: |
@@ -118,13 +195,14 @@ jobs:
         env:
           BUILD_VERSION: ${{ steps.tag.outputs.tag }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BUILD_ARCH: ${{ matrix.ARCH }}
         run: |
           ls -l
           mkdir -p tmp/build
           tools/build-prepare.sh
           asar e app/app.asar app/app
           npm run pkg-linux
-          rm -rf tmp/build/linux-unpacked
+          rm -rf tmp/build/*-unpacked
           # tools/build-appimage.sh ${{ steps.tag.outputs.tag }} ${{ matrix.ARCH }}
 
       - name: Upload artifact
@@ -137,19 +215,22 @@ jobs:
   build-win:
     name: Build Windows
     needs:
-      - build-src
+      - build-app
     runs-on: ubuntu-20.04
 
     strategy:
       matrix:
         node-version: [16.x]
-        ARCH: ['x86_64']
+        ARCH: ['x64']
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
       - uses: actions/checkout@v2
       - name: Download artifacts
         uses: actions/download-artifact@v2
+        with:
+          name: bilibili-app.src
+          path: tmp/src
 
       - name: Prepare
         run: |
@@ -198,13 +279,14 @@ jobs:
         env:
           BUILD_VERSION: ${{ steps.tag.outputs.tag }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BUILD_ARCH: ${{ matrix.ARCH }}
         run: |
           ls -l
           mkdir -p tmp/build
           tools/build-prepare.sh
           asar e app/app.asar app/app
           npm run pkg-win
-          rm -rf tmp/build/win-unpacked
+          rm -rf tmp/build/*-unpacked
           # tools/build-appimage.sh ${{ steps.tag.outputs.tag }} ${{ matrix.ARCH }}
 
       - name: Upload artifact
@@ -217,18 +299,21 @@ jobs:
   build-deepin:
     name: Build Deepin Package
     needs:
-      - build-src
+      - build-app
     runs-on: ubuntu-20.04
 
     strategy:
       matrix:
-        ARCH: ['x86_64', 'ARM64']
+        ARCH: ['x64', 'arm64']
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
       - uses: actions/checkout@v2
       - name: Download artifacts
         uses: actions/download-artifact@v2
+        with:
+          name: bilibili-app.src
+          path: tmp/src
 
       - name: Prepare
         run: |
@@ -252,17 +337,19 @@ jobs:
       # https://stackoverflow.com/questions/61096521/how-to-use-gpg-key-in-github-actions
 
       - name: Build Deb Package
+        env:
+          BUILD_ARCH: ${{ matrix.ARCH }}
         run: |
           export BUILD_VERSION=${{ steps.tag.outputs.tag }}
           ls -l
           mkdir -p tmp/build
           tools/build-prepare.sh
           echo "${{ matrix.ARCH }}"
-          if [ "${{ matrix.ARCH }}" == "ARM64" ];then
-            export BUILD_ARCH="arm64"
+          if [ "${{ matrix.ARCH }}" == "arm64" ];then
             export LD_LIBRARY_PATH="/usr/aarch64-linux-gnu/lib"
-            tools/update-electron
-          else
+          fi
+          tools/update-electron
+          if [ "$BUILD_ARCH" == "x64" ];then
             export BUILD_ARCH="amd64"
           fi
           tools/build-deepin.sh ${{ steps.tag.outputs.tag }}
@@ -394,8 +481,8 @@ jobs:
   upload:
     name: Create release and upload artifacts
     needs:
-      - build-src
       - build-linux
+      - build-appimage
       - build-win
       - build-deepin
     runs-on: ubuntu-latest
