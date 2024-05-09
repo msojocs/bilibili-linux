@@ -519,6 +519,7 @@ jobs:
           **build/*.AppImage \
           **build/*.deb \
           **build/*.exe \
+          **build/*.rpm
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -534,3 +535,4 @@ jobs:
             **build/*.AppImage
             **build/*.deb
             **build/*.exe
+            **build/*.rpm

@@ -45,7 +45,8 @@
     },
     "linux": {
       "target": [
-        "AppImage"
+        "AppImage",
+        "rpm"
       ],
       "maintainer": "msojocs <jiyecafe@gmail.com> (https://www.jysafe.cn)",
       "icon": "res/icons",
@@ -58,6 +59,7 @@
     "pkg-win": "electron-builder --win --x64 --arm64",
     "pkg-mac": "electron-builder --mac --x64",
     "pkg-linux": "electron-builder --linux --x64 --arm64",
+    "pkg-loongarch": "electron-installer-debian --config config.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
