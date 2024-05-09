@@ -1,14 +1,15 @@
 #!/bin/bash
 
-SOURCE="${BASH_SOURCE[0]}"
-while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
-  DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
-  SOURCE="$(readlink "$SOURCE")"
-  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
-done
-root_dir="$( cd -P "$( dirname "$SOURCE" )"/.. >/dev/null 2>&1 && pwd )"
-
+root_dir=$(cd `dirname $0`/.. && pwd -P)
 set -e
+trap 'catchError $LINENO "$BASH_COMMAND"' ERR # 捕获错误情况
+catchError() {
+    exit_code=$?
+    if [ $exit_code -ne 0 ]; then
+        fail "\033[31mcommand: $2\n  at $0:$1\n  at $STEP\033[0m"
+    fi
+    exit $exit_code
+}
 
 notice() {
     echo -e "\033[36m $1 \033[0m "
@@ -18,7 +19,7 @@ fail() {
 }
 
 download_url="https://dl.hdslb.com/mobile/fixed/bili_win/bili_win-install.exe"
-
+mkdir -p "$root_dir/cache"
 if [[ ! -f "$root_dir/cache/bili_win-install.exe" ]];then
     wget -c "$download_url" -O "$root_dir/cache/bili_win-install.exe.tmp"
     mv "$root_dir/cache/bili_win-install.exe.tmp" "$root_dir/cache/bili_win-install.exe"
