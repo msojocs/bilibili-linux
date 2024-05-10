@@ -345,6 +345,7 @@ jobs:
       - name: Build Deb Package
         env:
           BUILD_ARCH: ${{ matrix.ARCH }}
+          BUILD_TAG: ${{ steps.tag.outputs.tag }}
         run: |
           export BUILD_VERSION=${{ steps.tag.outputs.tag }}
           ls -l
@@ -359,7 +360,11 @@ jobs:
             export BUILD_ARCH="amd64"
           fi
           dpkg --version
-          tools/build-deepin.sh ${{ steps.tag.outputs.tag }}
+          if [[ "$BUILD_ARCH" == loong* ]];then
+            docker compose up
+          else
+            tools/build-deepin.sh ${{ steps.tag.outputs.tag }}
+          fi
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2.3.1
