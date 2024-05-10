@@ -361,6 +361,7 @@ jobs:
           fi
           dpkg --version
           if [[ "$BUILD_ARCH" == loong* ]];then
+            cat /etc/passwd
             docker compose up
           else
             tools/build-deepin.sh ${{ steps.tag.outputs.tag }}
