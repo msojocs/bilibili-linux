@@ -96,6 +96,19 @@ https://www.electronjs.org/docs/latest/api/command-line-switches
 
 登录界面有两层，内层右键打开，外层<kbd>F12</kbd>打开。
 
+## 关于龙芯
+
+https://areweloongyet.com/docs/loong-or-loongarch
+
+|发行版|架构标识符|
+|------|----------|
+|AOSC OS|`loongarch64`|
+|Debian|<ul><li>旧世界：`loongarch64`</li><li>新世界：`loong64`</li></ul>|
+|Gentoo|`loong`|
+|Loong Arch Linux|`loong64`|
+|RPM 系|`loongarch64`|
+|Slackware|`loong64`|
+
 ## 预览
 
 ![推荐](res/screenshots/1.png)
