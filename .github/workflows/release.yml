@@ -201,7 +201,7 @@ jobs:
         run: |
           ls -l
           mkdir -p tmp/build
-          tools/build-prepare.sh
+          # tools/build-prepare.sh
           asar e app/app.asar app/app
           if [[ "$BUILD_ARCH" == loong* ]];then
             npm run pkg-loongarch
@@ -306,11 +306,11 @@ jobs:
     name: Build Deepin Package
     needs:
       - build-app
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        ARCH: ['x64', 'arm64']
+        ARCH: ['x64', 'arm64', 'loong64']
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
