@@ -75,7 +75,6 @@ jobs:
         if: steps.tag.outputs.tag == 'continuous'
         run: |
           version=$(cat conf/bilibili_version)
-          rm -rf ./bilibili-app.src
           mv ./tmp/build/bilibili-asar-continuous.tar.gz ./tmp/build/bilibili-asar-${version}-continuous.tar.gz
           mv ./tmp/build/extensions-${{ steps.tag.outputs.tag }}.tar.gz ./tmp/build/extensions-${version}-continuous.tar.gz
 
@@ -519,7 +518,8 @@ jobs:
         uses: actions/download-artifact@v2
       - name: Inspect directory after downloading artifacts
         run: |
-          ls -alFR 
+          rm -rf ./bilibili-app.src
+          ls -alFR
 
       - name: Generate TAG
         id: Tag
