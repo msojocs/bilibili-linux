@@ -40,8 +40,8 @@
   },
   "linux": {
     "target": [
-      "deb",
-      "rpm"
+      "rpm",
+      "deb"
     ],
     "maintainer": "msojocs <jiyecafe@gmail.com> (https://www.jysafe.cn)",
     "icon": "res/icons",
