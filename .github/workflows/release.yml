@@ -77,7 +77,7 @@ jobs:
           version=$(cat conf/bilibili_version)
           rm -rf ./bilibili-app.src
           mv ./tmp/build/bilibili-asar-continuous.tar.gz ./tmp/build/bilibili-asar-${version}-continuous.tar.gz
-          mv ./tmp/build/extensions-${{ steps.tag.outputs.tag }}.tar.gz /tmp/build/extensions-${version}-continuous.tar.gz
+          mv ./tmp/build/extensions-${{ steps.tag.outputs.tag }}.tar.gz ./tmp/build/extensions-${version}-continuous.tar.gz
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2.3.1
