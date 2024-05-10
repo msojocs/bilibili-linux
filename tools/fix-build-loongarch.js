@@ -16,9 +16,9 @@ const fixBuildUtil = () => {
     archJs = archJs.replace(
       '"aarch64" : "arm64";\n',
       `"aarch64" : "arm64";// loongarch64\ncase Arch.loong64:
-      return targetName === "pacman" || targetName === "rpm" || targetName === "flatpak" ? "loong64" : "loong64";
+      return targetName === "rpm" ? "loongarch64_abi1" : "loong64";
       case Arch.loongarch64:
-      return targetName === "pacman" || targetName === "rpm" || targetName === "flatpak" ? "loongarch64" : "loongarch64";
+      return targetName === "rpm" ? "loongarch64_abi2" : "loongarch64";
       `
     )
     archJs = archJs.replace(
@@ -28,6 +28,19 @@ const fixBuildUtil = () => {
     archJs = archJs.replace(
       'return Arch.arm64;\n',
       'return Arch.arm64;// loongarch64\ncase "loongarch64":\nreturn Arch.loongarch64;case "loong64":\nreturn Arch.loong64;\n'
+    )
+    archJs = archJs.replace(
+      'else if (arch === Arch.arm64) {\n',
+      `else if (arch === Arch.loongarch64) {
+        if (ext === "rpm") {
+          archName = "loongarch64_abi1";
+        }
+      } else if (arch === Arch.loong64) {
+        if (ext === "rpm") {
+          archName = "loongarch64_abi2";
+        }
+      }
+      else if (arch === Arch.arm64) {// loongarch64\n`
     )
     fs.writeFileSync(archJsPath, archJs)
   }
