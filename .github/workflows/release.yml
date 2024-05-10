@@ -201,9 +201,10 @@ jobs:
         run: |
           ls -l
           mkdir -p tmp/build
-          # tools/build-prepare.sh
+          tools/build-prepare.sh
           asar e app/app.asar app/app
           if [[ "$BUILD_ARCH" == loong* ]];then
+            dpkg --version
             npm run pkg-loongarch
           else
             npm run pkg-linux
