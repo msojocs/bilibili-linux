@@ -204,7 +204,6 @@ jobs:
           tools/build-prepare.sh
           asar e app/app.asar app/app
           if [[ "$BUILD_ARCH" == loong* ]];then
-            dpkg --version
             npm run pkg-loongarch
           else
             npm run pkg-linux
@@ -359,6 +358,7 @@ jobs:
           if [ "$BUILD_ARCH" == "x64" ];then
             export BUILD_ARCH="amd64"
           fi
+          dpkg --version
           tools/build-deepin.sh ${{ steps.tag.outputs.tag }}
 
       - name: Upload artifact
