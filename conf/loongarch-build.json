@@ -16,7 +16,7 @@
     "extensions",
     "app/app-update.yml"
   ],
-  "electronVersion": "21.3.3",
+  "electronVersion": "22.3.27",
   "appId": "com.bilibili.app",
   "mac": {
     "target": [
@@ -40,7 +40,6 @@
   },
   "linux": {
     "target": [
-      "AppImage",
       "deb",
       "rpm"
     ],
@@ -51,7 +50,7 @@
     "category": "AudioVideo"
   },
   "electronDownload": {
-    "mirror": "https://github.com/msojocs/electron-loongarch/",
+    "mirror": "https://github.com/msojocs/electron-loongarch/releases/download/",
     "customDir": "v22.3.27"
   }
 }

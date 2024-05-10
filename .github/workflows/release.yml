@@ -84,7 +84,7 @@ jobs:
           name: bilibili-app.build
           path: tmp/build
 
-  build-linux:
+  build-linux-simple:
     name: Build Linux Packages
     needs:
       - build-app
@@ -152,8 +152,8 @@ jobs:
           name: bilibili-${{ matrix.ARCH }}.build
           path: tmp/build
 
-  build-appimage:
-    name: Build AppImage
+  build-linux-package:
+    name: Build Linux Package
     needs:
       - build-app
     runs-on: ubuntu-latest
@@ -161,7 +161,7 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x]
-        ARCH: ['x64']
+        ARCH: ['x64', 'loong64']
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -317,7 +317,7 @@ jobs:
 
     strategy:
       matrix:
-        ARCH: ['x64', 'arm64']
+        ARCH: ['x64', 'arm64', 'loong64', 'loongarch64']
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -494,8 +494,8 @@ jobs:
   upload:
     name: Create release and upload artifacts
     needs:
-      - build-linux
-      - build-appimage
+      - build-linux-simple
+      - build-linux-package
       - build-win
       - build-deepin
     runs-on: ubuntu-latest
