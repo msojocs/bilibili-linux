@@ -4,7 +4,7 @@
   "description": "bilibili client",
   "main": "index.js",
   "build": {
-    "buildVersion": "",
+    "buildVersion": "1",
     "directories": {
       "output": "tmp/build",
       "app": "app/app"
