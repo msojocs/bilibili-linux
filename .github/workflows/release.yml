@@ -84,8 +84,8 @@ jobs:
           name: bilibili-app.build
           path: tmp/build
 
-  build-linux:
-    name: Build Linux Packages
+  build-linux-simple:
+    name: Build Linux Archive
     needs:
       - build-app
     runs-on: ubuntu-latest
@@ -152,8 +152,8 @@ jobs:
           name: bilibili-${{ matrix.ARCH }}.build
           path: tmp/build
 
-  build-appimage:
-    name: Build AppImage
+  build-linux-package:
+    name: Build Linux Package
     needs:
       - build-app
     runs-on: ubuntu-latest
@@ -161,7 +161,7 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x]
-        ARCH: ['x64']
+        ARCH: ['x64', 'loong64']
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -173,6 +173,8 @@ jobs:
           path: tmp/src
 
       - name: Prepare
+        env:
+          BUILD_ARCH: ${{ matrix.ARCH }}
         run: |
           sudo npm install asar -g
           npm install
@@ -201,7 +203,11 @@ jobs:
           mkdir -p tmp/build
           tools/build-prepare.sh
           asar e app/app.asar app/app
-          npm run pkg-linux
+          if [[ "$BUILD_ARCH" == loong* ]];then
+            npm run pkg-loongarch
+          else
+            npm run pkg-linux
+          fi
           rm -rf tmp/build/*-unpacked
           # tools/build-appimage.sh ${{ steps.tag.outputs.tag }} ${{ matrix.ARCH }}
 
@@ -300,11 +306,11 @@ jobs:
     name: Build Deepin Package
     needs:
       - build-app
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        ARCH: ['x64', 'arm64']
+        ARCH: ['x64', 'arm64', 'loong64']
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -339,6 +345,7 @@ jobs:
       - name: Build Deb Package
         env:
           BUILD_ARCH: ${{ matrix.ARCH }}
+          BUILD_TAG: ${{ steps.tag.outputs.tag }}
         run: |
           export BUILD_VERSION=${{ steps.tag.outputs.tag }}
           ls -l
@@ -352,7 +359,19 @@ jobs:
           if [ "$BUILD_ARCH" == "x64" ];then
             export BUILD_ARCH="amd64"
           fi
-          tools/build-deepin.sh ${{ steps.tag.outputs.tag }}
+          dpkg --version
+          if [[ "$BUILD_ARCH" == loong* ]];then
+            export DOCKER_UID=$(id -u)
+            export DOCKER_GID=$(id -g)
+            cat /etc/passwd
+            env
+            docker compose up
+            if [ -f tmp/exit_code ];then
+              exit $(cat tmp/exit_code)
+            fi
+          else
+            tools/build-deepin.sh ${{ steps.tag.outputs.tag }}
+          fi
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2.3.1
@@ -481,8 +500,8 @@ jobs:
   upload:
     name: Create release and upload artifacts
     needs:
-      - build-linux
-      - build-appimage
+      - build-linux-simple
+      - build-linux-package
       - build-win
       - build-deepin
     runs-on: ubuntu-latest
@@ -519,6 +538,7 @@ jobs:
           **build/*.AppImage \
           **build/*.deb \
           **build/*.exe \
+          **build/*.rpm
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -534,3 +554,4 @@ jobs:
             **build/*.AppImage
             **build/*.deb
             **build/*.exe
+            **build/*.rpm
