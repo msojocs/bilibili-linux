@@ -21,6 +21,6 @@ fail() {
 apt update
 apt install -y devscripts build-essential debhelper
 
-# useradd -m -G 1000 builder && passwd -d builder
+useradd -m -u $DOCKER_UID -g $DOCKER_GID builder && passwd -d builder
 cat /etc/passwd
 su - ubuntu -c "BUILD_ARCH=$BUILD_ARCH $root_dir/tools/build-deepin.sh $BUILD_TAG"

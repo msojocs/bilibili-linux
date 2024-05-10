@@ -10,5 +10,7 @@ services:
     environment:
       - BUILD_ARCH=${BUILD_ARCH:-loong64}
       - BUILD_TAG=${BUILD_TAG:-1.0.0}
+      - DOCKER_UID=${DOCKER_UID:-1000}
+      - DOCKER_GID=${DOCKER_GID:-1000}
     entrypoint: /workspace/tools/build-deepin-loongarch.sh
     userns_mode: "host"

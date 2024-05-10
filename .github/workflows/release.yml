@@ -361,6 +361,8 @@ jobs:
           fi
           dpkg --version
           if [[ "$BUILD_ARCH" == loong* ]];then
+            export DOCKER_UID=$(id -u)
+            export DOCKER_GID=$(id -g)
             cat /etc/passwd
             env
             docker compose up
