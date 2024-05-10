@@ -85,7 +85,7 @@ jobs:
           path: tmp/build
 
   build-linux-simple:
-    name: Build Linux Packages
+    name: Build Linux Archive
     needs:
       - build-app
     runs-on: ubuntu-latest
@@ -177,13 +177,6 @@ jobs:
           BUILD_ARCH: ${{ matrix.ARCH }}
         run: |
           sudo npm install asar -g
-          if [ "$BUILD_ARCH" == "loong64" ];then
-            # 新世界
-            npm config set registry https://registry.loongnix.cn:5873/
-          elif [ "$BUILD_ARCH" == "loongarch64" ];then
-            # 旧世界
-            npm config set registry https://registry.loongnix.cn:4873/
-          fi
           npm install
           echo "$UID, $GID"
 
@@ -317,7 +310,7 @@ jobs:
 
     strategy:
       matrix:
-        ARCH: ['x64', 'arm64', 'loong64', 'loongarch64']
+        ARCH: ['x64', 'arm64']
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
