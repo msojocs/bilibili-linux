@@ -366,7 +366,9 @@ jobs:
             cat /etc/passwd
             env
             docker compose up
-            exit $(cat tmp/exit_code)
+            if [ -f tmp/exit_code ];then
+              exit $(cat tmp/exit_code)
+            fi
           else
             tools/build-deepin.sh ${{ steps.tag.outputs.tag }}
           fi
