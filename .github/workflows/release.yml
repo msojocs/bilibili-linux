@@ -143,7 +143,8 @@ jobs:
           ls -l
           mkdir -p tmp/src
           mkdir -p tmp/build
-          tar -zcf tmp/build/bilibili-${{ steps.tag.outputs.tag }}-${{ matrix.ARCH }}.tar.gz bin app electron
+          version=$(cat conf/bilibili_version)
+          tar -zcf tmp/build/bilibili-${version}-${{ steps.tag.outputs.tag }}-${{ matrix.ARCH }}.tar.gz bin app electron
           
       - name: Upload artifact
         uses: actions/upload-artifact@v2.3.1
@@ -509,7 +510,8 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v2
       - name: Inspect directory after downloading artifacts
-        run: ls -alFR
+        run: |
+          ls -alFR 
 
       - name: Generate TAG
         id: Tag
@@ -523,6 +525,14 @@ jobs:
           echo "tag result: $tag - $name"
           echo "::set-output name=tag::$tag"
           echo "::set-output name=name::$name"
+
+      - name: Fix name for continuous
+        if: steps.tag.outputs.tag == 'continuous'
+        run: |
+          version=$(cat conf/bilibili_version)
+          rm -rf ./bilibili-app.src
+          mv ./bilibili-app.build/bilibili-asar-continuous.tar.gz ./bilibili-app.build/bilibili-asar-${version}-continuous.tar.gz
+          mv ./bilibili-app.build/extensions-continuous.tar.gz ./bilibili-app.build/extensions-${version}-continuous.tar.gz
 
       - name: Create release and upload artifacts
         if: startsWith(github.ref, 'refs/heads/')
