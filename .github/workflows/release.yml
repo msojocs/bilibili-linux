@@ -543,7 +543,6 @@ jobs:
           wget -q https://github.com/TheAssassin/pyuploadtool/releases/download/continuous/pyuploadtool-x86_64.AppImage
           chmod +x pyuploadtool-x86_64.AppImage
           ./pyuploadtool-x86_64.AppImage \
-          **src/*.tar.gz \
           **build/*.tar.gz \
           **build/*.AppImage \
           **build/*.deb \
@@ -559,7 +558,6 @@ jobs:
           name: ${{ steps.tag.outputs.name }}
           tag_name: ${{ steps.tag.outputs.tag }}
           files: |
-            **src/*.tar.gz
             **build/*.tar.gz
             **build/*.AppImage
             **build/*.deb
