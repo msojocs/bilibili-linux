@@ -71,6 +71,14 @@ jobs:
           cp tmp/src/bilibili-asar-${{ steps.tag.outputs.tag }}.tar.gz tmp/build/bilibili-asar-${{ steps.tag.outputs.tag }}.tar.gz
           tar -zcf tmp/build/extensions-${{ steps.tag.outputs.tag }}.tar.gz extensions
 
+      - name: Fix name for continuous
+        if: steps.tag.outputs.tag == 'continuous'
+        run: |
+          version=$(cat conf/bilibili_version)
+          rm -rf ./bilibili-app.src
+          mv ./tmp/build/bilibili-asar-continuous.tar.gz ./tmp/build/bilibili-asar-${version}-continuous.tar.gz
+          mv ./tmp/build/extensions-${{ steps.tag.outputs.tag }}.tar.gz /tmp/build/extensions-${version}-continuous.tar.gz
+
       - name: Upload artifact
         uses: actions/upload-artifact@v2.3.1
         with:
@@ -525,14 +533,6 @@ jobs:
           echo "tag result: $tag - $name"
           echo "::set-output name=tag::$tag"
           echo "::set-output name=name::$name"
-
-      - name: Fix name for continuous
-        if: steps.tag.outputs.tag == 'continuous'
-        run: |
-          version=$(cat conf/bilibili_version)
-          rm -rf ./bilibili-app.src
-          mv ./bilibili-app.build/bilibili-asar-continuous.tar.gz ./bilibili-app.build/bilibili-asar-${version}-continuous.tar.gz
-          mv ./bilibili-app.build/extensions-continuous.tar.gz ./bilibili-app.build/extensions-${version}-continuous.tar.gz
 
       - name: Create release and upload artifacts
         if: startsWith(github.ref, 'refs/heads/')
