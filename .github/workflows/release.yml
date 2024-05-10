@@ -203,7 +203,7 @@ jobs:
           mkdir -p tmp/build
           tools/build-prepare.sh
           asar e app/app.asar app/app
-          if [ "$BUILD_ARCH" == loong* ];then
+          if [[ "$BUILD_ARCH" == loong* ]];then
             npm run pkg-loongarch
           else
             npm run pkg-linux
