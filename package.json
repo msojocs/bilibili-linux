@@ -76,7 +76,6 @@
   },
   "homepage": "https://github.com/msojocs/bilibili-linux#readme",
   "devDependencies": {
-    "electron": "^21.3.3",
     "electron-builder": "^24.13.3"
   }
 }

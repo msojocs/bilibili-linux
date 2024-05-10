@@ -161,7 +161,7 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x]
-        ARCH: ['x64', 'loong64', 'loongarch64']
+        ARCH: ['x64']
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
