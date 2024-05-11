@@ -53,6 +53,9 @@
       "synopsis": "BiliBili client for Linux.",
       "description": "BiliBili client for Linux with roaming.",
       "category": "AudioVideo"
+    },
+    "appImage": {
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
     }
   },
   "scripts": {
