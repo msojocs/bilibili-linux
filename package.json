@@ -41,8 +41,7 @@
       "installerIcon": "res/icons/bilibili.ico",
       "uninstallerIcon": "res/icons/bilibili.ico",
       "installerHeaderIcon": "res/icons/bilibili.ico",
-      "allowToChangeInstallationDirectory": true,
-      "artifactName": "${productName}-${version}-${arch}.${ext}"
+      "allowToChangeInstallationDirectory": true
     },
     "linux": {
       "target": [
