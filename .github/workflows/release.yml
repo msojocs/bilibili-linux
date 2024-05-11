@@ -153,6 +153,12 @@ jobs:
           version=$(cat conf/bilibili_version)
           tar -zcf tmp/build/bilibili-${version}-${{ steps.tag.outputs.tag }}-${{ matrix.ARCH }}.tar.gz bin app electron
           
+      - name: Fix name for continuous
+        if: steps.tag.outputs.tag == 'continuous'
+        run: |
+          version=$(cat conf/bilibili_version)
+          mv ./tmp/build/bilibili-${version}-${{ steps.tag.outputs.tag }}-${{ matrix.ARCH }}.tar.gz ./tmp/build/bilibili-${{ steps.tag.outputs.tag }}-${{ matrix.ARCH }}.tar.gz
+
       - name: Upload artifact
         uses: actions/upload-artifact@v2.3.1
         with:

@@ -41,7 +41,8 @@
       "installerIcon": "res/icons/bilibili.ico",
       "uninstallerIcon": "res/icons/bilibili.ico",
       "installerHeaderIcon": "res/icons/bilibili.ico",
-      "allowToChangeInstallationDirectory": true
+      "allowToChangeInstallationDirectory": true,
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
     },
     "linux": {
       "target": [
@@ -53,6 +54,9 @@
       "synopsis": "BiliBili client for Linux.",
       "description": "BiliBili client for Linux with roaming.",
       "category": "AudioVideo"
+    },
+    "appImage": {
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
     }
   },
   "scripts": {
