@@ -16,7 +16,7 @@
     "extensions",
     "app/app-update.yml"
   ],
-  "electronVersion": "22.3.27",
+  "electronVersion": "21.3.3",
   "appId": "com.bilibili.app",
   "mac": {
     "target": [
@@ -40,17 +40,13 @@
   },
   "linux": {
     "target": [
-      "rpm",
-      "deb"
+      "AppImage",
+      "rpm"
     ],
     "maintainer": "msojocs <jiyecafe@gmail.com> (https://www.jysafe.cn)",
     "icon": "res/icons",
     "synopsis": "BiliBili client for Linux.",
     "description": "BiliBili client for Linux with roaming.",
     "category": "AudioVideo"
-  },
-  "electronDownload": {
-    "mirror": "https://github.com/msojocs/electron-loongarch/releases/download/",
-    "customDir": "v22.3.27"
   }
 }

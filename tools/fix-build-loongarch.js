@@ -76,3 +76,5 @@ console.log('fixing electron-builder...')
 fixElectronBuilder()
 
 console.log('fix builder for loongarch done.')
+
+fs.copyFileSync(path.resolve(__dirname, '../res/app-builder-lib/scheme.json'), path.resolve(__dirname, '../node_modules/app-builder-lib/scheme.json'))

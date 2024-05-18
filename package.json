@@ -3,64 +3,12 @@
   "version": "1.12.5-2",
   "description": "bilibili client",
   "main": "index.js",
-  "build": {
-    "buildVersion": "1",
-    "directories": {
-      "output": "tmp/build",
-      "app": "app/app"
-    },
-    "asar": true,
-    "files": [
-      "**/*",
-      {
-        "from": "node_modules",
-        "to": "node_modules"
-      }
-    ],
-    "extraResources": [
-      "extensions",
-      "app/app-update.yml"
-    ],
-    "electronVersion": "21.3.3",
-    "appId": "com.bilibili.app",
-    "mac": {
-      "target": [
-        "dmg",
-        "zip"
-      ],
-      "icon": "res/icons/bilibili.icns"
-    },
-    "win": {
-      "target": [
-        "nsis"
-      ],
-      "icon": "res/icons/bilibili.ico"
-    },
-    "nsis": {
-      "oneClick": false,
-      "installerIcon": "res/icons/bilibili.ico",
-      "uninstallerIcon": "res/icons/bilibili.ico",
-      "installerHeaderIcon": "res/icons/bilibili.ico",
-      "allowToChangeInstallationDirectory": true
-    },
-    "linux": {
-      "target": [
-        "AppImage",
-        "rpm"
-      ],
-      "maintainer": "msojocs <jiyecafe@gmail.com> (https://www.jysafe.cn)",
-      "icon": "res/icons",
-      "synopsis": "BiliBili client for Linux.",
-      "description": "BiliBili client for Linux with roaming.",
-      "category": "AudioVideo"
-    }
-  },
   "scripts": {
-    "pkg-win": "electron-builder --win --x64 --arm64",
-    "pkg-mac": "electron-builder --mac --x64",
-    "pkg-linux": "electron-builder --linux --x64 --arm64",
-    "pkg-loongarch": "tools/fix-build-loongarch.js && electron-builder --linux --loong64 --loongarch64 -c conf/loongarch-build.json",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "pkg-win": "electron-builder --win --x64 --arm64 -c conf/build.json",
+    "pkg-mac": "electron-builder --mac --x64 -c conf/build.json",
+    "pkg-linux": "electron-builder --linux --x64 --arm64 -c conf/build.json",
+    "pkg-loongarch": "node tools/build-loongarch.js",
+    "test": "node tools/build-loongarch.js"
   },
   "repository": {
     "type": "git",
@@ -76,6 +24,8 @@
   },
   "homepage": "https://github.com/msojocs/bilibili-linux#readme",
   "devDependencies": {
+    "app-builder-bin": "5.0.0-alpha.3",
+    "app-builder-lib": "24.13.3",
     "builder-util": "24.13.1",
     "electron-builder": "^24.13.3"
   }
