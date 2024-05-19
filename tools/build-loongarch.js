@@ -7,12 +7,14 @@ process.env['PATH'] = `${path.resolve(__dirname, '../node_modules/app-builder-bi
 const builder = require("electron-builder")
 const { execSync } = require('child_process')
 const { homedir } = require('os')
-const { fstat, existsSync } = require('fs')
+const { fstat, existsSync, mkdirSync } = require('fs')
 const Platform = builder.Platform
 
 const home = homedir()
 const file = path.resolve(home, './.cache/electron-builder/appimage/appimage-13.0.0/runtime-loong64')
 if (!existsSync(file)) {
+  const p = path.resolve(home, './.cache/electron-builder/appimage/appimage-13.0.0')
+  mkdirSync(p, { recursive: true })
   execSync('wget https://github.com/msojocs/type2-runtime-loongarch/releases/download/continuous/runtime-loong64 -O ~/.cache/electron-builder/appimage/appimage-13.0.0/runtime-loong64', {
     stdio: 'inherit'
   })
