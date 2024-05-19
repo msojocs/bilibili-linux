@@ -3,6 +3,7 @@
 ## 🚀 功能
 
 - bilibili: update to v1.13.4.3360
+- feat: 添加loong64的AppImage支持
 
 # 🌈 v1.13.2-2 / 2024-05-10
 
