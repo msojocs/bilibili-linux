@@ -5,7 +5,7 @@ process.env.USE_SYSTEM_APP_BUILDER = 'true'
 process.env['PATH'] = `${path.resolve(__dirname, '../node_modules/app-builder-bin/linux/x64')}:${process.env['PATH']}`
 
 const builder = require("electron-builder")
-const { execSync } = require('child_process')
+const { execSync, exec } = require('child_process')
 const { homedir } = require('os')
 const { fstat, existsSync, mkdirSync } = require('fs')
 const Platform = builder.Platform
@@ -15,6 +15,14 @@ const file = path.resolve(home, './.cache/electron-builder/appimage/appimage-13.
 if (!existsSync(file)) {
   const p = path.resolve(home, './.cache/electron-builder/appimage/appimage-13.0.0')
   mkdirSync(p, { recursive: true })
+  execSync('wget https://github.com/electron-userland/electron-builder-binaries/releases/download/appimage-13.0.0/appimage-13.0.0.7z -O ~/.cache/electron-builder/appimage/appimage-13.0.0/appimage-13.0.0.7z', {
+    stdio: 'inherit'
+  })
+  execSync('7z x appimage-13.0.0.7z -o. -aoa', {
+    stdio: 'inherit',
+    cwd: p
+  })
+  // https://github.com/electron-userland/electron-builder-binaries/releases/download/appimage-13.0.0/appimage-13.0.0.7z
   execSync('wget https://github.com/msojocs/type2-runtime-loongarch/releases/download/continuous/runtime-loong64 -O ~/.cache/electron-builder/appimage/appimage-13.0.0/runtime-loong64', {
     stdio: 'inherit'
   })
