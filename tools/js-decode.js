@@ -64,7 +64,7 @@ resultCode = resultCode.replace(
   function ($0, $1, $2) {
     i++;
     // 查找异常点
-    if(i === 6218){
+    if(i == 5580){
       // if(i === 3312){
       //     console.log("--->", $0, $1, $2)
       //     let result = eval('"' + $1 + '"')

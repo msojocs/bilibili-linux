@@ -38,14 +38,14 @@ cat "$root_dir/res/scripts/injectIndex.js" > "app/index.js"
 notice "====app.js===="
 
 notice "屏蔽检测"
-grep -lr 'if(!h7' --exclude="app.asar" .
-sed -i 's#if(!h7#if(false\&\&!h7#g' "app/main/app.js"
+grep -lr 'if(!Xi' --exclude="app.asar" .
+sed -i 's#if(!Xi#if(false\&\&!Xi#g' "app/main/app.js"
 # ==='win';if(!
-grep -lr 'if(!b0)' --exclude="app.asar" .
-sed -i 's#if(!b0)#if(false\&\&!b0)#' "app/main/app.js"
+grep -lr 'if(!H3)' --exclude="app.asar" .
+sed -i 's#if(!H3)#if(false\&\&!H3)#' "app/main/app.js"
 # global['bootstrapApp']();
-grep -lr 'if(h7)' --exclude="app.asar" .
-sed -i 's#if(h7)#if(!h7)#' "app/main/app.js"
+grep -lr 'if(Xi)' --exclude="app.asar" .
+sed -i 's#if(Xi)#if(!Xi)#' "app/main/app.js"
 #grep -lr '};!fb' --exclude="app.asar" .
 #sed -i 's#};!fb#};false\&\&!fb#' "app/main/app.js"
 
