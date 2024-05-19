@@ -5,7 +5,18 @@ process.env.USE_SYSTEM_APP_BUILDER = 'true'
 process.env['PATH'] = `${path.resolve(__dirname, '../node_modules/app-builder-bin/linux/x64')}:${process.env['PATH']}`
 
 const builder = require("electron-builder")
+const { execSync } = require('child_process')
+const { homedir } = require('os')
+const { fstat, existsSync } = require('fs')
 const Platform = builder.Platform
+
+const home = homedir()
+const file = path.resolve(home, './.cache/electron-builder/appimage/appimage-13.0.0/runtime-loong64')
+if (!existsSync(file)) {
+  execSync('wget https://github.com/msojocs/type2-runtime-loongarch/releases/download/continuous/runtime-loong64 -O ~/.cache/electron-builder/appimage/appimage-13.0.0/runtime-loong64', {
+    stdio: 'inherit'
+  })
+}
 
 // Let's get that intellisense working
 /**
@@ -99,6 +110,7 @@ const options = {
   })
   .catch((error) => {
     console.error(error)
+    process.exit(1)
   })
   
 })()
