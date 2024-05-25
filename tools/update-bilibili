@@ -37,8 +37,8 @@ if [[ "$BILIBILI_VERSION" != "$CONF_VERSION" ]];then
   exit 1
 fi
 
-7z x "$root_dir/cache/bili_win-install.exe" -o"$tmp_dir/bili" "\$PLUGINSDIR/app-64.7z"
-7z x "$tmp_dir/bili/\$PLUGINSDIR/app-64.7z" -o"$tmp_dir/bili" "resources"
+7z x -y "$root_dir/cache/bili_win-install.exe" -o"$tmp_dir/bili" "\$PLUGINSDIR/app-64.7z"
+7z x -y "$tmp_dir/bili/\$PLUGINSDIR/app-64.7z" -o"$tmp_dir/bili" "resources"
 rm -rf "$tmp_dir/bili/\$PLUGINSDIR/app-64.7z" "$tmp_dir/bili/resources/elevate.exe"
 
 # cd "$tmp_dir/bili/resources"
