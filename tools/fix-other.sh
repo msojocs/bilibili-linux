@@ -50,13 +50,7 @@ sed -i 's#if(d8)#if(!d8)#' "app/main/app.js"
 #sed -i 's#};!fb#};false\&\&!fb#' "app/main/app.js"
 
 notice "路由"
-grep -lr 'case"SettingsPage":s.push({name:"Settings"});return' --exclude="app.asar" .
-sed -i 's#case"SettingsPage":s.push({name:"Settings"});return#case"SettingsPage":s.push({name:"Settings"});return;default:if(s)return s.push({name:y.page});return#' app/render/assets/biliapp.*.js
-
-# ,'U@g9')]([{'label':'设置'
-notice "添加主页菜单" # ok
-grep -lr "emplate(\[{'label':'设置" --exclude="app.asar" .
-sed -i "s#emplate(\[{'label':'设置#emplate(\[{'label':'首页','click':()=>this.openMainWindowPage$.next({'page':'Root'})},{'label':'设置#" "app/main/app.js"
+cat "$root_dir/res/scripts/inject-biliapp.js" >> app/render/assets/biliapp.*.js
 
 notice "检查更新"
 # 检查更新

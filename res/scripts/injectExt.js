@@ -31,9 +31,21 @@ const HttpGet = (url, headers = {})=>{
 }
 
 // HOOK
-const {app, BrowserWindow} = require('electron');
+const {app, BrowserWindow, Menu} = require('electron');
 const path = require("path");
 const { Module } = require("module")
+
+const buildFromTemplate =  Menu.buildFromTemplate
+Menu.buildFromTemplate = function() {
+  if (arguments[0]?.[0]?.label == '设置') {
+    arguments[0]?.unshift({
+      label: '首页',
+      click: () => global.biliApp.configService.openMainWindowPage$.next({ page: 'Root' })
+    })
+    console.log('menu list:', arguments)
+  }
+  buildFromTemplate.apply(this, arguments)
+}
 
 const originalBrowserWindow = BrowserWindow;
 
