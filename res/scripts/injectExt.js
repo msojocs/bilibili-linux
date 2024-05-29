@@ -41,8 +41,12 @@ const hookBrowserWindow = (OriginalBrowserWindow) => {
   function HookedBrowserWindow(options) {
     // 修改或增加构造函数的选项
     try {
-      if (options && options.webPreferences)
-        options.webPreferences.devTools = true
+      if (options) {
+        options.frame = false
+        if (options.webPreferences) {
+          options.webPreferences.devTools = true
+        }
+      }
       console.log('======HookedBrowserWindow:', options)
     }catch(e) {
 

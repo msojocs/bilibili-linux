@@ -58,16 +58,6 @@ notice "添加主页菜单" # ok
 grep -lr "emplate(\[{'label':'设置" --exclude="app.asar" .
 sed -i "s#emplate(\[{'label':'设置#emplate(\[{'label':'首页','click':()=>this.openMainWindowPage$.next({'page':'Root'})},{'label':'设置#" "app/main/app.js"
 
-# 任务栏菜单
-notice "去除标题栏"
-# )}});
-grep -lr ')}});this\[' --exclude="app.asar" .
-sed -i "s#)}});this\\[#)},frame:false});this[#g" "app/main/app.js"
-sed -i "s#)}}),this\\[#)},frame:false}),this[#g" "app/main/app.js"
-sed -i "s#)}}),#)},frame:false}),#g" "app/main/app.js"
-# splash
-sed -i "s#erence']}})#erence']},frame:false})#g" "app/main/app.js"
-
 notice "检查更新"
 # 检查更新
 grep -lr "// noinspection SuspiciousTypeOfGuard" --exclude="app.asar" .
