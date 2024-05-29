@@ -44,7 +44,7 @@ Menu.buildFromTemplate = function() {
     })
     console.log('menu list:', arguments)
   }
-  buildFromTemplate.apply(this, arguments)
+  return buildFromTemplate.apply(this, arguments)
 }
 
 const originalBrowserWindow = BrowserWindow;
