@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/msojocs/bilibili-linux#readme",
   "devDependencies": {
+    "abstract-syntax-tree": "^2.22.0",
     "app-builder-bin": "5.0.0-alpha.3",
     "app-builder-lib": "24.13.3",
     "builder-util": "24.13.1",
