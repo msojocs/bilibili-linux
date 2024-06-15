@@ -63,23 +63,29 @@ resultCode = resultCode.replace(
   /'((\\x[a-z0-9]{2,2})+)'/g,
   function ($0, $1, $2) {
     i++;
+    let result = eval(`"${$1}"`)
     // 查找异常点
-    if(i === 24537){
-      // if(i === 3312){
-      //     console.log("--->", $0, $1, $2)
-      //     let result = eval('"' + $1 + '"')
-      //     console.log("--->", result)
-      // }
+    if(i == 2613){
+      console.log($0, $1, $2)
+      console.log('result:', result)
       return $0
     }
-    if(i === 10179){
+    if(i === 2632){
+      console.log($0, $1, $2)
+      console.log('result:', result)
       return $0
     }
-    if(i === 10163){
+    if(i === 2645){
+      console.log($0, $1, $2)
+      console.log('result:', result)
+      return $0
+    }
+    if(i === 24265){
+      // console.log($0, $1, $2)
+      // console.log('result:', result)
       return $0
     }
 
-    let result = eval('"' + $1 + '"')
     if (result.includes('*')) {
       // 不做处理
       return $0

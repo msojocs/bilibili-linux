@@ -1,7 +1,7 @@
 #!/bin/bash
 root_dir=$(cd `dirname $0`/.. && pwd -P)
 
-set -e
+set -ex
 trap 'catchError $LINENO "$BASH_COMMAND"' ERR # 捕获错误情况
 catchError() {
     exit_code=$?
@@ -41,8 +41,8 @@ notice "屏蔽检测"
 grep -lr 'if(!d8' --exclude="app.asar" .
 sed -i 's#if(!d8#if(false\&\&!d8#g' "app/main/app.js"
 # ==='win';if(!
-grep -lr 'if(!i1)' --exclude="app.asar" .
-sed -i 's#if(!i1)#if(false\&\&!i1)#' "app/main/app.js"
+grep -lr 'if(!i4)' --exclude="app.asar" .
+sed -i 's#if(!i4)#if(false\&\&!i4)#' "app/main/app.js"
 # global['bootstrapApp']();
 grep -lr 'if(d8)' --exclude="app.asar" .
 sed -i 's#if(d8)#if(!d8)#' "app/main/app.js"
