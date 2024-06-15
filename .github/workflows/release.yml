@@ -37,6 +37,7 @@ jobs:
         run: |
           sudo apt install wget exiftool
           sudo npm install asar -g
+          npm install
           echo "$UID, $GID"
 
       - name: Generate TAG
