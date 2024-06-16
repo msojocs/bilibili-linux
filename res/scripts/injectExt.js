@@ -225,7 +225,10 @@ ipcMain.handle('roaming/queryDynamicDetail', (_, dynamicId, accessKey) => {
     /**@type {import('@grpc/grpc-js').GrpcObject} */
     var client = new proto.Dynamic(
       "grpc.biliapi.net",
-      grpc.credentials.createSsl()
+      grpc.credentials.createSsl(),
+      {
+        'grpc.primary_user_agent': 'Dalvik/2.1.0 (Linux; U; Android 10; RMX2117 Build/QP1A.190711.020) 7.61.0 os/android model/Pixel XL mobi_app/android build/7610300 channel/yingyongbao innerVer/7610310 osVer/10 network/2 grpc-java-cronet/1.36.1'
+      }
     );
     var meta = new grpc.Metadata();
     meta.add('user-agent', 'Dalvik/2.1.0 (Linux; U; Android 10; RMX2117 Build/QP1A.190711.020) 7.61.0 os/android model/Pixel XL mobi_app/android build/7610300 channel/yingyongbao innerVer/7610310 osVer/10 network/2 grpc-java-cronet/1.36.1');
