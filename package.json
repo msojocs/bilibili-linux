@@ -1,6 +1,6 @@
 {
   "name": "bilibili-linux",
-  "version": "1.13.5-2",
+  "version": "1.13.6-2",
   "description": "bilibili client",
   "main": "index.js",
   "scripts": {
