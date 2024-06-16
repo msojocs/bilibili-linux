@@ -1,0 +1,431 @@
+syntax = "proto3";
+
+package bilibili.app.dynamic.v2;
+
+
+// v2动态, rpc 按字母顺序排列
+service Dynamic {
+    // 动态详情页
+    rpc DynDetail(DynDetailReq) returns (DynDetailReply);
+}
+// 动态详情页-响应
+message DynDetailReply {
+    // 动态详情
+    DynamicItem item = 1;
+}
+// 动态详情页-请求
+message DynDetailReq {
+    // 动态ID
+    string dynamic_id = 2;
+}
+
+// 动态卡片
+message DynamicItem {
+    // 动态卡片类型
+    DynamicType card_type = 1;
+    // 转发类型下，源卡片类型
+    DynamicType item_type = 2;
+    // 模块内容
+    repeated Module modules = 3;
+    // 操作相关字段
+    // Extend extend = 4;
+    // 该卡片下面是否含有折叠卡
+    int32 has_fold = 5;
+    // 透传到客户端的埋点字段。
+    string server_info = 6;
+}
+
+// 枚举-动态类型
+enum DynamicType {
+    dyn_none = 0;          // 占位
+    forward = 1;           // 转发
+    av = 2;                // 稿件: ugc、小视频、短视频、UGC转PGC
+    pgc = 3;               // pgc：番剧、PGC番剧、PGC电影、PGC电视剧、PGC国创、PGC纪录片
+    courses = 4;           // 付费更新批次
+    fold = 5;              // 折叠
+    word = 6;              // 纯文字
+    draw = 7;              // 图文
+    article = 8;           // 专栏 原仅phone端
+    music = 9;             // 音频 原仅phone端
+    common_square = 10;    // 通用卡 方形
+    common_vertical = 11;  // 通用卡 竖形
+    live = 12;             // 直播卡 只有转发态
+    medialist = 13;        // 播单 原仅phone端 只有转发态
+    courses_season = 14;   // 付费更新批次 只有转发态
+    ad = 15;               // 广告卡
+    applet = 16;           // 小程序卡
+    subscription = 17;     // 订阅卡
+    live_rcmd = 18;        // 直播推荐卡
+    banner = 19;           // 通栏
+    ugc_season = 20;       // 合集卡
+    subscription_new = 21; // 新订阅卡
+    story = 22;            //
+    topic_rcmd = 23;       //
+    cour_up = 24;          // 
+    topic_set = 25;        // 
+    notice = 26;           // 
+    text_notice = 27;      // 
+}
+// 动态模块
+message Module {
+    // 类型
+    DynModuleType module_type = 1;
+    oneof module_item {
+        // // 用户模块 1
+        // ModuleAuthor module_author = 2;
+        // // 争议黄条模块 2
+        // ModuleDispute module_dispute = 3;
+        // // 动态正文模块 3
+        // ModuleDesc module_desc = 4;
+        // 动态卡模块 4
+        ModuleDynamic module_dynamic = 5;
+        // // 点赞外露(废弃)
+        // ModuleLikeUser module_likeUser = 6;
+        // // 小卡模块 6
+        // ModuleExtend module_extend = 7;
+        // // 大卡模块 5
+        // ModuleAdditional module_additional = 8;
+        // // 计数模块 8
+        // ModuleStat module_stat = 9;
+        // // 折叠模块 9
+        // ModuleFold module_fold = 10;
+        // // 评论外露(废弃)
+        // ModuleComment module_comment = 11;
+        // // 外露交互模块(点赞、评论) 7
+        // ModuleInteraction module_interaction = 12;
+        // // 转发卡-原卡用户模块
+        // ModuleAuthorForward module_author_forward = 13;
+        // // 广告卡
+        // ModuleAd module_ad = 14;
+        // // 通栏
+        // ModuleBanner module_banner = 15;
+        // // 获取物料失败
+        // ModuleItemNull module_item_null = 16;
+        // // 分享组件
+        // ModuleShareInfo module_share_info = 17;
+        // // 相关推荐模块
+        // ModuleRecommend module_recommend = 18;
+        // // 顶部模块
+        // ModuleTop module_top = 19;
+        // // 底部模块
+        // ModuleButtom module_buttom = 20;
+        // // 转发卡计数模块
+        // ModuleStat module_stat_forward = 21;
+        // //
+        // ModuleStory module_story = 22;
+        // //
+        // ModuleTopic module_topic = 23;
+        // //
+        // ModuleTopicDetailsExt module_topic_details_ext = 24;
+        // //
+        // ModuleTopTag module_top_tag = 25;
+        // //
+        // ModuleTopicBrief module_topic_brief = 26;
+        // //
+        // ModuleTitle module_title = 27;
+        // // 
+        // ModuleButton module_button = 28;
+        // // 
+        // ModuleNotice module_notice = 29;
+        // // 
+        // ModuleOpusSummary module_opus_summary = 30;
+        // // 
+        // ModuleCopyright module_copyright = 31;
+        // // 
+        // ModuleParagraph module_paragraph = 32;
+        // // 
+        // ModuleBlocked module_blocked = 33;
+        // // 
+        // ModuleTextNotice module_text_notice = 34;
+        // // 
+        // ModuleOpusCollection module_opus_collection = 35;
+    }
+}
+// 动态模块类型
+enum DynModuleType {
+    module_none = 0;               // 占位
+    module_author = 1;             // 发布人模块
+    module_dispute = 2;            // 争议小黄条
+    module_desc = 3;               // 描述文案
+    module_dynamic = 4;            // 动态卡片
+    module_forward = 5;            // 转发模块
+    module_likeUser = 6;           // 点赞用户(废弃)
+    module_extend = 7;             // 小卡模块
+    module_additional = 8;         // 附加卡
+    module_stat = 9;               // 计数信息
+    module_fold = 10;              // 折叠
+    module_comment = 11;           // 评论外露(废弃)
+    module_interaction = 12;       // 外露交互模块(点赞、评论)
+    module_author_forward = 13;    // 转发卡的发布人模块
+    module_ad = 14;                // 广告卡模块
+    module_banner = 15;            // 通栏模块
+    module_item_null = 16;         // 获取物料失败模块
+    module_share_info = 17;        // 分享组件
+    module_recommend = 18;         // 相关推荐模块
+    module_stat_forward = 19;      // 转发卡计数信息
+    module_top = 20;               // 顶部模块
+    module_bottom = 21;            // 底部模块
+    module_story = 22;             //
+    module_topic = 23;             //
+    module_topic_details_ext = 24; //
+    module_top_tag = 25;           //
+    module_topic_brief = 26;       //
+    module_title = 27;             //
+    module_button = 28;
+    module_notice = 29;
+    module_opus_summary = 30;
+    module_copyright = 31;
+    module_paragraph = 32;
+    module_blocked = 33;
+    module_text_notice = 34;
+    module_opus_collection = 35;
+}
+// 动态-发布人模块
+// message ModuleAuthor {
+//     // 用户mid
+//     int64 mid = 1;
+//     // 时间标签
+//     string ptime_label_text = 2;
+//     // 用户详情
+//     UserInfo author = 3;
+//     // 装扮卡片
+//     DecorateCard decorate_card = 4;
+//     // 点击跳转链接
+//     string uri = 5;
+//     // 右侧操作区域 - 三点样式
+//     repeated ThreePointItem tp_list = 6;
+//     // 右侧操作区域样式枚举
+//     ModuleAuthorBadgeType badge_type = 7;
+//     // 右侧操作区域 - 按钮样式
+//     ModuleAuthorBadgeButton badge_button = 8;
+//     // 是否关注
+//     // 1:关注 0:不关注 默认0，注：点赞列表使用，其他场景不使用该字段
+//     int32 attend = 9;
+//     // 关注状态
+//     Relation relation = 10;
+//     // 右侧操作区域 - 提权样式
+//     Weight weight = 11;
+//     // 是否展示关注
+//     bool show_follow = 12;
+//     // 是否置顶
+//     bool is_top = 13;
+//     // ip属地
+//     string ptime_location_text = 14;
+//     //
+//     bool show_level = 15;
+//     // 
+//     OnlyFans only_fans = 16;
+// }
+
+
+// 动态-详情模块
+message ModuleDynamic {
+    // 类型
+    ModuleDynamicType type = 1;
+    oneof module_item {
+        //稿件
+        MdlDynArchive dyn_archive = 2;
+        // //pgc
+        // MdlDynPGC dyn_pgc = 3;
+        // //付费课程-系列
+        // MdlDynCourSeason dyn_cour_season = 4;
+        // //付费课程-批次
+        // MdlDynCourBatch dyn_cour_batch = 5;
+        // //转发卡
+        // MdlDynForward dyn_forward = 6;
+        // //图文
+        // MdlDynDraw dyn_draw = 7;
+        // //专栏
+        // MdlDynArticle dyn_article = 8;
+        // //音频
+        // MdlDynMusic dyn_music = 9;
+        // //通用卡方
+        // MdlDynCommon dyn_common = 10;
+        // //直播卡
+        // MdlDynLive dyn_common_live = 11;
+        // //播单
+        // MdlDynMedialist dyn_medialist = 12;
+        // //小程序卡
+        // MdlDynApplet dyn_applet = 13;
+        // //订阅卡
+        // MdlDynSubscription dyn_subscription = 14;
+        // //直播推荐卡
+        // MdlDynLiveRcmd dyn_live_rcmd = 15;
+        // //UGC合集
+        // MdlDynUGCSeason dyn_ugc_season = 16;
+        // //订阅卡
+        // MdlDynSubscriptionNew dyn_subscription_new = 17;
+        // //课程
+        // MdlDynCourUp dyn_cour_batch_up = 18;
+        // //话题集合
+        // MdlDynTopicSet dyn_topic_set = 19;
+    }
+}
+// 动态详情模块类型
+enum ModuleDynamicType {
+    mdl_dyn_archive = 0;           // 稿件
+    mdl_dyn_pgc = 1;               // pgc
+    mdl_dyn_cour_season = 2;       // 付费课程-系列
+    mdl_dyn_cour_batch = 3;        // 付费课程-批次
+    mdl_dyn_forward = 4;           // 转发卡
+    mdl_dyn_draw = 5;              // 图文
+    mdl_dyn_article = 6;           // 专栏
+    mdl_dyn_music = 7;             // 音频
+    mdl_dyn_common = 8;            // 通用卡方
+    mdl_dyn_live = 9;              // 直播卡
+    mdl_dyn_medialist = 10;        // 播单
+    mdl_dyn_applet = 11;           // 小程序卡
+    mdl_dyn_subscription = 12;     // 订阅卡
+    mdl_dyn_live_rcmd = 13;        // 直播推荐卡
+    mdl_dyn_ugc_season = 14;       // UGC合集
+    mdl_dyn_subscription_new = 15; // 订阅卡
+    mdl_dyn_cour_batch_up = 16;    // 课程
+    mdl_dyn_topic_set = 17;        // 话题集合
+}
+// 动态-详情模块-稿件
+message MdlDynArchive {
+    // 标题
+    string title = 1;
+    // 封面图
+    string cover = 2;
+    // 秒开地址
+    string uri = 3;
+    // 视频封面展示项 1
+    string cover_left_text_1 = 4;
+    // 视频封面展示项 2
+    string cover_left_text_2 = 5;
+    // 封面视频展示项 3
+    string cover_left_text_3 = 6;
+    // avid
+    int64 avid = 7;
+    // cid
+    int64 cid = 8;
+    // 视频源类型
+    MediaType media_type = 9;
+    // 尺寸信息
+    Dimension dimension = 10;
+    // 角标，多个角标之前有间距
+    repeated VideoBadge badge = 11;
+    // 是否能够自动播放
+    bool  can_play= 12;
+    // stype
+    VideoType stype = 13;
+    // 是否PGC
+    bool isPGC = 14;
+    // inline播放地址
+    string inlineURL = 15;
+    // PGC的epid
+    int64 EpisodeId = 16;
+    // 子类型
+    int32 SubType = 17;
+    // PGC的ssid
+    int64 PgcSeasonId = 18;
+    // 播放按钮
+    string play_icon = 19;
+    // 时长
+    int64 duration = 20;
+    // 跳转地址
+    string jump_url = 21;
+    // 番剧是否为预览视频
+    bool is_preview = 22;
+    // 新角标，多个角标之前没有间距
+    repeated VideoBadge badge_category = 23;
+    // 当前是否是pgc正片
+    bool is_feature = 24;
+    // 是否是预约召回
+    ReserveType reserve_type = 25;
+    // bvid
+    string bvid = 26;
+    // 播放数
+    int32 view = 27;
+    // 
+    bool show_premiere_badge = 28;
+    // 
+    bool premiere_card = 29;
+    // 
+    bool show_progress = 30;
+    // 
+    int64 part_duration = 31;
+    // 
+    int64 part_progress = 32;
+}
+// 播放器类型
+enum MediaType {
+    MediaTypeNone = 0; // 本地
+    MediaTypeUGC = 1;  // UGC
+    MediaTypePGC = 2;  // PGC
+    MediaTypeLive = 3; // 直播
+    MediaTypeVCS = 4;  // 小视频
+}
+// 尺寸信息
+message Dimension {
+    //
+    int64 height = 1;
+    //
+    int64 width = 2;
+    //
+    int64 rotate = 3;
+}
+// 角标信息
+message VideoBadge {
+    // 文案
+    string text = 1;
+    // 文案颜色-日间
+    string text_color = 2;
+    // 文案颜色-夜间
+    string text_color_night = 3;
+    // 背景颜色-日间
+    string bg_color = 4;
+    // 背景颜色-夜间
+    string bg_color_night = 5;
+    // 边框颜色-日间
+    string border_color = 6;
+    // 边框颜色-夜间
+    string border_color_night = 7;
+    // 样式
+    int32 bg_style = 8;
+    // 背景透明度-日间
+    int32 bg_alpha = 9;
+    // 背景透明度-夜间
+    int32 bg_alpha_night = 10;
+}
+
+// 视频类型
+enum VideoType {
+    video_type_general = 0;  //普通视频
+    video_type_dynamic = 1;  //动态视频
+    video_type_playback = 2; //直播回放视频
+    video_type_story = 3;    //
+}
+//
+enum ReserveType {
+    reserve_none = 0;   // 占位
+    reserve_recall = 1; // 预约召回
+}
+
+message Device {
+    int32 app_id = 1;
+    int32 build = 2;
+    string buvid = 3;
+    string mobi_app = 4;
+    string platform = 5;
+    string device = 6;
+    string channel = 7;
+    string brand = 8;
+    string model = 9;
+    string osver = 10;
+    string fp_local = 11;
+    string fp_remote = 12;
+    string version_name = 13;
+    string fp = 14;
+    int64 fts = 15;
+}
+message Metadata {
+    string access_key = 1;
+    string mobi_app = 2;
+    string device = 3;
+    int32 build = 4;
+    string channel = 5;
+    string buvid = 6;
+    string platform = 7;
+}

@@ -29,5 +29,10 @@
     "app-builder-lib": "24.13.3",
     "builder-util": "24.13.1",
     "electron-builder": "^24.13.3"
+  },
+  "dependencies": {
+    "@grpc/grpc-js": "^1.10.9",
+    "@grpc/proto-loader": "^0.7.13",
+    "protobufjs": "^7.3.2"
   }
 }

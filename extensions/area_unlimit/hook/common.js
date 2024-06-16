@@ -1260,8 +1260,13 @@ const URL_HOOK_FETCH = {
         // 获取动态详情
         const bili = new BiliBiliApi();
         const detail = await bili.getDynamicDetail(b2d.dynamic_id)
+        const dynamicDetail = await biliBridgePc.callNative('roaming/queryDynamicDetail', b2d.dynamic_id, UTILS.getAccessToken())
+        log.info('dynamic detail phone:', dynamicDetail)
+        const dynamic = dynamicDetail.item.modules.find(e => e.module_type === 'module_dynamic')
+        const epid = dynamic.module_dynamic.dyn_archive.uri.match(/ep\d+/)[0]
         // 构造数据
         const res = await UTILS.genVideoDetailByDynamicDetail(detail.data)
+        res.View.redirect_url = `https://www.bilibili.com/bangumi/play/${epid}`
         log.info('dynamic detail:', res)
         data.res.data = {
           code: 0,
