@@ -1136,10 +1136,10 @@ const URL_HOOK = {
       }
     }
     // 查找简体
-    const zhHans = resp.data.subtitle?.subtitles?.find(e=>e.lan === 'zh-Hans')
+    const zhHans = resp.data?.subtitle?.subtitles?.find(e=>e.lan === 'zh-Hans')
     if (!zhHans){
       // 没有简体，查找繁体
-      const zhHant = resp.data.subtitle.subtitles.find(e=>e.lan === 'zh-Hant')
+      const zhHant = resp.data?.subtitle?.subtitles?.find(e=>e.lan === 'zh-Hant')
       if (!!zhHant){
         // 有繁体，构造简体拦截器
         const zhHans = JSON.parse(JSON.stringify(zhHant))
@@ -1247,32 +1247,35 @@ const URL_HOOK_FETCH = {
    */
   "https://api.bilibili.com/x/web-interface/view/detail": async (data) => {
     const resp = await data.res.clone().json()
+    log.info('request for dynamic detail', resp)
     try {
       if (resp.code !== 0) {
         const params = UTILS._params2obj(data.urlInfo[1])
+        log.info('get dynamic id')
         // 获取dynamic_id
         const db = new DB()
         await db.open()
         const b2d = await db.getBvid2DynamicId(params.bvid)
+        log.info('get dynamic id result:', b2d)
         // 获取动态详情
         const bili = new BiliBiliApi();
         const detail = await bili.getDynamicDetail(b2d.dynamic_id)
         // 构造数据
         const res = await UTILS.genVideoDetailByDynamicDetail(detail.data)
-        log.log('res:', res)
+        log.info('dynamic detail:', res)
         data.res.data = {
           code: 0,
           message: '',
           msg: '',
           data: res
         }
-        log.log('修復結果：', JSON.stringify(data.res))
+        log.info('修復結果：', JSON.stringify(data.res))
         return data.res
       }
       data.res = Response.json(resp)
       // debugger
     }catch (e) {
-      console.error('視頻信息修復失败：', e)
+      log.error('視頻信息修復失败：', e)
     }
     return data.res
   },
@@ -2027,8 +2030,11 @@ const UTILS = {
       is_old_user: false,
     }
     const card = JSON.parse(dynamicDetail.card.card)
-    card.rights.download = 1
-    // log.log('card:', card)
+    log.log('dynamic card:', card)
+    if (card.rights)
+    {
+      card.rights.download = 1
+    }
     res.View = card
     const resp = await new BiliBiliApi().getUserCard(card.owner.mid)
     res.Card = resp.data

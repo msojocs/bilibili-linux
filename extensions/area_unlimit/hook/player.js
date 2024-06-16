@@ -400,12 +400,20 @@ const sleep = (ms) => {
   let rate175check = setInterval(()=>{
     // console.log('1.75倍速')
     try{
+      const createElement = (apeedRate) => {
+        const rate = document.createElement('li')
+        rate.className = "cpx-player-ctrl-playbackrate-menu-item"
+        rate.dataset.value = `${apeedRate}`
+        rate.textContent = `${apeedRate}x`
+        return rate
+      }
       const speedRate = window.danmakuManage.nodes.controlBottomRight.querySelector('.cpx-player-ctrl-playbackrate-menu > li:nth-child(1)')
-      const rate175 = document.createElement('li')
-      rate175.className = "cpx-player-ctrl-playbackrate-menu-item"
-      rate175.dataset.value = "1.75"
-      rate175.textContent = "1.75x"
-      speedRate.after(rate175)
+      
+      speedRate.after(createElement(1.75))
+      speedRate.before(createElement(4.0))
+      speedRate.before(createElement(3.5))
+      speedRate.before(createElement(3.0))
+      speedRate.before(createElement(2.5))
       clearInterval(rate175check)
     }catch(err){
       // console.error('添加1.75倍速失败：', err)
