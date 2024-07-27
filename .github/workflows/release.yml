@@ -321,7 +321,7 @@ jobs:
     name: Build Deepin Package
     needs:
       - build-app
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     strategy:
       matrix:
@@ -376,6 +376,7 @@ jobs:
           fi
           dpkg --version
           if [[ "$BUILD_ARCH" == loong* ]];then
+            echo "build loong"
             export DOCKER_UID=$(id -u)
             export DOCKER_GID=$(id -g)
             cat /etc/passwd
@@ -385,7 +386,12 @@ jobs:
               exit $(cat tmp/exit_code)
             fi
           else
+            echo "build simple"
             tools/build-deepin.sh ${{ steps.tag.outputs.tag }}
+            mkdir -p info/DEBIAN
+            dpkg -e ./tmp/build/io.github.msojocs.bilibili_*.deb info/DEBIAN
+            ls -l info/DEBIAN
+            rm -rf info
           fi
 
       - name: Upload artifact

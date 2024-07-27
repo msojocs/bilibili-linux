@@ -47,7 +47,7 @@ notice "架构：$BUILD_ARCH"
 if [ "$BUILD_ARCH" != "" ];then
   sed -i "s#amd64#${BUILD_ARCH}#" "$build_dir/debian/control"
 fi
-
+ls -l "$build_dir/debian"
 # desktop
 \cp -rf "$root_dir/res/bilibili.desktop" "$base_dir/entries/applications/$package_name.desktop"
 sed -i "s#Icon=bilibili#Icon=$package_name#" "$base_dir/entries/applications/$package_name.desktop"
