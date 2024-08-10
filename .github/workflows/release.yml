@@ -381,7 +381,7 @@ jobs:
             export DOCKER_GID=$(id -g)
             cat /etc/passwd
             env
-            docker compose up
+            tools/build-deepin-loongarch.sh
             if [ -f tmp/exit_code ];then
               exit $(cat tmp/exit_code)
             fi
