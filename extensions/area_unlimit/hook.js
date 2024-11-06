@@ -2,17 +2,17 @@
 const url = new URL(location.href)
 const fileName = url.pathname.substring(1).split('.')[0]
 console.log("[hook]: hook.js", fileName)
-const ext = chrome.extension
+const runtiime = chrome.runtime
 const URLS = {
-  md5: chrome.extension.getURL(`utils/md5.js`),
-  login: chrome.extension.getURL(`hook/login.js`),
-  search: chrome.extension.getURL(`hook/search.js`),
-  player: chrome.extension.getURL(`hook/player.js`),
-  biliapp: chrome.extension.getURL(`hook/biliapp.js`),
-  commonJS: chrome.extension.getURL(`hook/common.js`),
-  commonCSS: chrome.extension.getURL(`hook/common.css`),
-  RoamingPage: chrome.extension.getURL(`hook/RoamingPage.html`),
-  PlayerEnhance: chrome.extension.getURL(`hook/PlayerEnhance.html`),
+  md5: runtiime.getURL(`utils/md5.js`),
+  login: runtiime.getURL(`hook/login.js`),
+  search: runtiime.getURL(`hook/search.js`),
+  player: runtiime.getURL(`hook/player.js`),
+  biliapp: runtiime.getURL(`hook/biliapp.js`),
+  commonJS: runtiime.getURL(`hook/common.js`),
+  commonCSS: runtiime.getURL(`hook/common.css`),
+  RoamingPage: runtiime.getURL(`hook/RoamingPage.html`),
+  PlayerEnhance: runtiime.getURL(`hook/PlayerEnhance.html`),
 }
 
 var commonJS = document.createElement('script');
