@@ -907,7 +907,7 @@ const URL_HOOK = {
    * @param {XMLHttpRequest} req 原请求结果
    * @returns {Promise<void>}
    */
-  "//api.bilibili.com/pgc/player/web/playurl": async (req) => {
+  "//api.bilibili.com/pgc/player/web/v2/playurl": async (req) => {
     const resp = JSON.parse(req.responseText)
 
     // 默认pc，要referer

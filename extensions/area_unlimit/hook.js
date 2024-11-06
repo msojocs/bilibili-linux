@@ -8,7 +8,7 @@ const URLS = {
   login: runtiime.getURL(`hook/login.js`),
   search: runtiime.getURL(`hook/search.js`),
   player: runtiime.getURL(`hook/player.js`),
-  biliapp: runtiime.getURL(`hook/biliapp.js`),
+  index: runtiime.getURL(`hook/index.js`),
   commonJS: runtiime.getURL(`hook/common.js`),
   commonCSS: runtiime.getURL(`hook/common.css`),
   RoamingPage: runtiime.getURL(`hook/RoamingPage.html`),

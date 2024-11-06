@@ -32,7 +32,7 @@
         "hook/hook.js",
         "hook/player.js",
         "hook/login.js",
-        "hook/biliapp.js",
+        "hook/index.js",
         "hook/search.js",
         "hook/common.css",
         "hook/common.js",
