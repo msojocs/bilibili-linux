@@ -14,13 +14,14 @@ notice() {
   echo -e "\033[36m $1 \033[0m "
 }
 
-electron_version="21.3.3"
+electron_version="33.0.2"
 if [ "$BUILD_ARCH" == "" ];then
   BUILD_ARCH="x64"
 elif [ "$BUILD_ARCH" == "amd64" ];then
   BUILD_ARCH="x64"
 fi
 download_url="https://npmmirror.com/mirrors/electron/${electron_version}/electron-v${electron_version}-linux-${BUILD_ARCH}.zip"
+download_url="https://github.com/electron/electron/releases/download/v${electron_version}/electron-v${electron_version}-linux-x64.zip"
 if [ "$BUILD_ARCH" == "loong64" ];then
   # 新世界
   electron_version="22.3.27"
