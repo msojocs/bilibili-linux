@@ -16,7 +16,7 @@
     "extensions",
     "app/app-update.yml"
   ],
-  "electronVersion": "21.3.3",
+  "electronVersion": "33.0.2",
   "appId": "com.bilibili.app",
   "mac": {
     "target": [

@@ -253,29 +253,15 @@ jobs:
           name: bilibili-app.src
           path: tmp/src
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
       - name: Prepare
         run: |
           set -x
           echo $SHELL
           cat /etc/issue
           apt update
-          apt install -y curl
-          touch ~/.bashrc
-          touch ~/.zshrc
-          # installs nvm (Node Version Manager)
-          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
-          export NVM_DIR="$HOME/.nvm"
-          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-          [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-          # download and install Node.js (you may need to restart the terminal)
-          nvm install 22
-
-          # verifies the right Node.js version is in the environment
-          node -v # should print `v22.11.0`
-
-          # verifies the right npm version is in the environment
-          npm -v # should print `10.9.0`
           npm install asar -g
           npm install
           echo "$UID"
@@ -299,12 +285,8 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BUILD_ARCH: ${{ matrix.ARCH }}
         run: |
-          export NVM_DIR="$HOME/.nvm"
-          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-          [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
           ls -l
-          chmod 777 /github/home
+          # from @Xarth-Mai
           sudo chown -R $(whoami) /github/home
           mkdir -p tmp/build
           tools/build-prepare.sh
