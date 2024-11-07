@@ -34,5 +34,6 @@
     "@grpc/grpc-js": "^1.10.9",
     "@grpc/proto-loader": "^0.7.13",
     "protobufjs": "^7.3.2"
-  }
+  },
+  "packageManager": "pnpm@8.12.1+sha1.aa961ffce9b6eaa56307d9b5ff7e984f25b7eb58"
 }
