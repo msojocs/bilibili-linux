@@ -305,6 +305,7 @@ jobs:
 
           ls -l
           chmod 777 /github/home
+          sudo chown -R $(whoami) /github/home
           mkdir -p tmp/build
           tools/build-prepare.sh
           asar e app/app.asar app/app
