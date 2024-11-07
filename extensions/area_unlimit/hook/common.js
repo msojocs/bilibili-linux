@@ -1285,6 +1285,18 @@ const URL_HOOK_FETCH = {
     return data.res
   },
 
+  /**
+   * 视频列表
+   * 
+   * @param {{urlInfo: [string, string], config: RequestInit, res: Response }} data 原请求结果
+   * @returns {Promise<Response>}
+   */
+  "https://api.bilibili.com/x/web-interface/wbi/index/top/feed/rcmd": async (data) => {
+    const resp = await data.res.clone().json()
+    resp.data.item = resp.data.item.filter(e => e.goto !== 'ad')
+    data.res = Response.json(resp)
+    return data.res
+  }
 
 }
 
