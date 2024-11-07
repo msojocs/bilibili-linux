@@ -304,6 +304,7 @@ jobs:
           [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
           ls -l
+          chmod 777 /github/home
           mkdir -p tmp/build
           tools/build-prepare.sh
           asar e app/app.asar app/app
