@@ -982,6 +982,23 @@ const URL_HOOK = {
   },
 
   /**
+   * 获取播放链接
+   * @param {XMLHttpRequest} req 原请求结果
+   * @returns {Promise<void>}
+   */
+  '//api.bilibili.com/x/player/wbi/playurl': async (req) => {
+    // 默认pc，要referer
+    UTILS.enableReferer()
+    const upos = localStorage.upos || ""
+    const isReplaceAkamai = localStorage.replaceAkamai === "true"
+    if (localStorage.uposApplyAll === 'true')
+    {
+      // 应用到所有视频
+      req.responseText = UTILS.replaceUpos(req.responseText, uposMap[upos], isReplaceAkamai, '')
+    }
+  },
+
+  /**
    * 用户信息
    * @param {XMLHttpRequest} req 原请求结果
    * @returns {Promise<void>}

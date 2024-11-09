@@ -249,6 +249,7 @@ window.log = window.log ||{
             },
           ],
           uposKey: localStorage.upos || 'none',
+          uposApplyAll: localStorage.uposApplyAll == 'true',
           replaceAkamai: localStorage.replaceAkamai === "true",
           pacLink: localStorage.pacLink || "",
           serverList: {
@@ -327,6 +328,14 @@ window.log = window.log ||{
             message: "成功",
             type: 'success'
           })
+        },
+        setUposApplyAll: function(isAll) {
+          this.$notify({
+            title: 'Success',
+            message: "成功",
+            type: 'success'
+          })
+          localStorage.uposApplyAll = isAll ? 'true' : 'false'
         },
         changeReplaceAkamai: function () {
           this.$notify({

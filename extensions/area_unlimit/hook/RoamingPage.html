@@ -49,6 +49,8 @@
           <br>
           PAC代理(例如：https://bili.api.jysafe.cn/pac.php?proxy=127.0.0.1:7890)：
           <el-input v-model="pacLink" @change="changePACLink"></el-input>
+          <br>
+          应用到所有视频：<el-switch v-model="uposApplyAll" @change="setUposApplyAll"></el-switch>
         </div>
       </div>
       <div class="settings_content--item server-item">
