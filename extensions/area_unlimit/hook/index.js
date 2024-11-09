@@ -6,7 +6,7 @@ window.log = window.log ||{
   trace: console.trace,
 };
 (() => {
-  log.log("[hook]: biliapp.js");
+  log.log("[hook]: index.js");
   const HTTP_INDEX = {
     get(url) {
       return new Promise((resolve, reject) => {
@@ -168,28 +168,84 @@ window.log = window.log ||{
               label: '不替换'
             },
             {
-              value: 'ks3',
-              label: 'ks3(金山)'
+              value: "ali",
+              label: "ali（阿里）",
             },
             {
-              value: 'kodo',
-              label: 'kodo（七牛）'
+              value: "alib",
+              label: "alib（阿里）",
             },
             {
-              value: 'cos',
-              label: 'cos（腾讯）'
+              value: "alio1",
+              label: "alio1（阿里）",
             },
             {
-              value: 'bos',
-              label: 'bos（百度）'
+              value: "bos",
+              label: "bos（百度）",
             },
             {
-              value: 'wcs',
-              label: 'wcs（网宿）'
+              value: "cos",
+              label: "cos（腾讯）",
             },
             {
-              value: 'hw',
-              label: 'hw（251）'
+              value: "cosb",
+              label: "cosb（腾讯）",
+            },
+            {
+              value: "coso1",
+              label: "coso1（腾讯）",
+            },
+            {
+              value: "hw",
+              label: "hw（华为）",
+            },
+            {
+              value: "hwb",
+              label: "hwb（华为）",
+            },
+            {
+              value: "hwo1",
+              label: "hwo1（华为）",
+            },
+            {
+              value: "08c",
+              label: "08c（华为）",
+            },
+            {
+              value: "08h",
+              label: "08h（华为）",
+            },
+            {
+              value: "08ct",
+              label: "08ct（华为）",
+            },
+            {
+              value: "tf_hw",
+              label: "tf_hw（华为）",
+            },
+            {
+              value: "tf_tx",
+              label: "tf_tx（腾讯）",
+            },
+            {
+              value: "akamai",
+              label: "akamai（Akamai海外）",
+            },
+            {
+              value: "aliov",
+              label: "aliov（阿里海外）",
+            },
+            {
+              value: "cosov",
+              label: "cosov（腾讯海外）",
+            },
+            {
+              value: "hwov",
+              label: "hwov（华为海外）",
+            },
+            {
+              value: "hk_bcache",
+              label: "hk_bcache（Bilibili海外）",
             },
           ],
           uposKey: localStorage.upos || 'none',
