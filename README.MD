@@ -88,6 +88,12 @@ https://www.electronjs.org/docs/latest/api/command-line-switches
    --key=value
    ```
 
+## Wayland 窗口置顶操作
+
+从 v1.15.2-3 开始支持。
+
+参考规则设置：https://github.com/msojocs/bilibili-linux/issues/136#issuecomment-2480558792
+
 ## 开发者工具
 
 现已支持自行打开开发者工具，方法如下：
