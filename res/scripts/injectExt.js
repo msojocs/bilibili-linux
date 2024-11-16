@@ -99,6 +99,25 @@ Module._load = (...args) => {
   }
 }
 
+if (process.env.XDG_SESSION_TYPE === 'wayland' || process.env.WAYLAND_DISPLAY) {
+  const _setAlwaysOnTop = BrowserWindow.prototype.setAlwaysOnTop;
+  const key = '[Wayland置顶]'
+  BrowserWindow.prototype.setAlwaysOnTop = function(...args) {
+    let title = this.getTitle()
+    if (args[0] && !title.startsWith(key)) {
+      // 置顶
+      title = `${key}${title}`
+      this.setTitle(title)
+    }
+    else if(!args[0] && title.startsWith(key))
+    {
+      title = title.replace(key, '')
+      this.setTitle(title)
+    }
+    return _setAlwaysOnTop.apply(this, args)
+  }
+}
+
 const originloadURL = BrowserWindow.prototype.loadURL;
 BrowserWindow.prototype.loadURL = function(){
   this.setMinimumSize(300, 300);
