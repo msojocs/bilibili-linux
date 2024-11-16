@@ -192,7 +192,9 @@ jobs:
           BUILD_ARCH: ${{ matrix.ARCH }}
         run: |
           sudo npm install asar -g
-          npm install
+          corepack enable pnpm
+          corepack use pnpm@latest
+          pnpm install
           echo "$UID, $GID"
 
       - name: Generate TAG
