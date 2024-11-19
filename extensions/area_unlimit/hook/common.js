@@ -1309,7 +1309,7 @@ const URL_HOOK_FETCH = {
    */
   "https://api.bilibili.com/x/web-interface/wbi/index/top/feed/rcmd": async (data) => {
     const resp = await data.res.clone().json()
-    resp.data.item = resp.data.item.filter(e => e.goto !== 'ad')
+    // resp.data.item = resp.data.item.filter(e => e.goto !== 'ad')
     data.res = Response.json(resp)
     return data.res
   }
