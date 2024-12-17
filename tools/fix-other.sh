@@ -41,14 +41,13 @@ notice "屏蔽检测"
 # grep -lr 'if (!dj' --exclude="app.asar" .
 # sed -i 's#if (!dj#if(false\&\&!dj#g' "app/main/app.js"
 # ==='win';if(! 警告11
-grep -lr 'if (!iG)' --exclude="app.asar" .
-sed -i 's#if (!iG)#if(false\&\&!iG)#' "app/main/app.js"
+grep -lr 'if (!iL)' --exclude="app.asar" .
+sed -i 's#if (!iL)#if(false\&\&!iL)#' "app/main/app.js"
 # global['bootstrapApp']();
 # grep -lr 'if (dj)' --exclude="app.asar" .
 # sed -i 's#if (dj)#if(!dj)#' "app/main/app.js"
 #grep -lr '};!fb' --exclude="app.asar" .
 #sed -i 's#};!fb#};false\&\&!fb#' "app/main/app.js"
-echo "global.bootstrapApp();" >> "app/main/app.js"
 
 notice "路由"
 cat "$root_dir/res/scripts/inject-biliapp.js" >> app/render/assets/biliapp.*.js

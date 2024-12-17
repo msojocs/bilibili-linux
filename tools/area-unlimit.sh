@@ -30,12 +30,6 @@ cd "$res_dir"
 
 asar e "app.asar" app
 
-notice "扩展注入"
-cat "$root_dir/res/scripts/injectExt.js" > "app/main/temp.js"
-cat "app/main/app.js" >> "app/main/temp.js"
-rm -f "app/main/app.js"
-mv "app/main/temp.js" "app/main/app.js"
-
 notice "暴露弹幕管理接口"
 grep -lr "this.initDanmaku(),this" --exclude="app.asar" .
 sed -i 's#this.initDanmaku(),this#this.initDanmaku(),window.danmakuManage = this,this#' "app/render/assets/lib/core.js"

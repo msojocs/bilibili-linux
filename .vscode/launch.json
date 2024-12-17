@@ -8,7 +8,7 @@
           "cwd": "${workspaceRoot}",
           "runtimeExecutable": "${workspaceRoot}/electron/electron",
           "env": {
-            // "ELECTRON_FORCE_IS_PACKAGED": "true" 
+            // "ELECTRON_FORCE_IS_PACKAGED": "true"
           },
           "args": ["app/app"],
           // "program": "${workspaceRoot}/app/app/index.js",
