@@ -2,7 +2,7 @@
 
 ## 🚀 功能
 
-- bilibili: update to v1.16.1.3899
+- bilibili: update to v1.16.1.3923
 
 # 🌈 v1.15.2-3 / 2024-11-16
 

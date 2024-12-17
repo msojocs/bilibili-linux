@@ -15,6 +15,11 @@ if [ "$DEBUG" == '1' ]; then
   ELECTRON_FORCE_IS_PACKAGED=true "$root_dir/electron/electron" "$root_dir/tmp/bili/resources/app" --no-sandbox "$@"
 elif [ "$DEBUG" == '2' ]; then
   echo "Debug Mode"
+  if [ ! -d "$root_dir/app/app" ];then
+    cd "$root_dir/app"
+    asar e app.asar app
+  fi
+  cd "$root_dir"
   ELECTRON_FORCE_IS_PACKAGED=true "$root_dir/electron/electron" "$root_dir/app/app" --no-sandbox "$@"
 else
   echo "Release Mode"
