@@ -1,7 +1,7 @@
 (() => {
 
   const url = new URL(location.href)
-  let fileName = url.pathname.substring(1).split('.')[0]
+  let fileName = url.pathname.substring(0, url.pathname.lastIndexOf('.'))
   fileName = fileName.substring(fileName.lastIndexOf('/') + 1)
   console.log("[hook]: load.js", fileName)
 

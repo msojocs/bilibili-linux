@@ -1,6 +1,6 @@
 
 const url = new URL(location.href)
-const fileName = url.pathname.substring(1).split('.')[0]
+const fileName = url.pathname.substring(0, url.pathname.lastIndexOf('.'))
 console.log("[hook]: hook.js", fileName)
 const runtiime = chrome.runtime
 const URLS = {
