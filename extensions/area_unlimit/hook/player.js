@@ -400,6 +400,7 @@ const sleep = (ms) => {
   let rate175check = setInterval(()=>{
     log.info('1.75倍速')
     try{
+      if (!window.danmakuManage) return
       const createElement = (apeedRate) => {
         const rate = document.createElement('li')
         rate.className = "bpx-player-ctrl-playbackrate-menu-item"
