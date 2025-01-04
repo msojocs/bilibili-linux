@@ -418,3 +418,7 @@ app.whenReady().then(() => {
   global["bootstrapApp"]()
 })
 
+// https://github.com/msojocs/bilibili-linux/issues/147
+process.on('uncaughtException', () => {
+  
+})
