@@ -10,7 +10,7 @@
           "env": {
             // "ELECTRON_FORCE_IS_PACKAGED": "true"
           },
-          "args": ["app/app"],
+          "args": ["app/app", "--disable-gpu"],
           // "program": "${workspaceRoot}/app/app/index.js",
           "outputCapture": "std"
           
