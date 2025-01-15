@@ -379,6 +379,28 @@ ipcMain.handle('roaming/queryDynamicDetail', (_, dynamicId, accessKey) => {
     })
   })
 })
+{
+  // 处理启动缓慢的问题
+  ipcMain.on('app/getTheme', (event, data) => {
+    // 在这里处理数据，然后通过 event.returnValue 发送返回值
+    console.info('app/getTheme')
+    event.returnValue = 'simple'
+  })
+  ipcMain.on('app/mainProcessReady', (event, data) => {
+    // 在这里处理数据，然后通过 event.returnValue 发送返回值
+    console.info('app/mainProcessReady')
+    event.returnValue = true
+  })
+  // const originalOn = ipcMain.on
+  // ipcMain.on = function(...args) {
+  //   console.info('on:', ...args)
+  //   if (args[0] === 'app/getTheme')
+  //   {
+  //     debugger
+  //   }
+  //   return originalOn.apply(this, args)
+  // }
+}
 app.on('ready', ()=>{
   // 自定义协议的具体实现
   protocol.registerStringProtocol('roaming', (req, cb) => {
