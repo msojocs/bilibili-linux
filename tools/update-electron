@@ -19,6 +19,8 @@ if [ "$BUILD_ARCH" == "" ];then
   BUILD_ARCH="x64"
 elif [ "$BUILD_ARCH" == "amd64" ];then
   BUILD_ARCH="x64"
+elif [ "$BUILD_ARCH" == "arm64" ];then
+  BUILD_ARCH="arm64"
 fi
 download_url="https://npmmirror.com/mirrors/electron/${electron_version}/electron-v${electron_version}-linux-${BUILD_ARCH}.zip"
 download_url="https://github.com/electron/electron/releases/download/v${electron_version}/electron-v${electron_version}-linux-${BUILD_ARCH}.zip"
