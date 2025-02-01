@@ -164,7 +164,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           # Artifact name
-          name: bilibili-${{ matrix.ARCH }}.build
+          name: bilibili-${{ matrix.ARCH }}-archiev.build
           path: tmp/build
 
   build-linux-package:
@@ -232,7 +232,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           # Artifact name
-          name: bilibili-${{ matrix.ARCH }}.build
+          name: bilibili-${{ matrix.ARCH }}-linuxpkg.build
           path: tmp/build
 
   build-win:
@@ -301,7 +301,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           # Artifact name
-          name: bilibili-${{ matrix.ARCH }}.build
+          name: bilibili-${{ matrix.ARCH }}-winpkg.build
           path: tmp/build
 
   build-deepin:
@@ -385,7 +385,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           # Artifact name
-          name: bilibili-${{ matrix.ARCH }}.build
+          name: bilibili-${{ matrix.ARCH }}-deepinpkg.build
           path: tmp/build
 
   # build-arch:
