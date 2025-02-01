@@ -171,7 +171,7 @@ const sleep = (ms) => {
       // danmakuManage.danmakuStore.loadDmPbAll(true)
       
       return Promise.resolve(`成功加载${comments.length}条弹幕`)
-    }
+    },
   }
   const UI = (()=>{
     const init = ()=>{
@@ -281,6 +281,9 @@ const sleep = (ms) => {
             dmTimelineDrawer: false,
             moveFactor: 0,
             dandanplayWithRelated: true,
+            // block level 屏蔽等级
+            blockLevel: 0,
+            isBlockVipColor: false,
           };
         },
         created() {
@@ -293,6 +296,9 @@ const sleep = (ms) => {
           UI.dmTimeline = ()=>{
             this.dmTimelineDrawer = !this.dmTimelineDrawer
           }
+          this.blockLevel = parseInt(localStorage.getItem('dm-filter-weight') || '0')
+          log.info('current weight:', this.weight)
+          this.isBlockVipColor = localStorage.getItem('dm-filter-blockvip') === 'true'
         },
         methods: {
           doSearch: function(){
@@ -313,7 +319,7 @@ const sleep = (ms) => {
               default:
                 break;
             }
-            HandleResult[this.activeName](this.selectOptions, data)
+            HandleResult[this.activeName]?.(this.selectOptions, data)
             .then(res=>{
               this.$message({
                 message: res,
@@ -347,6 +353,14 @@ const sleep = (ms) => {
               dm.stime += time
             });
           }
+        },
+        watch: {
+          blockLevel(n, o) {
+            localStorage.setItem('dm-filter-weight', n)
+          },
+          isBlockVipColor(n, o) {
+            localStorage.setItem('dm-filter-blockvip', n)
+          },
         }
       };
       const app = Vue.createApp(App);
@@ -416,83 +430,31 @@ const sleep = (ms) => {
       speedRate.before(createElement(3.0))
       speedRate.before(createElement(2.5))
       {
-        /**
-         * @type {Element | null}
-         */
-        const speed = window.danmakuManage.nodes.controlBottomCenter.querySelector('.bpx-player-dm-setting-left-speedplus')
-        
-        const weightFilter = document.createElement('div')
-        weightFilter.innerHTML = `
-        <div class="bpx-player-dm-setting-left-speedplus bui bui-progress">
-          <div class="bpx-player-dm-setting-left-speedplus-title">屏蔽等级</div>
-          <div class="bpx-player-dm-setting-left-speedplus-content">
-            <div class="bpx-player-dm-setting-ui-speedplus"></div>
-          </div>
-          <div class="bui-area">
-            <div class="bui-progress-wrap">
-              <div class="bui-progress-bar" style="width: 0%;">
-                  <span class="bui-progress-dot"></span>
-              </div>
-              <div class="bui-progress-step">
-                <div class="bui-progress-item" style="left:0%">
-                    <div class="bui-progress-lab"></div>
-                </div>
-              </div>
-            </div>
-            <div class="bui-progress-val" style="width:60px">0</div>
-          </div>
-        </div>`
-        const valueText = weightFilter.querySelector('.bui-progress-val')
-        const value = weightFilter.querySelector('.bui-progress-bar')
-        const option = weightFilter.querySelector('.bui-progress-item')
         let originalFilter = window.danmakuManage.danmaku.config.fn.filter
-        const changeFilterWeight = (weight) => {
-          if (weight > 10) weight = 10
-          if (weight < 0) weight = 0
-          localStorage.setItem('dm-filter-weight', weight)
-
-          valueText.textContent = `${weight}级`
-          value.style.width = `${weight * 10}%`
-          if (weight < 5)
+        const customFilter = (t) => {
+          log.info('filter....')
+          if (originalFilter(t)){
+            // log.info('default block:', t.weight)
+            return true
+          }
+          if (localStorage.getItem('dm-filter-blockvip') === 'true')
           {
-            value.firstElementChild.style.transform = 'translate3d(10px, -4px, 0px)'
-          }
-          else {
-            value.firstElementChild.style = {}
-          }
-
-          window.danmakuManage.danmaku.config.fn.filter = (t) => {
-            // log.info('filter:', t)
-            if (originalFilter(t)){
-              // log.info('default block:', t.weight)
+            // 屏蔽大会员彩色
+            if (t.colorful || t.colorfulImg) {
+              log.info('block vip', JSON.stringify(t, null, 4))
               return true
             }
-            if (t.weight < weight) {
-              // log.info('block weight:', t.weight)
-              return true
-            }
-            return false
+            
           }
+          const weight = parseInt(localStorage.getItem('dm-filter-weight') || '0')
+          if (t.weight <= weight) {
+            log.info('current weight:', weight)
+            log.info('block weight:', JSON.stringify(t, null, 4))
+            return true
+          }
+          return false
         }
-        let isDown = false
-        const cal = (e) => {
-          // log.info('click options', e)
-          if (e.target.classList.contains('bui-progress-dot')) return
-          const filterWeight = Math.round(e.offsetX / 160 * 10)
-          // log.info('click result:', e.offsetX, filterWeight)
-          
-          changeFilterWeight(filterWeight)
-        }
-        option.parentElement.parentElement.onmousedown = (e) => {
-          isDown = true
-          cal(e)
-        }
-        option.parentElement.parentElement.onmouseup = () => {
-          isDown = false
-        }
-        option.parentElement.parentElement.onmousemove = (e) => {
-          if (isDown) cal(e)
-        }
+        window.danmakuManage.danmaku.config.fn.filter = customFilter
         {
           const originalInitDanmaku = window.danmakuManage.initDanmaku
           window.danmakuManage.initDanmaku = function () {
@@ -500,47 +462,10 @@ const sleep = (ms) => {
             originalInitDanmaku.apply(this)
             log.info('update filter...')
             originalFilter = this.danmaku.config.fn.filter
-            changeFilterWeight(parseInt(localStorage.getItem('dm-filter-weight') || '0'))
-            {
-              let check = setInterval(() => {
-                /**
-                调整大小
-                * @type {Element | null}
-                */
-                const left = document.querySelector('.bpx-player-dm-setting-left')
-                if (left.parentElement.style.height === '340px')
-                  clearInterval(check)
-                left.parentElement.style.height = '340px'
-                left.parentElement.parentElement.parentElement.style.height = '340px'
-                log.info('fix height end')
-              }, 1000)
-            }
+            window.danmakuManage.danmaku.config.fn.filter = customFilter
           }
         }
-        changeFilterWeight(parseInt(localStorage.getItem('dm-filter-weight') || '0'))
 
-        for (let i = 0; i <= 10; i++) {
-          const newOption = option.cloneNode(true)
-          newOption.style.left = `${i * 10}%`
-          option.before(newOption)
-        }
-        option.remove()
-        // log.info(weightFilter.firstElementChild)
-        speed.after(weightFilter.firstElementChild)
-        {
-          let check = setInterval(() => {
-            /**
-            调整大小
-            * @type {Element | null}
-            */
-            const left = document.querySelector('.bpx-player-dm-setting-left')
-            if (left.parentElement.style.height === '340px')
-              clearInterval(check)
-            left.parentElement.style.height = '340px'
-            left.parentElement.parentElement.parentElement.style.height = '340px'
-            log.info('fix height end')
-          }, 1000)
-        }
       }
       clearInterval(rate175check)
     }catch(err){

@@ -2,7 +2,7 @@
   <link rel="stylesheet" href="https://lib.baomitu.com/element-plus/2.2.0/index.min.css">
 </div>
 <div id="player-settings-ext">
-  <el-dialog v-model="settingsVisible" title="弹幕填充" width="60%">
+  <el-dialog v-model="settingsVisible" title="弹幕拓展功能" width="60%">
     <el-tabs
         v-model="activeName"
         type="card"
@@ -13,8 +13,16 @@
       </el-tab-pane>
       <el-tab-pane label="弹弹Play" name="dandanplay">
       </el-tab-pane>
+      <el-tab-pane label="弹幕设定" name="danmu-settings">
+        <div style="display: flex;width: 500px;justify-content: center;align-items: center;">
+          <span style="width: 20%;">屏蔽等级：</span>
+          <el-slider v-model="blockLevel" :step="1" :max="10" show-stops />
+        </div>
+        <br>
+        <el-checkbox v-model="isBlockVipColor" label="屏蔽大会员彩色弹幕" size="large" />
+      </el-tab-pane>
     </el-tabs>
-    <div>
+    <div v-if="activeName === 'bilibili' || activeName === 'dandanplay'">
       <el-row>
         <el-col :span="4" class="flex_center">搜索:</el-col>
         <el-col :span="19">
