@@ -80,13 +80,13 @@ jobs:
           mv ./tmp/build/extensions-${{ steps.tag.outputs.tag }}.tar.gz ./tmp/build/extensions-${version}-continuous.tar.gz
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           # Artifact name
           name: bilibili-app.src
           path: tmp/src
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           # Artifact name
           name: bilibili-app.build
@@ -109,7 +109,7 @@ jobs:
         with:
           submodules: 'recursive'
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: bilibili-app.src
           path: tmp/src
@@ -161,10 +161,10 @@ jobs:
           mv ./tmp/build/bilibili-${version}-${{ steps.tag.outputs.tag }}-${{ matrix.ARCH }}.tar.gz ./tmp/build/bilibili-${{ steps.tag.outputs.tag }}-${{ matrix.ARCH }}.tar.gz
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           # Artifact name
-          name: bilibili-${{ matrix.ARCH }}.build
+          name: bilibili-${{ matrix.ARCH }}-archiev.build
           path: tmp/build
 
   build-linux-package:
@@ -182,7 +182,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: bilibili-app.src
           path: tmp/src
@@ -229,10 +229,10 @@ jobs:
           # tools/build-appimage.sh ${{ steps.tag.outputs.tag }} ${{ matrix.ARCH }}
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           # Artifact name
-          name: bilibili-${{ matrix.ARCH }}.build
+          name: bilibili-${{ matrix.ARCH }}-linuxpkg.build
           path: tmp/build
 
   build-win:
@@ -250,7 +250,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: bilibili-app.src
           path: tmp/src
@@ -298,10 +298,10 @@ jobs:
           # tools/build-appimage.sh ${{ steps.tag.outputs.tag }} ${{ matrix.ARCH }}
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           # Artifact name
-          name: bilibili-${{ matrix.ARCH }}.build
+          name: bilibili-${{ matrix.ARCH }}-winpkg.build
           path: tmp/build
 
   build-deepin:
@@ -318,7 +318,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: bilibili-app.src
           path: tmp/src
@@ -382,10 +382,10 @@ jobs:
           fi
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           # Artifact name
-          name: bilibili-${{ matrix.ARCH }}.build
+          name: bilibili-${{ matrix.ARCH }}-deepinpkg.build
           path: tmp/build
 
   # build-arch:
@@ -459,7 +459,7 @@ jobs:
   #         ls -l
 
   #     - name: Upload artifact
-  #       uses: actions/upload-artifact@v3
+  #       uses: actions/upload-artifact@v4
   #       with:
   #         # Artifact name
   #         name: bilibili-${{ matrix.ARCH }}.build
@@ -499,7 +499,7 @@ jobs:
   #         mkdir -p tmp/build
   #         mv *.snap tmp/build
   #     - name: Upload artifact
-  #       uses: actions/upload-artifact@v3
+  #       uses: actions/upload-artifact@v4
   #       with:
   #         # Artifact name
   #         name: bilibili-${{ matrix.ARCH }}.build
@@ -515,7 +515,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
       - name: Inspect directory after downloading artifacts
         run: |
           rm -rf ./bilibili-app.src
