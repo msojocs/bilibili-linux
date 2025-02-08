@@ -195,6 +195,7 @@ jobs:
           BUILD_ARCH: ${{ matrix.ARCH }}
         run: |
           sudo npm install asar -g
+          npm install -g corepack@latest
           corepack enable pnpm
           corepack use pnpm@latest
           pnpm install
