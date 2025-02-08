@@ -22,7 +22,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [22.x]
         ARCH: ['x64']
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
@@ -30,7 +30,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: 'recursive'
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js
         uses: actions/setup-node@v2
 
       - name: Prepare
@@ -113,7 +113,7 @@ jobs:
         with:
           name: bilibili-app.src
           path: tmp/src
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js
         uses: actions/setup-node@v2
 
       - name: Prepare
@@ -186,6 +186,9 @@ jobs:
         with:
           name: bilibili-app.src
           path: tmp/src
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
       - name: Prepare
         env:
