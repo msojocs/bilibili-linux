@@ -1,3 +1,5 @@
+**简体中文 | [繁體中文](README_zh-tw.MD)**
+
 <div align="center">
 
   <img src="./res/icons/bilibili.svg" height="100px" width="100px"/>
@@ -6,7 +8,6 @@
   <br>
 
 ----
-
 
 [![aur](https://img.shields.io/aur/version/bilibili-bin)](https://aur.archlinux.org/packages/bilibili-bin)
 
@@ -27,7 +28,7 @@
 
 本项目完全开源，且没有任何代码加密操作，如有疑虑请自行审查代码或停止使用相关文件。
 
-## 特点：
+## 特点
 
 1. 没有讨厌的标题栏
 2. 支持小分辨率屏幕全屏
@@ -92,13 +93,13 @@ https://www.electronjs.org/docs/latest/api/command-line-switches
 
 从 v1.15.2-3 开始支持。
 
-参考规则设置：https://github.com/msojocs/bilibili-linux/issues/136#issuecomment-2480558792
+参考设置：https://github.com/msojocs/bilibili-linux/issues/136#issuecomment-2480558792
 
 ## 开发者工具
 
 现已支持自行打开开发者工具，方法如下：
 
-尝试按下<kbd>F12</kbd>，如果没有反应就是没开；
+尝试按下<kbd>F12</kbd>，如果没有反应就是没有开启；
 
 登录界面有两层，内层右键打开，外层<kbd>F12</kbd>打开。
 
