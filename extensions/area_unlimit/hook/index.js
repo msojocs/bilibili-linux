@@ -445,6 +445,28 @@ window.log = window.log ||{
   //     addAreaLimit()
   //   }
   // });
+  
+  const getData = (name) => {
+    return new Promise((resolve, reject) => {
+      document.addEventListener('ROAMING_sendURL', async function (e) {
+        // e.detail contains the transferred data (can be anything, ranging
+        // from JavaScript objects to strings).
+        // Do something, for example:
+        console.log('player ROAMING_sendURL: ', e.detail);
+        document.removeEventListener('ROAMING_sendURL', this)
+        if (e.detail) {
+          resolve(e.detail)
+        }
+        else {
+          reject(e)
+        }
+      });
+      document.dispatchEvent(new CustomEvent('ROAMING_getURL', {
+        detail: name // Some variable from Gmail.
+      }));
+    })
+  }
+
   const targetOnload = (targetWindow = window)=>{
     const url = new URL(targetWindow.location.href)
 
@@ -474,10 +496,22 @@ window.log = window.log ||{
         // 延时，太快取不到页面元素
         setTimeout(addAreaLimit, 500, targetWindow)
       }
+      else if (e.arguments[0].current === "/page/selected") {
+        (async () => {
+          const p = await getData('player')
+          getScript(p)
+        })()
+      }
     });
 
     if (url.hash === "#/page/settings") {
       setTimeout(addAreaLimit, 500, targetWindow)
+    }
+    else if (url.hash === "#/page/selected") {
+      (async () => {
+        const p = await getData('player')
+        getScript(p)
+      })()
     }
   }
 

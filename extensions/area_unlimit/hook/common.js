@@ -1121,7 +1121,8 @@ const URL_HOOK = {
     if (!req._params) return;
     const resp = JSON.parse(req.responseText || "{}")
     const serverList = JSON.parse(localStorage.serverList || "{}")
-    if ((resp.code === -400 || resp.code === -404 || resp.data.subtitle.subtitles.length === 0) && serverList.th) {
+    if ((resp.code === -400 || resp.code === -404 || !resp.data || resp.data.subtitle.subtitles.length === 0)
+       && serverList.th) {
       log.log('处理字幕')
       // 字幕请求失败
       const api = new BiliBiliApi(serverList.th);
@@ -1273,6 +1274,7 @@ const URL_HOOK_FETCH = {
         await db.open()
         const b2d = await db.getBvid2DynamicId(params.bvid)
         log.info('get dynamic id result:', b2d)
+        if (!b2d) return
         // 获取动态详情
         const bili = new BiliBiliApi();
         const detail = await bili.getDynamicDetail(b2d.dynamic_id)
