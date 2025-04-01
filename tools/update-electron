@@ -37,19 +37,8 @@ fi
 
 mkdir -p "$root_dir/cache" "$root_dir/tmp"
 if [[ ! -f "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.zip" ]];then
-  if [ "$BUILD_ARCH" == "loong64" ];then
-    # 龙芯新世界
-    wget -c "$download_url" -O "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.pkg.tar.zst"
-    unzstd -f -d "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.pkg.tar.zst" -o "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.pkg.tar"
-    tar -xf "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.pkg.tar" -C "$root_dir/tmp" usr/lib/electron22
-    rm -rf "$root_dir/tmp/electron22"
-    mv "$root_dir/tmp/usr/lib/electron22" "$root_dir/tmp/electron22"
-    cd "$root_dir/tmp/electron22"
-    zip -r "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.zip" ./*
-  else
-    wget -c "$download_url" -O "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.zip.tmp"
-    mv "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.zip.tmp" "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.zip"
-  fi
+  wget -c "$download_url" -O "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.zip.tmp"
+  mv "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.zip.tmp" "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.zip"
 fi
 rm -rf "$root_dir/electron"
 mkdir -p "$root_dir/electron"
