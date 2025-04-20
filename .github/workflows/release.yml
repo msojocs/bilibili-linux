@@ -243,7 +243,7 @@ jobs:
     name: Build Windows
     needs:
       - build-app
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     container: scottyhardy/docker-wine
     strategy:
       matrix:
@@ -312,7 +312,7 @@ jobs:
     name: Build Deepin Package
     needs:
       - build-app
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
