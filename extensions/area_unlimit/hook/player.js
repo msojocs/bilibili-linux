@@ -1,17 +1,16 @@
-const pacLink = localStorage.pacLink || ""
-let result = ""
-if(pacLink.length > 0)
-  result = biliBridgePc.callNativeSync('config/roamingPAC', pacLink);
-if(result === 'error')localStorage.pacLink = ""
-log.info("[hook]: player.js");
-
-const sleep = (ms) => {
-  return new Promise((resolve, reject) => {
-    setTimeout(resolve, ms)
-  })
-}
 (()=>{
+  const pacLink = localStorage.pacLink || ""
+  let result = ""
+  if(pacLink.length > 0)
+    result = biliBridgePc.callNativeSync('config/roamingPAC', pacLink);
+  if(result === 'error')localStorage.pacLink = ""
+  log.info("[hook]: player.js");
 
+  const sleep = (ms) => {
+    return new Promise((resolve, reject) => {
+      setTimeout(resolve, ms)
+    })
+  }
   const HTTP = {
     get(url) {
       return new Promise((resolve, reject) => {
@@ -467,8 +466,10 @@ const sleep = (ms) => {
         }
 
       }
+      log.info('1.75倍速添加完成')
       clearInterval(rate175check)
-    }catch(err){
+    }
+    catch(err){
       log.error('添加1.75倍速异常：', err)
     }
   }, 1000)
