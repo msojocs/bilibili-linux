@@ -12,6 +12,11 @@ DH_VERBOSE = 1
 # package maintainers to append LDFLAGS
 #export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
 
+# 1.20.9ubuntu1 -> 1.20.9ubuntu2修改了默认打包工具为zstd，导致统信平台不能识别，强制设定为xz
+# changelog: https://launchpad.net/ubuntu/+source/dpkg/1.20.9ubuntu2
+override_dh_builddeb:
+	dh_builddeb -- -Zxz
+	
 override_dh_strip_nondeterminism:
 
 override_dh_shlibdeps:
