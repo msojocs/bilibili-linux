@@ -18,6 +18,8 @@ elif [ "$DEBUG" == '2' ]; then
   if [ ! -d "$root_dir/app/app" ];then
     cd "$root_dir/app"
     asar e app.asar app
+    rm -rf extensions
+    ln -s ../extensions extensions
   fi
   cd "$root_dir"
   ELECTRON_FORCE_IS_PACKAGED=true "$root_dir/electron/electron" "$root_dir/app/app" --no-sandbox "$@"

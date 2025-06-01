@@ -1229,12 +1229,12 @@ const URL_HOOK_FETCH = {
             s.title = `[${area}]${s.title}`
           })
           searchResult.data.result.push(...result)
-          data.res.data = searchResult
         } catch (err) {
 
           console.error('搜索异常:', err)
         }
       }
+      data.res.data = searchResult
     }
     return data.res
   },
