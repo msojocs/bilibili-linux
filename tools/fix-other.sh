@@ -49,8 +49,8 @@ sed -i 's#if (!j5)#if(false\&\&!j5)#' "app/main/app.js"
 #grep -lr '};!fb' --exclude="app.asar" .
 #sed -i 's#};!fb#};false\&\&!fb#' "app/main/app.js"
 
-notice "路由"
-cat "$root_dir/res/scripts/inject-biliapp.js" >> app/render/assets/biliapp.*.js
+# notice "路由"
+# cat "$root_dir/res/scripts/inject-biliapp.js" >> app/render/assets/biliapp.*.js
 
 notice "检查更新"
 # 检查更新

@@ -521,7 +521,7 @@ window.log = window.log ||{
   }
   else {
     log.warn('页面似乎没有加载完成')
-    window.onload = () => targetOnload(window)
+    document.addEventListener('DOMContentLoaded', () => targetOnload(window))
   }
 })();
 

@@ -372,8 +372,8 @@
     }
   })()
 
-  window.onload = async ()=>{
-    log.info("====plarer===onload====")
+  document.addEventListener('DOMContentLoaded', async ()=>{
+    log.info("====player===onload====")
     let headerLeft = null
 
     for (let i = 0; true; i++) {
@@ -408,7 +408,7 @@
 
     getScript('https://greasyfork.org/scripts/430412-chinese-conversion-api/code/Chinese%20Conversion%20API.js')
 
-  }
+  })
   // 1.75倍速
   let rate175check = setInterval(()=>{
     log.info('1.75倍速')

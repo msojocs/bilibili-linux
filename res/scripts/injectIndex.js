@@ -203,13 +203,6 @@ BrowserWindow.prototype.loadURL = function(){
     }
   });
   if(arguments[0].includes('player.html') || arguments[0].includes('index.html')){
-    // this.webContents.openDevTools()
-    const extPath = path.join(path.dirname(app.getAppPath()), "extensions");
-    console.log('----extPath----', extPath)
-    this.webContents.session.loadExtension(extPath + "/area_unlimit").then(({ id }) => {
-      // ...
-      console.log('-----Load Extension:', id)
-    })
     // 设置PAC代理脚本
     this.webContents.on('ipc-message-sync', (event, ...args)=>{
       if(args[0] === "config/roamingPAC")
@@ -251,16 +244,6 @@ BrowserWindow.prototype.loadFile = function(...args){
       this.webContents.toggleDevTools();
     }
   });
-  const extPath = path.join(path.dirname(app.getAppPath()), "extensions");
-  console.log('extension path:', extPath)
-  this.webContents.session.loadExtension(extPath + "/area_unlimit", {
-    allowFileAccess: true,
-  }).then(({ id }) => {
-    // ...
-    console.log('-----Load Extension:', id)
-  }).catch((e) => {
-
-  })
   _loadFile.apply(this, args)
   // this.loadURL('http://www.jysafe.cn')
 }
@@ -401,7 +384,12 @@ ipcMain.handle('roaming/queryDynamicDetail', (_, dynamicId, accessKey) => {
   //   return originalOn.apply(this, args)
   // }
 }
-app.on('ready', ()=>{
+app.on('ready', ()=>{  
+  const extPath = path.join(path.dirname(app.getAppPath()), "extensions");
+  session.defaultSession.loadExtension(extPath + "/area_unlimit").then(({ id }) => {
+    // ...
+    console.log('-----Load Extension:', id)
+  })
   // 自定义协议的具体实现
   protocol.registerStringProtocol('roaming', (req, cb) => {
     // console.log('registerHttpProtocol', req)
