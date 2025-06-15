@@ -116,6 +116,10 @@ https://areweloongyet.com/docs/loong-or-loongarch
 |RPM 系|`loongarch64`|
 |Slackware|`loong64`|
 
+## English
+
+在主界面按下<kbd>Ctrl + T</kbd>，左下角会出现弹窗；选择语言后，点击OK，重启。
+
 ## 预览
 
 ![推荐](res/screenshots/1.png)

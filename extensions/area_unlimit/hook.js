@@ -1,18 +1,20 @@
 
+// extension context
 const url = new URL(location.href)
 const fileName = url.pathname.substring(0, url.pathname.lastIndexOf('.'))
 console.log("[hook]: hook.js", fileName)
-const runtiime = chrome.runtime
+const runtime = chrome.runtime
 const URLS = {
-  md5: runtiime.getURL(`utils/md5.js`),
-  login: runtiime.getURL(`hook/login.js`),
-  search: runtiime.getURL(`hook/search.js`),
-  player: runtiime.getURL(`hook/player.js`),
-  index: runtiime.getURL(`hook/index.js`),
-  commonJS: runtiime.getURL(`hook/common.js`),
-  commonCSS: runtiime.getURL(`hook/common.css`),
-  RoamingPage: runtiime.getURL(`hook/RoamingPage.html`),
-  PlayerEnhance: runtiime.getURL(`hook/PlayerEnhance.html`),
+  md5: runtime.getURL(`utils/md5.js`),
+  login: runtime.getURL(`hook/login.js`),
+  search: runtime.getURL(`hook/search.js`),
+  player: runtime.getURL(`hook/player.js`),
+  index: runtime.getURL(`hook/index.js`),
+  translation: runtime.getURL(`hook/translation.js`),
+  commonJS: runtime.getURL(`hook/common.js`),
+  commonCSS: runtime.getURL(`hook/common.css`),
+  RoamingPage: runtime.getURL(`hook/RoamingPage.html`),
+  PlayerEnhance: runtime.getURL(`hook/PlayerEnhance.html`),
 }
 
 var commonJS = document.createElement('script');
@@ -48,3 +50,28 @@ document.addEventListener('ROAMING_getURL', function (e) {
   }));
 });
 
+const storage = chrome.storage.local
+document.addEventListener('ROAMING_request', async function (e) {
+  // e.detail contains the transferred data (can be anything, ranging
+  // from JavaScript objects to strings).
+  // Do something, for example:
+  console.log('hook ROAMING_request:', e.detail);
+  const request = e.detail
+  let data = null
+  switch (e.detail.action) {
+    case 'getStorage':
+      data = await storage.get(e.detail.data.key);
+      data = data[e.detail.data.key] || null;
+      break;
+    case 'setStorage':
+      data = await storage.set({[e.detail.data.key]: e.detail.data.value});
+      break;
+  }
+  console.log('hook ROAMING_response:', data)
+  document.dispatchEvent(new CustomEvent('ROAMING_response', {
+    detail: {
+      id: request.id,
+      data: data // Some variable from Gmail.
+    } // Some variable from Gmail.
+  }));
+});

@@ -36,6 +36,7 @@
         "hook/search.js",
         "hook/common.css",
         "hook/common.js",
+        "hook/translation.js",
         "utils/md5.js",
         "hook/RoamingPage.html",
         "hook/PlayerEnhance.html"

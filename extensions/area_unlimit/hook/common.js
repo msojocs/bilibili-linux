@@ -2077,3 +2077,84 @@ const UTILS = {
   }
 }
 
+const communicateMap = {}
+let communicateId = 1
+document.addEventListener('ROAMING_response', function (e) {
+  // e.detail contains the transferred data (can be anything, ranging
+  // from JavaScript objects to strings).
+  // Do something, for example:
+  log.info('translation ROAMING_response: ', e.detail);
+  const detail = e.detail
+  if (communicateMap[detail.id]) {
+    const ctx = communicateMap[detail.id]
+    delete communicateMap[detail.id]
+    clearTimeout(ctx.timeout)
+    ctx.resolve(detail.data)
+  }
+});
+window.requestBackground = (action, data) => {
+  return new Promise((resolve, reject) => {
+    const id = communicateId++
+    communicateMap[id] = {
+      resolve: resolve,
+      reject: reject,
+      timeout: setTimeout(() => {
+        delete communicateMap[id]
+        reject(new Error('ROAMING_storage timeout'))
+      }
+      , 5000) // 5 seconds timeout
+    }
+    document.dispatchEvent(new CustomEvent('ROAMING_request', {
+      detail: {
+        id,
+        action: action,
+        data // Some variable from Gmail.
+      } // Some variable from Gmail.
+    }));
+  })
+}
+
+window.sleep = (ms) => {
+  return new Promise((resolve, reject) => {
+    setTimeout(resolve, ms)
+  })
+}
+
+;(() => {
+  document.addEventListener('keyup', async (e) => {
+    // Ctrl + T
+    if (e.ctrlKey && e.key === 't') {
+      log.log('按下 Ctrl + T 键')
+      document.getElementById('languageChangePanel')?.remove()
+      const lang = await window.requestBackground('getStorage', {key: 'lang'}) || 'zh_CN'
+      const languageChangePanel = document.createElement('div')
+      languageChangePanel.id = 'languageChangePanel'
+      languageChangePanel.style.position = 'fixed'
+      languageChangePanel.style.bottom = '10px'
+      languageChangePanel.style.left = '10px'
+      languageChangePanel.style.backgroundColor = 'white'
+      languageChangePanel.style.padding = '10px'
+      languageChangePanel.style.border = '1px solid black'
+      languageChangePanel.style.zIndex = '10000'
+      languageChangePanel.innerHTML = `
+        <h3>Language:</h3>
+        <select id="languageSelect">
+          <option value="zh_CN" ${lang === 'zh_CN' ? 'selected' : ''}>简体中文</option>
+          <option value="en" ${lang === 'en' ? 'selected' : ''}>English</option>
+        </select>
+        <button id="languageChangeButton">OK</button>
+        <button id="closeLanguageChangePanel">X</button>
+      `
+      document.body.appendChild(languageChangePanel)
+      languageChangePanel.querySelector('#languageChangeButton').addEventListener('click', async () => {
+        const selectedLanguage = languageChangePanel.querySelector('#languageSelect').value
+        log.log('选择的语言:', selectedLanguage)
+        await window.requestBackground('setStorage', {key: 'lang', value: selectedLanguage})
+        switchLanguage(selectedLanguage)
+      })
+      languageChangePanel.querySelector('#closeLanguageChangePanel').addEventListener('click', () => {
+        document.body.removeChild(languageChangePanel)
+      })
+    }
+  })
+})()
