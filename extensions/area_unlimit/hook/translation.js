@@ -61,6 +61,10 @@
     '消息（X）': {
       en: 'Message (X)'
     },
+    '顶部 ': {
+      condition: node => node?.parentNode?.className === 'vui_button vui_button--active-shrink p_relative',
+      en: 'Top '
+    },
     // #region 动态
     '综合': {
       condition: node => node?.parentNode?.className === 'vui_tabs--nav-text',
