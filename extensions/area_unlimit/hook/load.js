@@ -1,10 +1,10 @@
 (() => {
-
+  // extension context
   const url = new URL(location.href)
   let fileName = url.pathname.substring(0, url.pathname.lastIndexOf('.'))
   fileName = fileName.substring(fileName.lastIndexOf('/') + 1)
   console.log("[hook]: load.js", fileName)
-
+  
   if (!location.href.includes('live.bilibili')) {
     if (parent?.getHookXMLHttpRequest)
       window.getHookXMLHttpRequest = parent?.getHookXMLHttpRequest
@@ -43,6 +43,11 @@
   // }
   // if (loadFunc[fileName]) loadFunc[fileName]()
 
+  const loadJS = (src) => {
+    const loadJS = document.createElement('script');
+    loadJS.src = src;
+    (document.head || document.documentElement).appendChild(loadJS);
+  }
   const loadAction = async () => {
     console.log('[hook]: loadAction')
     const win = parent || window
@@ -57,9 +62,7 @@
     {
       if (win.URLS[fileName]) {
         console.log('try to load script:', win.URLS[fileName])
-        const loadJS = document.createElement('script');
-        loadJS.src = win.URLS[fileName];
-        (document.head || document.documentElement).appendChild(loadJS);
+        loadJS(win.URLS[fileName]);
         // loadJS.onload = function () {
         //   loadJS.remove();
         // };
@@ -67,6 +70,7 @@
       else {
         console.warn('[hook]: 未找到脚本', fileName)
       }
+      loadJS(win.URLS.translation);
     }
   }
   // load.js应该直接执行，而不是等待页面加载完成在执行
