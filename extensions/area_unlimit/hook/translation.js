@@ -424,4 +424,48 @@
     subtree: true,
     attributes: false,
   });
+})();
+window.sleep = (ms) => {
+  return new Promise((resolve, reject) => {
+    setTimeout(resolve, ms)
+  })
+}
+
+;(() => {
+  document.addEventListener('keyup', async (e) => {
+    // Ctrl + T
+    if (e.ctrlKey && (e.key === 't' || e.key === 'T')) {
+      log.log('按下 Ctrl + T 键')
+      document.getElementById('languageChangePanel')?.remove()
+      const lang = await window.requestBackground('getStorage', {key: 'lang'}) || 'zh_CN'
+      const languageChangePanel = document.createElement('div')
+      languageChangePanel.id = 'languageChangePanel'
+      languageChangePanel.style.position = 'fixed'
+      languageChangePanel.style.bottom = '10px'
+      languageChangePanel.style.left = '10px'
+      languageChangePanel.style.backgroundColor = 'white'
+      languageChangePanel.style.padding = '10px'
+      languageChangePanel.style.border = '1px solid black'
+      languageChangePanel.style.zIndex = '10000'
+      languageChangePanel.innerHTML = `
+        <h3>Language:</h3>
+        <select id="languageSelect">
+          <option value="zh_CN" ${lang === 'zh_CN' ? 'selected' : ''}>简体中文</option>
+          <option value="en" ${lang === 'en' ? 'selected' : ''}>English</option>
+        </select>
+        <button id="languageChangeButton">OK</button>
+        <button id="closeLanguageChangePanel">X</button>
+      `
+      document.body.appendChild(languageChangePanel)
+      languageChangePanel.querySelector('#languageChangeButton').addEventListener('click', async () => {
+        const selectedLanguage = languageChangePanel.querySelector('#languageSelect').value
+        log.log('选择的语言:', selectedLanguage)
+        await window.requestBackground('setStorage', {key: 'lang', value: selectedLanguage})
+        switchLanguage(selectedLanguage)
+      })
+      languageChangePanel.querySelector('#closeLanguageChangePanel').addEventListener('click', () => {
+        document.body.removeChild(languageChangePanel)
+      })
+    }
+  })
 })()
