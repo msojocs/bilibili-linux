@@ -65,6 +65,32 @@
       condition: node => node?.parentNode?.className === 'vui_button vui_button--active-shrink p_relative',
       en: 'Top '
     },
+    // #region 退出
+    '点击关闭按钮以后：': {
+      condition: node => node?.parentNode?.className === 'b_text text1 text_center mt_sm',
+      en: 'After clicking the close button:'
+    },
+    '最小化到系统托盘': {
+      condition: node => node?.parentNode?.className === 'text2 text_nowrap',
+      en: 'Minimize to System Tray'
+    },
+    '退出应用': {
+      condition: node => node?.parentNode?.className === 'text2 text_nowrap',
+      en: 'Exit Application'
+    },
+    '不再提示': {
+      condition: node => node?.parentNode?.className === 'vui_checkbox--label',
+      en: 'Do not remind again'
+    },
+    '确定': {
+      condition: node => node?.parentNode?.className === 'vui_button vui_button--pink',
+      en: 'Confirm'
+    },
+    '取消': {
+      condition: node => node?.parentNode?.className === 'vui_button mr_sm',
+      en: 'Cancel'
+    },
+    // #endregion
     // #region 动态
     '综合': {
       condition: node => node?.parentNode?.className === 'vui_tabs--nav-text',
@@ -461,7 +487,8 @@ window.sleep = (ms) => {
         const selectedLanguage = languageChangePanel.querySelector('#languageSelect').value
         log.log('选择的语言:', selectedLanguage)
         await window.requestBackground('setStorage', {key: 'lang', value: selectedLanguage})
-        switchLanguage(selectedLanguage)
+        window.biliBridgePc.callNativeSync('config/changeLanguage', selectedLanguage)
+        // switchLanguage(selectedLanguage)
       })
       languageChangePanel.querySelector('#closeLanguageChangePanel').addEventListener('click', () => {
         document.body.removeChild(languageChangePanel)

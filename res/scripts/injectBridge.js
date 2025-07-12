@@ -31,6 +31,7 @@ contextBridge.exposeInMainWorld = function(){
 const originEW = String.prototype.endsWith
 String.prototype.endsWith = function (){
   // console.log('endsWith: ', arguments);
-  if(arguments[0] === "config/roamingPAC")return true;
+  if (arguments[0] === "config/roamingPAC"  || this == "config/roamingPAC") return true;
+  if (arguments[0] === "config/changeLanguage"  || this == "config/changeLanguage") return true;
   return originEW.apply(this, arguments)
 }

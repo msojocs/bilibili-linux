@@ -1,4 +1,4 @@
-const {app, protocol, ipcMain, BrowserWindow, Menu} = require('electron');
+const {app, protocol, ipcMain, BrowserWindow, Menu, session} = require('electron');
 const EventEmitter = require('events');
 const https = require('https');
 const path = require('path');
@@ -228,6 +228,21 @@ BrowserWindow.prototype.loadURL = function(){
           event.returnValue = 'error'
         })
       }
+      else if (args[0] === 'config/changeLanguage') {
+        // get all window and send ChangeLanguage event
+        console.log('receive config/changeLanguage:', ...args)
+        const windows = BrowserWindow.getAllWindows()
+        windows.forEach(win => {
+          console.info('notify language change:', args[1])
+          win.webContents.executeJavaScript(`window.switchLanguage('${args[1]}')`).then(res => {
+            console.log('switchLanguage result:', res)
+          }).catch(err => {
+            console.error('switchLanguage error:', err)
+          })
+        })
+        console.info('notify language change end1.')
+        event.returnValue = 'ok'
+      }
     })
   }
   originloadURL.apply(this, arguments)
@@ -384,7 +399,7 @@ ipcMain.handle('roaming/queryDynamicDetail', (_, dynamicId, accessKey) => {
   //   return originalOn.apply(this, args)
   // }
 }
-app.on('ready', ()=>{  
+app.on('ready', ()=>{
   const extPath = path.join(path.dirname(app.getAppPath()), "extensions");
   session.defaultSession.loadExtension(extPath + "/area_unlimit").then(({ id }) => {
     // ...

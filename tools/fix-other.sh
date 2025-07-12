@@ -61,9 +61,15 @@ sed -i 's#process.resourcesPath#path.dirname(this.app.getAppPath())#' app/node_m
 notice "====Bili Bridge===="
 notice "inject"
 cat "$root_dir/res/scripts/injectBridge.js" > "app/main/assets/temp.js"
+# inject
 cat "app/main/assets/bili-inject.js" >> "app/main/assets/temp.js"
 rm "app/main/assets/bili-inject.js"
 mv "app/main/assets/temp.js" "app/main/assets/bili-inject.js"
+# preload
+cat "$root_dir/res/scripts/injectBridge.js" > "app/main/assets/temp.js"
+cat "app/main/assets/bili-preload.js" >> "app/main/assets/temp.js"
+rm "app/main/assets/bili-preload.js"
+mv "app/main/assets/temp.js" "app/main/assets/bili-preload.js"
 cp "$root_dir/res/protos/dynamic.proto" "app/main/assets/protos/dynamic.proto"
 mkdir tmp
 cd tmp
