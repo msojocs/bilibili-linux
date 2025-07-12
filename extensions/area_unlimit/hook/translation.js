@@ -406,7 +406,7 @@
   ]
   // TODO: 用于切换语言时更新
   const node2keyword = new Map()
-  let lang = await window.requestBackground('getStorage', {key: 'lang'}) || 'en'
+  let lang = await window.requestBackground('getStorage', {key: 'lang'}) || 'zhCn'
   window.switchLanguage = async (newLang) => {
     if (newLang === lang) return
     log.info('switchLanguage', newLang)
@@ -525,7 +525,7 @@ window.sleep = (ms) => {
     if (e.ctrlKey && (e.key === 't' || e.key === 'T')) {
       log.log('按下 Ctrl + T 键')
       document.getElementById('languageChangePanel')?.remove()
-      const lang = await window.requestBackground('getStorage', {key: 'lang'}) || 'zh_CN'
+      const lang = await window.requestBackground('getStorage', {key: 'lang'}) || 'zhCn'
       const languageChangePanel = document.createElement('div')
       languageChangePanel.id = 'languageChangePanel'
       languageChangePanel.style.position = 'fixed'
@@ -538,7 +538,7 @@ window.sleep = (ms) => {
       languageChangePanel.innerHTML = `
         <h3>Language:</h3>
         <select id="languageSelect">
-          <option value="zh_CN" ${lang === 'zh_CN' ? 'selected' : ''}>简体中文</option>
+          <option value="zhCn" ${lang === 'zhCn' ? 'selected' : ''}>简体中文</option>
           <option value="en" ${lang === 'en' ? 'selected' : ''}>English</option>
         </select>
         <button id="languageChangeButton">OK</button>
