@@ -329,6 +329,68 @@
       zhCn: ' 再投一个 '
     },
     // #endregion 发布视频 - step3
+    // #region 设置
+    '常规设置': {
+      condition: node => node.parentNode && node.parentNode.className === 'b_text mt_0',
+      en: 'General Settings',
+      zhCn: '常规设置'
+    },
+    '下载设置': {
+      condition: node => node.parentNode && node.parentNode.className === 'b_text mt_0',
+      en: 'Download Settings',
+      zhCn: '下载设置'
+    },
+    '缓存设置': {
+      condition: node => node.parentNode && node.parentNode.className === 'b_text mt_0',
+      en: 'Cache Settings',
+      zhCn: '缓存设置'
+    },
+    '播放设置': {
+      condition: node => node.parentNode && node.parentNode.className === 'b_text mt_0',
+      en: 'Playback Settings',
+      zhCn: '播放设置'
+    },
+    '快捷键': {
+      condition: node => node.parentNode && node.parentNode.className === 'b_text mt_0',
+      en: 'Shortcut Keys',
+      zhCn: '快捷键'
+    },
+    '手柄设置': {
+      condition: node => node.parentNode && node.parentNode.className === 'b_text mt_0',
+      en: 'Gamepad Settings',
+      zhCn: '手柄设置'
+    },
+    '消息设置': {
+      condition: node => node.parentNode && node.parentNode.className === 'b_text mt_0',
+      en: 'Message Settings',
+      zhCn: '消息设置'
+    },
+    '推送设置': {
+      condition: node => node.parentNode && node.parentNode.className === 'b_text mt_0',
+      en: 'Push Settings',
+      zhCn: '推送设置'
+    },
+    '关于哔哩哔哩': {
+      condition: node => node.parentNode && node.parentNode.className === 'b_text mt_0',
+      en: 'About Bilibili',
+      zhCn: '关于哔哩哔哩'
+    },
+    '检查更新': {
+      condition: node => node.parentNode && node.parentNode.className === 'vui_button about-button mr_sm',
+      en: 'Check for Updates',
+      zhCn: '检查更新'
+    },
+    '反馈意见': {
+      condition: node => node.parentNode && node.parentNode.className === 'vui_button about-button mr_sm',
+      en: 'Feedback',
+      zhCn: '反馈意见'
+    },
+    '客服中心': {
+      condition: node => node.parentNode && node.parentNode.className === 'vui_button about-button mr_sm',
+      en: 'Customer Service Center',
+      zhCn: '客服中心'
+    },
+    // #endregion 设置
   }
   const regExpI18n = [
     {
