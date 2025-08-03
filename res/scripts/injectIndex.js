@@ -262,7 +262,27 @@ BrowserWindow.prototype.loadFile = function(...args){
   _loadFile.apply(this, args)
   // this.loadURL('http://www.jysafe.cn')
 }
-
+{
+  const originalClose = BrowserWindow.prototype.close
+  BrowserWindow.prototype.close = function (...args) {
+    /**
+     * https://github.com/msojocs/bilibili-linux/issues/169
+     * 1. 使用账户密码登录，遇到验证码
+     * 2. 关闭验证码弹窗 loginRiskWindow.close
+     * 3. 再次使用账户密码登录
+     * 4. 此时不再需要验证码（跳过验证码），执行成功逻辑，再次调用 loginRiskWindow.close 错误
+     * 
+     */
+    console.info('------------->close window', args)
+    const result = originalClose.apply(this, args)
+    if (this === global.biliApp.configService.loginWindow) {
+      global.biliApp.configService.loginWindow = null
+    } else if (this === global.biliApp.configService.loginRiskWindow) {
+      global.biliApp.configService.loginRiskWindow = null
+    }
+    return result
+  }
+}
 /**
  * 
  * @param {string} struct
