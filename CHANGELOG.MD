@@ -2,6 +2,8 @@
 
 ## 🚀 版本
 - bilibili: update to v1.17.0.4380
+## 🐞 修复
+- 小窗：按钮无法消失 https://github.com/msojocs/bilibili-linux/issues/170
 
 # 🌈 v1.16.5-5 / 2025-08-03
 ## 🐞 修复

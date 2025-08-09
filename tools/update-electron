@@ -14,7 +14,8 @@ notice() {
   echo -e "\033[36m $1 \033[0m "
 }
 
-electron_version="33.0.2"
+# 大于28.2.1有问题：https://github.com/msojocs/bilibili-linux/issues/170, https://github.com/electron/electron/issues/42519
+electron_version="28.2.1"
 if [ "$BUILD_ARCH" == "" ];then
   BUILD_ARCH="x64"
 elif [ "$BUILD_ARCH" == "amd64" ];then
