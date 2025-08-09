@@ -59,7 +59,8 @@ func (ev *Event) GetAbsolutePosition() (Pointer, error) {
 		return Pointer{}, fmt.Errorf("resolution error")
 	}
 	ptr := (*C.struct_libinput_event_pointer)(unsafe.Pointer(ev.ev))
-	w, h := uint32(resolution.Width), uint32(resolution.Height)
+	scale := GetScreenScale()
+	w, h := uint32(float64(resolution.Width)/scale), uint32(float64(resolution.Height)/scale)
 	x := C.libinput_event_pointer_get_absolute_x_transformed(ptr, C.uint32_t(w))
 	y := C.libinput_event_pointer_get_absolute_y_transformed(ptr, C.uint32_t(h))
 	p := Pointer{

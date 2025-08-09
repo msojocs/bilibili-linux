@@ -13,8 +13,6 @@ const (
 )
 
 func main() {
-	scale := libinput.GetScreenScale()
-	log.Println("scale:", scale)
 
 	li := libinput.NewPathContext()
 	defer li.Close()
@@ -55,6 +53,7 @@ func main() {
 				log.Fatalln("absolute position error:", err)
 			}
 			log.Println("x:", p.X, ", y:", p.Y)
+			break
 		}
 		time.Sleep(100 * time.Millisecond)
 	}

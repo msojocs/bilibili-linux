@@ -4,46 +4,36 @@ package libinput
 #cgo linux  pkg-config: xrandr
 #include <stdlib.h>
 #include <X11/Xlib.h>
-#include <X11/extensions/Xrandr.h>
+#include <X11/Xresource.h>
 
 float get_screen_scale(Display *dpy) {
-    int event_base, error_base;
-    if (!XRRQueryExtension(dpy, &event_base, &error_base)) {
-        return 1.0; // Xrandr extension not available
-    }
+	Display* display = XOpenDisplay(NULL);
+    if (!display) return 1.0;
 
-    int screen = DefaultScreen(dpy);
-    XRRScreenResources *res = XRRGetScreenResources(dpy, RootWindow(dpy, screen));
-    if (!res) {
-        return 1.0;
-    }
+    double scale = 1.0;
+    XrmInitialize();
+    char* resmgr = XResourceManagerString(display);
 
-    XRROutputInfo *output_info = NULL;
-    for (int i = 0; i < res->noutput; ++i) {
-        output_info = XRRGetOutputInfo(dpy, res, res->outputs[i]);
-        if (output_info && output_info->connection == RR_Connected) {
-            break;
-        }
-        XRRFreeOutputInfo(output_info);
-        output_info = NULL;
-    }
+    if (resmgr) {
+        XrmDatabase db = XrmGetStringDatabase(resmgr);
+        if (db) {
+            char* type;
+            XrmValue value;
 
-    if (!output_info) {
-        XRRFreeScreenResources(res);
-        return 1.0;
-    }
-
-    float scale = 1.0;
-    if (output_info->crtc) {
-        XRRCrtcInfo *crtc_info = XRRGetCrtcInfo(dpy, res, output_info->crtc);
-        if (crtc_info) {
-            scale = (float)crtc_info->width / (float)output_info->mm_width;
-            XRRFreeCrtcInfo(crtc_info);
+            // 尝试获取 Xft.dpi 值
+            if (XrmGetResource(db, "Xft.dpi", "String", &type, &value)) {
+                if (value.addr) {
+                    double dpi = atof(value.addr);
+                    if (dpi > 48) {  // 合理值检查
+                        scale = dpi / 96.0;
+                    }
+                }
+            }
+            XrmDestroyDatabase(db);
         }
     }
 
-    XRRFreeOutputInfo(output_info);
-    XRRFreeScreenResources(res);
+    XCloseDisplay(display);
     return scale;
 }
 */
