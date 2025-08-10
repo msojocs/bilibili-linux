@@ -76,7 +76,12 @@ cd tmp
 echo "{}" > package.json
 npm install @grpc/grpc-js
 cd ..
+
 cp -rf tmp/node_modules/* app/node_modules
 rm -rf tmp
 asar p app app.asar
 rm -rf app
+
+notice "Download cursor-tool"
+wget -c https://github.com/msojocs/bilibili-linux/releases/download/tools/cursor-tool -Ocursor-tool
+chmod +x cursor-tool

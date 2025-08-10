@@ -1,4 +1,4 @@
-const {app, protocol, ipcMain, BrowserWindow, Menu, session} = require('electron');
+const {app, protocol, ipcMain, BrowserWindow, Menu, session, screen} = require('electron');
 const EventEmitter = require('events');
 const https = require('https');
 const path = require('path');
@@ -445,6 +445,57 @@ app.on('ready', ()=>{
       url: req.url.replace('roaming-thpic', 'https')
     })
   })
+  {
+    // setInterval(() => {
+    //   const p = screen.getCursorScreenPoint()
+    //   console.info(p)
+    // }, 1000)
+  }
+  {
+    const cursorTool = () => {
+      return new Promise((resolve, reject) => {
+        cp.exec(path.resolve(__dirname, '../cursor-tool'), (ex, out, err) => {
+          if (ex || err) {
+            reject(err)
+          }
+          else {
+            resolve(out)
+          }
+        })
+      })
+    }
+    const original = screen.getCursorScreenPoint
+    const cp = require('child_process')
+    screen.getCursorScreenPoint = function() {
+      if (process.env['XDG_SESSION_TYPE'] == 'wayland') {
+        (async() => {
+          try {
+            const point = (await cursorTool()).replace('\n', '')
+            const detail = point.split(',')
+            this.oldX = parseInt(detail[0])
+            this.oldY = parseInt(detail[1])
+            return {
+              x: this.oldX,
+              y: this.oldY,
+            }
+          }
+          catch (err) {
+            console.error('error:', err.replace('\n', ''))
+            if (err.includes('failed to add device')) {
+              console.info(`\x1B[36mNeed execute: sudo usermod -aG input ${process.env.USERNAME}, then reboot.\x1B[0m`)
+            }
+          }
+        })()
+      }
+      if (!this.oldX || !this.oldY) {
+        return original.apply(this, [])
+      }
+      return {
+        x: this.oldX,
+        y: this.oldY,
+      }
+    }
+  }
 });
 {
   const cp = require('child_process')
