@@ -454,7 +454,7 @@ app.on('ready', ()=>{
   {
     const cursorTool = () => {
       return new Promise((resolve, reject) => {
-        cp.exec(path.resolve(__dirname, '../cursor-tool'), (ex, out, err) => {
+        cp.exec(`${path.resolve(__dirname, '../cursor-tool')} --devices "/dev/input/event1,/dev/input/event2,/dev/input/event3"`, (ex, out, err) => {
           if (ex || err) {
             reject(err)
           }

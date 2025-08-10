@@ -2,25 +2,37 @@ package main
 
 import (
 	"cursor-tool/libinput"
+	"flag"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"golang.org/x/sys/unix"
 )
 
-const (
-	testDevice = "/dev/input/event2"
+var (
+	devices = flag.String("devices", "", "evdev devices (comma-separated)")
 )
+
+func init() {
+	flag.Parse()
+
+	if *devices == "" {
+		log.Fatal("please specify devices")
+	}
+}
 
 func main() {
 
 	li := libinput.NewPathContext()
 	defer li.Close()
 
-	// log.Println("start add device")
-	if err := li.PathAddDevice(testDevice); err != nil {
-		log.Fatal(err)
+	ds := strings.Split(*devices, ",")
+	for _, d := range ds {
+		if err := li.PathAddDevice(d); err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	// log.Println("start poll")
