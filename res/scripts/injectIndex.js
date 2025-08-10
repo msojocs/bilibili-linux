@@ -111,7 +111,7 @@ Menu.buildFromTemplate = function() {
   if (arguments[0]?.[0]?.label == '设置') {
     arguments[0]?.unshift({
       label: '首页',
-      click: () => global.biliApp.configService.openMainWindowPage$.next({ page: 'Root' })
+      click: () => global.biliApp.configService.openMainWindowPage$.next({ page: 'RecommendPage' })
     })
     console.log('menu list:', arguments)
   }
