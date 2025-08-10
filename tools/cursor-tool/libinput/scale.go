@@ -1,7 +1,6 @@
 package libinput
 
 /*
-#cgo linux  pkg-config: xrandr
 #include <stdlib.h>
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>

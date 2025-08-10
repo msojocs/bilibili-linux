@@ -170,24 +170,24 @@ Module._load = (...args) => {
   }
 }
 
-if (process.env.XDG_SESSION_TYPE === 'wayland' || process.env.WAYLAND_DISPLAY) {
-  const _setAlwaysOnTop = BrowserWindow.prototype.setAlwaysOnTop;
-  const key = '[Wayland置顶]'
-  BrowserWindow.prototype.setAlwaysOnTop = function(...args) {
-    let title = this.getTitle()
-    if (args[0] && !title.startsWith(key)) {
-      // 置顶
-      title = `${key}${title}`
-      this.setTitle(title)
-    }
-    else if(!args[0] && title.startsWith(key))
-    {
-      title = title.replace(key, '')
-      this.setTitle(title)
-    }
-    return _setAlwaysOnTop.apply(this, args)
-  }
-}
+// if (process.env.XDG_SESSION_TYPE === 'wayland' || process.env.WAYLAND_DISPLAY) {
+//   const _setAlwaysOnTop = BrowserWindow.prototype.setAlwaysOnTop;
+//   const key = '[Wayland置顶]'
+//   BrowserWindow.prototype.setAlwaysOnTop = function(...args) {
+//     let title = this.getTitle()
+//     if (args[0] && !title.startsWith(key)) {
+//       // 置顶
+//       title = `${key}${title}`
+//       this.setTitle(title)
+//     }
+//     else if(!args[0] && title.startsWith(key))
+//     {
+//       title = title.replace(key, '')
+//       this.setTitle(title)
+//     }
+//     return _setAlwaysOnTop.apply(this, args)
+//   }
+// }
 
 // hook loadURL
 const originloadURL = BrowserWindow.prototype.loadURL;
@@ -454,14 +454,24 @@ app.on('ready', ()=>{
   {
     const cursorTool = () => {
       return new Promise((resolve, reject) => {
-        cp.exec(`${path.resolve(__dirname, '../cursor-tool')} --devices "/dev/input/event1,/dev/input/event2,/dev/input/event3"`, (ex, out, err) => {
-          if (ex || err) {
-            reject(err)
-          }
-          else {
-            resolve(out)
-          }
-        })
+        try {
+          const info = cp.execSync('cat /proc/bus/input/devices').toString()
+          const devices = info.split('\n')
+          .filter(e => e.startsWith('H:')).filter(e => e.includes('mouse'))
+          .map(e => e.split('=')[1].split(' ').filter(e1 => e1.startsWith('event'))[0])
+          .map(e => `/dev/input/${e}`).join(',')
+          cp.exec(`${path.resolve(__dirname, '../cursor-tool')} --devices "${devices}"`, (ex, out, err) => {
+            if (ex || err) {
+              reject(err)
+            }
+            else {
+              resolve(out)
+            }
+          })
+        }
+        catch(err) {
+          reject(err)
+        }
       })
     }
     const original = screen.getCursorScreenPoint
