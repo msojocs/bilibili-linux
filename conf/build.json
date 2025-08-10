@@ -14,9 +14,13 @@
   ],
   "extraResources": [
     "extensions",
-    "app/app-update.yml"
+    "app/app-update.yml",
+    {
+      "from": "app/cursor-tool",
+      "to": "cursor-tool"
+    }
   ],
-  "electronVersion": "33.0.2",
+  "electronVersion": "28.2.1",
   "appId": "com.bilibili.app",
   "mac": {
     "target": [
