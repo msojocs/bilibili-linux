@@ -5,15 +5,26 @@
   window.biliPlugins.set('Other', otherPlugin)
   Map.prototype.delete = function (...args) {
     if (args[0].install) {
-      window?.log?.info('Plugin:', args[0])
-      if (args[0].danmaku) {
-        window.danmakuManage = args[0]
+      const plugin = args[0]
+      if (plugin.danmaku) {
+        window.danmakuManage = plugin
+        // 自动连播推荐视频处理
+        plugin.storyStore.state.relatedAutoplay = localStorage.getItem('related_auto_play') === 'true'
+        plugin.settingStore.getHandoff = function() {
+          if (!this.storyStore.state.relatedAutoplay)
+            return 2
+          /**
+           * 0 - Auto
+           * 1 - Delay
+           * 2 - Abort
+           */
+          return this.state.handoff
+        }
       }
-      if (args[0].tag) {
-        window.biliPlugins.set(args[0].tag, otherPlugin)
-      }
-      else {
-        otherPlugin.push(args[0])
+      if (plugin.tag) {
+        window.biliPlugins.set(plugin.tag, otherPlugin)
+      } else {
+        otherPlugin.push(plugin)
       }
     }
     return original.apply(this, args)

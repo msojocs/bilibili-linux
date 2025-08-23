@@ -2,7 +2,7 @@
   <link rel="stylesheet" href="https://lib.baomitu.com/element-plus/2.2.0/index.min.css">
 </div>
 <div id="player-settings-ext">
-  <el-dialog v-model="settingsVisible" title="弹幕拓展功能" width="60%">
+  <el-dialog v-model="settingsVisible" title="拓展功能" width="60%">
     <el-tabs
         v-model="activeName"
         type="card"
@@ -20,6 +20,9 @@
         </div>
         <br>
         <el-checkbox v-model="isBlockVipColor" label="屏蔽大会员彩色弹幕" size="large" />
+      </el-tab-pane>
+      <el-tab-pane label="播放设定" name="play-settings">
+        <el-checkbox v-model="isRelatedAutoPlay" label="自动连播推荐视频" size="large" />
       </el-tab-pane>
     </el-tabs>
     <div v-if="activeName === 'bilibili' || activeName === 'dandanplay'">
