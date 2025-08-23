@@ -19,7 +19,7 @@
         "<all_urls>"
       ],
       "js": [
-        "hook.js",
+        "content.js",
         "hook/load.js"
       ],
       "run_at": "document_start",
@@ -29,7 +29,6 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "hook/hook.js",
         "hook/player.js",
         "hook/login.js",
         "hook/index.js",
