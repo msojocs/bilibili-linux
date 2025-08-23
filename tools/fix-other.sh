@@ -29,7 +29,7 @@ notice "解密"
 notice "====index.js===="
 # 修复新版不能启动的问题
 notice "修复不能启动的问题 index.js -- $root_dir"
-cat "$root_dir/res/scripts/injectIndex.js" > "app/index.js"
+cat "$root_dir/res/scripts/inject-index.js" > "app/index.js"
 # 从app.js加载 ok
 # grep -lr '!import_electron2' --exclude="app.asar" .
 # sed -i 's#!import_electron2#import_electron2#' app/main/index.js
@@ -60,13 +60,18 @@ sed -i 's#process.resourcesPath#path.dirname(this.app.getAppPath())#' app/node_m
 
 notice "====Bili Bridge===="
 notice "inject"
-cat "$root_dir/res/scripts/injectBridge.js" > "app/main/assets/temp.js"
 # inject
+cat "$root_dir/res/scripts/inject-bridge.js" > "app/main/assets/temp.js"
 cat "app/main/assets/bili-inject.js" >> "app/main/assets/temp.js"
 rm "app/main/assets/bili-inject.js"
 mv "app/main/assets/temp.js" "app/main/assets/bili-inject.js"
+# core
+cat "$root_dir/res/scripts/inject-core.js" > "app/render/assets/lib/temp.js"
+cat "app/render/assets/lib/core.js" >> "app/render/assets/lib/temp.js"
+rm "app/render/assets/lib/core.js"
+mv "app/render/assets/lib/temp.js" "app/render/assets/lib/core.js"
 # preload
-cat "$root_dir/res/scripts/injectBridge.js" > "app/main/assets/temp.js"
+cat "$root_dir/res/scripts/inject-bridge.js" > "app/main/assets/temp.js"
 cat "app/main/assets/bili-preload.js" >> "app/main/assets/temp.js"
 rm "app/main/assets/bili-preload.js"
 mv "app/main/assets/temp.js" "app/main/assets/bili-preload.js"
@@ -74,7 +79,7 @@ cp "$root_dir/res/protos/dynamic.proto" "app/main/assets/protos/dynamic.proto"
 mkdir tmp
 cd tmp
 echo "{}" > package.json
-npm install @grpc/grpc-js
+npm install @grpc/grpc-js @expo/sudo-prompt
 cd ..
 
 cp -rf tmp/node_modules/* app/node_modules

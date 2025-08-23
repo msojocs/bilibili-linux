@@ -30,9 +30,10 @@ cd "$res_dir"
 
 asar e "app.asar" app
 
-notice "暴露弹幕管理接口"
-grep -lr "this.initDanmaku(),this" --exclude="app.asar" .
-sed -i 's#this.initDanmaku(),this#this.initDanmaku(),window.danmakuManage = this,this#' "app/render/assets/lib/core.js"
+# notice "暴露弹幕管理接口"
+# grep -lr "this.initDanmaku(),this" --exclude="app.asar" .
+# sed -i 's#this.initDanmaku(),this#this.initDanmaku(),window.danmakuManage = this,this#' "app/render/assets/lib/core.js"
+
 
 asar p app app.asar
 rm -rf app
