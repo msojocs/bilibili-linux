@@ -30,7 +30,6 @@
     {
       "resources": [
         "hook/player.js",
-        "hook/login.js",
         "hook/index.js",
         "hook/search.js",
         "hook/common.css",

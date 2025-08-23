@@ -6,7 +6,6 @@ console.log("[hook]: hook.js", fileName)
 const runtime = chrome.runtime
 const URLS = {
   md5: runtime.getURL(`utils/md5.js`),
-  login: runtime.getURL(`hook/login.js`),
   search: runtime.getURL(`hook/search.js`),
   player: runtime.getURL(`hook/player.js`),
   index: runtime.getURL(`hook/index.js`),

@@ -5,3 +5,9 @@ export const getPageType = () => {
     if (fileName === 'login')
         return PageType.Login
 }
+
+export const loadJS = (src: string) => {
+    const loadJS = document.createElement('script');
+    loadJS.src = src;
+    (document.head || document.documentElement).appendChild(loadJS);
+}
