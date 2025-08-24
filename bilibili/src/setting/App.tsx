@@ -2,6 +2,7 @@ import { useState } from 'react'
 import './App.css'
 import { Modal } from 'antd'
 import { SettingOutlined } from '@ant-design/icons'
+import Setting from './setting/Setting'
 
 function App() {
   const [showSetting, setShowSetting] = useState(false)
@@ -21,15 +22,13 @@ function App() {
       </button>
 
       <Modal
-        title="Basic Modal"
+        title="插件设置"
         closable={{ 'aria-label': 'Custom Close Button' }}
         open={showSetting}
         onOk={handleOk}
         onCancel={handleCancel}
       >
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
+        <Setting />
       </Modal>
 
     </>

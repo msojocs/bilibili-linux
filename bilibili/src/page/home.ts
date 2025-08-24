@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client"
-import SettingButton from "../setting/render/main"
+import SettingButton from "../setting/main"
 import { createLogger } from "../common/log"
 
 (() => {
