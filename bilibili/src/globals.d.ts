@@ -10,4 +10,5 @@ interface Window {
     }
     requestBackground: (action: string, data: unknown) => Promise<unknown>
     cookieStore: CookieStore
+    danmakuManage: unknown
 }
