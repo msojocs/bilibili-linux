@@ -16,6 +16,9 @@ export default defineConfig({
     emptyOutDir: false,
     watch: {}
   },
+  define: {
+    'process.env.NODE_ENV': '"production"'
+  },
   plugins: [react()],
 })
 
@@ -25,6 +28,12 @@ const libraries: LibraryOptions[] = [
     entry: resolve(__dirname, 'src/page/login.ts'),
     name: 'login',
     fileName: 'page/login',
+    formats: ['es'],
+  },
+  {
+    entry: resolve(__dirname, 'src/page/home.ts'),
+    name: 'home',
+    fileName: 'page/home',
     formats: ['es'],
   },
 ];
@@ -39,6 +48,9 @@ libraries.forEach(async (libItem) => {
         // other options
       },
       watch: {}
+    },
+    define: {
+      'process.env.NODE_ENV': '"production"'
     },
     plugins: [react()],
   });

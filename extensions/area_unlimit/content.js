@@ -5,29 +5,14 @@ const fileName = url.pathname.substring(0, url.pathname.lastIndexOf('.'))
 console.log("[hook]: hook.js", fileName)
 const runtime = chrome.runtime
 const URLS = {
-  md5: runtime.getURL(`utils/md5.js`),
   search: runtime.getURL(`hook/search.js`),
   player: runtime.getURL(`hook/player.js`),
   index: runtime.getURL(`hook/index.js`),
   translation: runtime.getURL(`hook/translation.js`),
-  commonJS: runtime.getURL(`hook/common.js`),
   commonCSS: runtime.getURL(`hook/common.css`),
   RoamingPage: runtime.getURL(`hook/RoamingPage.html`),
   PlayerEnhance: runtime.getURL(`hook/PlayerEnhance.html`),
 }
-
-var commonJS = document.createElement('script');
-commonJS.src = URLS.commonJS;
-(document.head || document.documentElement).appendChild(commonJS);
-// commonJS.onload = function () {
-//   commonJS.remove();
-// };
-var md5JS = document.createElement('script');
-md5JS.src = URLS.md5;
-(document.head || document.documentElement).appendChild(md5JS);
-// md5JS.onload = function () {
-//   md5JS.remove();
-// };
 
 // Event listener
 document.addEventListener('ROAMING_getURL', function (e) {

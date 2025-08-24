@@ -19,7 +19,8 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "page/login.js"
+        "page/login.js",
+        "page/home.js"
       ],
       "matches": [
         "<all_urls>"

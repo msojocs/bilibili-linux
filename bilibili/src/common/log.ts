@@ -45,7 +45,7 @@ const CurrentLogLevel: LogLevelType = (() => {
 /**
  * 日志打印工具，统一管理日志输出&上报
  */
-class Logger {
+export class Logger {
   /** 命名空间（scope），用于区分所在执行文件 */
   private readonly beforeFuncs: InterceptorFuncType[] = []
   private readonly afterFuncs: InterceptorFuncType[] = []

@@ -4,7 +4,7 @@
   const otherPlugin = []
   window.biliPlugins.set('Other', otherPlugin)
   Map.prototype.delete = function (...args) {
-    if (args[0].install) {
+    if (args[0] && args[0].install) {
       const plugin = args[0]
       if (plugin.danmaku) {
         window.danmakuManage = plugin
