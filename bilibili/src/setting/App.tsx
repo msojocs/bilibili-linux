@@ -26,7 +26,10 @@ function App() {
         closable={{ 'aria-label': 'Custom Close Button' }}
         open={showSetting}
         onOk={handleOk}
+        okButtonProps={{style: {display: 'none'}}}
+        cancelText={'关闭'}
         onCancel={handleCancel}
+        centered={true}
       >
         <Setting />
       </Modal>

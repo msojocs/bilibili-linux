@@ -1,3 +1,9 @@
+window.log = window.log || {
+  info: console.info,
+  log: console.log,
+  warn: console.warn,
+  debug: console.debug,
+};
 (()=>{
   const pacLink = localStorage.pacLink || ""
   let result = ""
