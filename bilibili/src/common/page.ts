@@ -6,6 +6,8 @@ export const getPageType = (): PageType => {
         return Page.Login
     if (fileName === 'index')
         return Page.Home
+    if (fileName === 'search')
+        return Page.Search
     return Page.Unknown
 }
 

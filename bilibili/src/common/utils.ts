@@ -31,7 +31,6 @@ export const UTILS = {
     log.info('replaceUpos:', host, replaceAkamai)
     if (host && (!playURL.includes("akamaized.net") || replaceAkamai)) {
       playURL = playURL.replace(/:\\?\/\\?\/[^/]+\\?\//g, `://${host}/`);
-
     }
     return playURL
   },

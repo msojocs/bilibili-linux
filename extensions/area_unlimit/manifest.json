@@ -31,7 +31,6 @@
       "resources": [
         "hook/player.js",
         "hook/index.js",
-        "hook/search.js",
         "hook/common.css",
         "hook/translation.js",
         "hook/RoamingPage.html",

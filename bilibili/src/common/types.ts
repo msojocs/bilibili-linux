@@ -1,6 +1,8 @@
+
 export const Page = {
-  Login: 'login',
   Home: 'home',
+  Login: 'login',
+  Search: 'search',
   Unknown: 'Unknown'
 } as const
 export type PageType = typeof Page[keyof typeof Page]
@@ -11,9 +13,9 @@ export interface Bvid2DynamicIdType {
 export interface DandanPlayAnimeType {
   animeId: number
   animeTitle: string
+  episodes: DandanPlayEpisodeType[]
   type: string
   typeDescription: string
-  episodes: DandanPlayEpisodeType[]
 }
 export interface DandanPlayEpisodeType {
   episodeId: number
@@ -21,11 +23,11 @@ export interface DandanPlayEpisodeType {
 }
 export interface DandanPlayCommentType {
   cid: number
+  m: string
   /**
    * 出现时间,模式,颜色,用户ID
    */
   p: string
-  m: string
 }
 export interface BiliResponseType<T> {
   code: number
@@ -33,44 +35,28 @@ export interface BiliResponseType<T> {
 }
 
 export interface BiliSeasonInfoType {
-  modules: BiliSeasonInfoModuleType[]
   actor: {
     info: string
   }
   alias: string
   areas: string
   cover: string
+  dynamic_subtitle: string
   enable_vt: boolean
   evaluate: string
-  test_switch: {
-    hide_ep_vv_vt_dm: boolean
-  }
   icon_font: string
   link: string
   media_id: number
   mode: string
+  modules: BiliSeasonInfoModuleType[]
   new_ep: boolean
   payment: string
   play_strategy:string
   publish: boolean
-  share_url: string
-  square_cover: string
-  staff: {
-    info: string
+  rating: {
+    count: number
+    score: number
   }
-  show_season_type: string
-  dynamic_subtitle: string
-  share_copy: string
-  stat: string
-  status: string
-  styles: {
-    name: string
-  }[]
-  subtitle: string
-  title: string
-  total: number
-  type: string
-  user_status: Record<string, string>
   record: Record<string, string>
   rights: {
     area_limit: number
@@ -79,43 +65,81 @@ export interface BiliSeasonInfoType {
   season_id: number
   season_title: string
   series: string
-  rating: {
-    count: number
-    score: number
+  share_copy: string
+  share_url: string
+  show_season_type: string
+  square_cover: string
+  staff: {
+    info: string
   }
+  stat: string
+  status: string
+  styles: {
+    name: string
+  }[]
+  subtitle: string
+  test_switch: {
+    hide_ep_vv_vt_dm: boolean
+  }
+  title: string
+  total: number
+  type: string
+  user_status: Record<string, string>
 }
 export interface BiliSeasonInfoModuleType {
   data: BiliAppSearchResultType
 }
 export interface BiliAppSearchResultType {
-  season_id: number
-  title: string
+  area: string
+  cover: string
   cv: string
-  staff: string
-  season_type: string
-  selection_style: string
-  uri: string
+  episodes: BiliSeasonInfoEpisodeType[]
   is_atten: number
   is_selection: number
-  cover: string
-  area: string
-  style: string
   ptime: string
   rating: string
+  season_id: number
+  season_type: string
+  selection_style: string
+  staff: string
+  style: string
+  title: string
+  uri: string
   vote: string
-  episodes: BiliSeasonInfoEpisodeType[]
 }
 export interface BiliSeasonInfoEpisodeType {
-  ep_id: number
-  cid: number
-  param: string
-  index: number
-  uri: string
   badge_info: {
     text: string
   }
+  cid: number
+  ep_id: number
+  index: number
+  param: string
   rights: {
     area_limit: number
     allow_dm: number
   }
+  uri: string
+}
+/**
+ * https://api.bilibili.com/x/web-interface/search/type
+ * 
+ */
+export interface BiliWebSearchResultType {
+  areas: string
+  cover: string
+  cv: string
+  episodes: BiliSeasonInfoEpisodeType[]
+  is_atten: number
+  is_selection: number
+  ptime: string
+  rating: string
+  season_id: number
+  season_type: string
+  selection_style: string
+  staff: string
+  style: string
+  title: string
+  uri: string
+  vote: string
 }

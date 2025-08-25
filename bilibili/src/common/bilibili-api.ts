@@ -110,7 +110,7 @@ export class BiliBiliApi {
       mobi_app: 'android_hd',
       platform: 'android',
       qn: 80,
-      ts: (Date.now()/1000).toFixed(0),
+      ts: (Date.now() / 1000).toFixed(0),
     }
     const queryParam = this.genSignParam(param)
     return GET(`${url}?${queryParam}`).then(res => {
@@ -135,7 +135,7 @@ export class BiliBiliApi {
       spmid: 'pgc.pgc-video-detail.0.0',
       track_patch: 0,
       trackid: '',
-      ts: (Date.now()/1000).toFixed(0),
+      ts: (Date.now() / 1000).toFixed(0),
       ugc_ogv_unity_exp: 1
     }
     if (seasonId) {
@@ -168,7 +168,7 @@ export class BiliBiliApi {
       let path = "x/v2/search/type"
       try {
         params.access_key = UTILS.getAccessToken()
-      }catch (e) {
+      } catch (e) {
         this.log.error('获取access token异常：', e)
       }
       if (area === 'th') {
@@ -199,28 +199,6 @@ export class BiliBiliApi {
           reject(e)
         }
       })
-    })
-  }
-
-  searchBangumi2(params: string, area: AreaType, buvid3: string = '') {
-    let path = "x/web-interface/search/type"
-    if (area === "th") path = "intl/gateway/v2/app/search/type"
-    const url = `roaming://${this.server}/${path}?${params}&area=${area}${area === "th" ? '&type=7' : ''}`
-
-    return GET(url, {'x-cookie': `buvid3=${buvid3}`}).then(res => {
-      this.log.info('search result:', res)
-      this.log.info(res.responseText)
-      try {
-
-        const resp = JSON.parse(res.responseText)
-        this.log.info("searchBangumi: ", resp)
-        if (area === "th")
-          return Promise.resolve(UTILS.handleTHSearchResult(resp.data.items || []))
-        else
-          return Promise.resolve(resp.data?.result || [])
-      } catch (e) {
-        return Promise.resolve(e)
-      }
     })
   }
 
@@ -297,7 +275,7 @@ export class BiliBiliApi {
       spm_id: 'from_spmid',
       statistics: '{"appId":5,"platform":3,"version":"1.44.2","abtest":""}',
       sys_ver: '29',
-      ts: (Date.now()/1000).toFixed(0)
+      ts: (Date.now() / 1000).toFixed(0)
     }
     const _resp = await POST(url, this.genSignParam(param), {
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -343,7 +321,7 @@ export class BiliBiliApi {
       s_locale: 'zh_CN',
       spm_id: 'from_spmid',
       statistics: '{"appId":5,"platform":3,"version":"1.44.2","abtest":""}',
-      ts: (Date.now()/1000).toFixed(0),
+      ts: (Date.now() / 1000).toFixed(0),
     }
     const _resp = await POST(url, this.genSignParam(param), {
       'Content-Type': 'application/x-www-form-urlencoded',

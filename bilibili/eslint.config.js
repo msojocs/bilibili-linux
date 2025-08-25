@@ -5,6 +5,7 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
 import { globalIgnores } from 'eslint/config'
 import { parser } from 'typescript-eslint'
+import perfectionist from 'eslint-plugin-perfectionist'
 
 export default tseslint.config([
   globalIgnores(['dist']),
@@ -21,6 +22,9 @@ export default tseslint.config([
       parser: parser,
       globals: globals.browser,
     },
+    plugins: {
+      perfectionist
+    },
     rules: {
       "no-console": [
         "error",
@@ -36,6 +40,9 @@ export default tseslint.config([
           "varsIgnorePattern": "^_",
           "ignoreRestSiblings": true
         }
+      ],
+      'perfectionist/sort-interfaces': [
+        'error',
       ],
     }
   },

@@ -20,7 +20,8 @@
     {
       "resources": [
         "page/login.js",
-        "page/home.js"
+        "page/home.js",
+        "page/search.js"
       ],
       "matches": [
         "<all_urls>"

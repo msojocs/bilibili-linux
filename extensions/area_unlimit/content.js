@@ -5,7 +5,6 @@ const fileName = url.pathname.substring(0, url.pathname.lastIndexOf('.'))
 console.log("[hook]: hook.js", fileName)
 const runtime = chrome.runtime
 const URLS = {
-  search: runtime.getURL(`hook/search.js`),
   player: runtime.getURL(`hook/player.js`),
   index: runtime.getURL(`hook/index.js`),
   translation: runtime.getURL(`hook/translation.js`),

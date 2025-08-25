@@ -50,6 +50,7 @@ export class Logger {
   /** 命名空间（scope），用于区分所在执行文件 */
   private readonly beforeFuncs: InterceptorFuncType[] = []
   private readonly afterFuncs: InterceptorFuncType[] = []
+  public static moduleName: string = ''
   private readonly config: LoggerConfigType = {
     namespace: 'Bilibili',
   }
@@ -73,7 +74,7 @@ export class Logger {
     // 优先级小的不显示
     if (level < CurrentLogLevel) return
     this.beforeFuncs.forEach(e => e(this.config))
-    log[Methods[level]](`%c${this.config.namespace}`, Styles[level], ...args)
+    log[Methods[level]](`%c[${Logger.moduleName}]${this.config.namespace}`, Styles[level], ...args)
     this.afterFuncs.forEach(e => e(this.config))
   }
 

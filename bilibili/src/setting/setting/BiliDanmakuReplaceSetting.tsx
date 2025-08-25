@@ -104,7 +104,7 @@ export default function BiliDanmakuReplaceSetting() {
   return (
     <>
       {contextHolder}
-      <div>
+      <div style={{maxHeight: '300px'}}>
         <Row>
           <Col span="4" className="flex_center">搜索:</Col>
           <Col span="19">
@@ -121,6 +121,7 @@ export default function BiliDanmakuReplaceSetting() {
             <Cascader.Panel
               onChange={e => updateSettingValue("selectOptions", e)}
               options={danmakuReplace.searchResult}
+              style={{maxHeight: '250px'}}
             ></Cascader.Panel>
           </Col>
         </Row>

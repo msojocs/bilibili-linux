@@ -33,7 +33,7 @@ export const replaceFetch = () => {
               res
             })
           }catch (e) {
-            console.error(e)
+            log.error(e)
           }
         }
       }

@@ -10,7 +10,7 @@ import { createLogger } from "../common/log";
             const wv = wvList[0] as WebviewTag
             // 右键打开开发者工具
             wv.addEventListener("context-menu", () => {
-                // context环境取到的webview对象没有DevTools的方法，只能额外加载
+                // content环境取到的webview对象没有DevTools的方法，只能额外加载
                 if (wv.isDevToolsOpened()) {
                     wv.closeDevTools()
                 }

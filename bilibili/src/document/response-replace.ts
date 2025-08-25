@@ -24,8 +24,8 @@ const space_account_info_map: Record<string, any> = {
       "silence": 0,
       "coins": 0,
       "fans_badge": false,
-      "fans_medal": {"show": false, "wear": false, "medal": null},
-      "official": {"role": 3, "title": "哔哩哔哩番剧出差 官方账号", "desc": "", "type": 1},
+      "fans_medal": { "show": false, "wear": false, "medal": null },
+      "official": { "role": 3, "title": "哔哩哔哩番剧出差 官方账号", "desc": "", "type": 1 },
       "vip": {
         "type": 0,
         "status": 0,
@@ -46,9 +46,9 @@ const space_account_info_map: Record<string, any> = {
         "role": 0,
         "avatar_subscript_url": ""
       },
-      "pendant": {"pid": 0, "name": "", "image": "", "expire": 0, "image_enhance": "", "image_enhance_frame": ""},
-      "nameplate": {"nid": 0, "name": "", "image": "", "image_small": "", "level": "", "condition": ""},
-      "user_honour_info": {"mid": 0, "colour": null, "tags": []},
+      "pendant": { "pid": 0, "name": "", "image": "", "expire": 0, "image_enhance": "", "image_enhance_frame": "" },
+      "nameplate": { "nid": 0, "name": "", "image": "", "image_small": "", "level": "", "condition": "" },
+      "user_honour_info": { "mid": 0, "colour": null, "tags": [] },
       "is_followed": true,
       "top_photo": "http://i2.hdslb.com/bfs/space/cb1c3ef50e22b6096fde67febe863494caefebad.png",
       "theme": {},
@@ -65,10 +65,10 @@ const space_account_info_map: Record<string, any> = {
         "broadcast_type": 0
       },
       "birthday": "",
-      "school": {"name": ""},
-      "profession": {"name": ""},
+      "school": { "name": "" },
+      "profession": { "name": "" },
       "tags": null,
-      "series": {"user_upgrade_status": 3, "show_upgrade_window": false}
+      "series": { "user_upgrade_status": 3, "show_upgrade_window": false }
     }
   },
   "1988098633": {
@@ -85,8 +85,8 @@ const space_account_info_map: Record<string, any> = {
       "silence": 0,
       "coins": 0,
       "fans_badge": false,
-      "fans_medal": {"show": false, "wear": false, "medal": null},
-      "official": {"role": 0, "title": "", "desc": "", "type": -1},
+      "fans_medal": { "show": false, "wear": false, "medal": null },
+      "official": { "role": 0, "title": "", "desc": "", "type": -1 },
       "vip": {
         "type": 0,
         "status": 0,
@@ -107,9 +107,9 @@ const space_account_info_map: Record<string, any> = {
         "role": 0,
         "avatar_subscript_url": ""
       },
-      "pendant": {"pid": 0, "name": "", "image": "", "expire": 0, "image_enhance": "", "image_enhance_frame": ""},
-      "nameplate": {"nid": 0, "name": "", "image": "", "image_small": "", "level": "", "condition": ""},
-      "user_honour_info": {"mid": 0, "colour": null, "tags": []},
+      "pendant": { "pid": 0, "name": "", "image": "", "expire": 0, "image_enhance": "", "image_enhance_frame": "" },
+      "nameplate": { "nid": 0, "name": "", "image": "", "image_small": "", "level": "", "condition": "" },
+      "user_honour_info": { "mid": 0, "colour": null, "tags": [] },
       "is_followed": true,
       "top_photo": "http://i0.hdslb.com/bfs/space/cb1c3ef50e22b6096fde67febe863494caefebad.png",
       "theme": {},
@@ -126,10 +126,10 @@ const space_account_info_map: Record<string, any> = {
         "broadcast_type": 0
       },
       "birthday": "01-01",
-      "school": {"name": ""},
-      "profession": {"name": ""},
+      "school": { "name": "" },
+      "profession": { "name": "" },
       "tags": null,
-      "series": {"user_upgrade_status": 3, "show_upgrade_window": false}
+      "series": { "user_upgrade_status": 3, "show_upgrade_window": false }
     }
   },
   "2042149112": {
@@ -146,8 +146,8 @@ const space_account_info_map: Record<string, any> = {
       "silence": 0,
       "coins": 0,
       "fans_badge": false,
-      "fans_medal": {"show": false, "wear": false, "medal": null},
-      "official": {"role": 0, "title": "", "desc": "", "type": -1},
+      "fans_medal": { "show": false, "wear": false, "medal": null },
+      "official": { "role": 0, "title": "", "desc": "", "type": -1 },
       "vip": {
         "type": 0,
         "status": 0,
@@ -168,9 +168,9 @@ const space_account_info_map: Record<string, any> = {
         "role": 0,
         "avatar_subscript_url": ""
       },
-      "pendant": {"pid": 0, "name": "", "image": "", "expire": 0, "image_enhance": "", "image_enhance_frame": ""},
-      "nameplate": {"nid": 0, "name": "", "image": "", "image_small": "", "level": "", "condition": ""},
-      "user_honour_info": {"mid": 0, "colour": null, "tags": []},
+      "pendant": { "pid": 0, "name": "", "image": "", "expire": 0, "image_enhance": "", "image_enhance_frame": "" },
+      "nameplate": { "nid": 0, "name": "", "image": "", "image_small": "", "level": "", "condition": "" },
+      "user_honour_info": { "mid": 0, "colour": null, "tags": [] },
       "is_followed": true,
       "top_photo": "http://i0.hdslb.com/bfs/space/cb1c3ef50e22b6096fde67febe863494caefebad.png",
       "theme": {},
@@ -187,10 +187,10 @@ const space_account_info_map: Record<string, any> = {
         "broadcast_type": 0
       },
       "birthday": "",
-      "school": {"name": ""},
-      "profession": {"name": ""},
+      "school": { "name": "" },
+      "profession": { "name": "" },
       "tags": null,
-      "series": {"user_upgrade_status": 3, "show_upgrade_window": false}
+      "series": { "user_upgrade_status": 3, "show_upgrade_window": false }
     }
   },
 };
@@ -219,7 +219,7 @@ const uposMap: Record<string, string> = {
 const AREA_MARK_CACHE: Record<string, AreaType> = {}
 
 export const ResponseReplaceXMLHttpRequest = {
-  
+
 
   /**
    * 番剧信息
@@ -479,8 +479,7 @@ export const ResponseReplaceXMLHttpRequest = {
     UTILS.enableReferer()
     const upos = localStorage.upos || ""
     const isReplaceAkamai = localStorage.replaceAkamai === "true"
-    if (localStorage.uposApplyAll === 'true')
-    {
+    if (localStorage.uposApplyAll === 'true') {
       // 应用到所有视频
       req.responseText = UTILS.replaceUpos(req.responseText, uposMap[upos], isReplaceAkamai, undefined)
     }
@@ -521,7 +520,7 @@ export const ResponseReplaceXMLHttpRequest = {
             })
           }
         }
-      }catch (e) {
+      } catch (e) {
         log.error('动态信息1:', e)
       }
 
@@ -549,7 +548,7 @@ export const ResponseReplaceXMLHttpRequest = {
             })
           }
         }
-      }catch (e) {
+      } catch (e) {
         log.error('动态信息2:', e)
       }
 
@@ -574,7 +573,10 @@ export const ResponseReplaceXMLHttpRequest = {
       for (const k in serverList) {
         const area = k as AreaType
         const server = serverList[area] || ""
-        if (server.length === 0) continue
+        if (server.length === 0) {
+          log.info('skip area:', area)
+          continue
+        }
 
         api.setServer(server)
         try {
@@ -584,7 +586,6 @@ export const ResponseReplaceXMLHttpRequest = {
           }
 
           sleep(500); //当前方法暂停0.5秒
-          // const result = await api.searchBangumi2(req._params, area, buvid3.value || '')
           const result: any = await api.searchBangumi(params, area)
           // log.info('searchResult:', result)
           result.forEach((s: any) => {
@@ -609,7 +610,7 @@ export const ResponseReplaceXMLHttpRequest = {
     const resp = JSON.parse(req.responseText || "{}")
     const serverList = JSON.parse(localStorage.serverList || "{}")
     if ((resp.code === -400 || resp.code === -404 || !resp.data || resp.data.subtitle.subtitles.length === 0)
-       && serverList.th) {
+      && serverList.th) {
       log.info('处理字幕')
       // 字幕请求失败
       const api = new BiliBiliApi(serverList.th);
@@ -635,16 +636,16 @@ export const ResponseReplaceXMLHttpRequest = {
     }
     // 删除旧的规则
     for (const key in ResponseReplaceXMLHttpRequest) {
-      if (key && key.endsWith('json.translate')){
+      if (key && key.endsWith('json.translate')) {
         delete (ResponseReplaceXMLHttpRequest as any)[key]
       }
     }
     // 查找简体
-    const zhHans = resp.data?.subtitle?.subtitles?.find((e: { lan: string; })=>e.lan === 'zh-Hans')
-    if (!zhHans){
+    const zhHans = resp.data?.subtitle?.subtitles?.find((e: { lan: string; }) => e.lan === 'zh-Hans')
+    if (!zhHans) {
       // 没有简体，查找繁体
-      const zhHant = resp.data?.subtitle?.subtitles?.find((e: { lan: string; })=>e.lan === 'zh-Hant')
-      if (zhHant){
+      const zhHant = resp.data?.subtitle?.subtitles?.find((e: { lan: string; }) => e.lan === 'zh-Hant')
+      if (zhHant) {
         // 有繁体，构造简体拦截器
         const zhHans = JSON.parse(JSON.stringify(zhHant))
         zhHans.lan = 'zh-Hans'
@@ -669,7 +670,7 @@ export const ResponseReplaceXMLHttpRequest = {
     // log.info('繁体转简体', req)
     if (req._params.includes('zh-Hans')) {
       // log.info('繁体字幕数据: ', req.responseText)
-      
+
       req.responseText = ChineseConversionAPI.tc2sc(req.responseText)
       req.response = JSON.parse(req.responseText)
       req.status = 200
@@ -679,7 +680,7 @@ export const ResponseReplaceXMLHttpRequest = {
 }
 
 export const ResponseReplaceFetch: Record<string, (data: FetchReplaceType) => Promise<Response>> = {
-  
+
   /**
    * 搜索
    * @param {{urlInfo: [string, string], config: RequestInit, res: Response }} data 原请求结果
@@ -708,7 +709,6 @@ export const ResponseReplaceFetch: Record<string, (data: FetchReplaceType) => Pr
           }
 
           sleep(500); //当前方法暂停0.5秒
-          // const result = await api.searchBangumi2(req._params, area, buvid3.value || '')
           const result: any = await api.searchBangumi(params, area)
           // log.info('searchResult:', result)
           result.forEach((s: { title: string; }) => {
@@ -716,7 +716,6 @@ export const ResponseReplaceFetch: Record<string, (data: FetchReplaceType) => Pr
           })
           searchResult.data.result.push(...result)
         } catch (err) {
-
           log.error('搜索异常:', err)
         }
       }
@@ -737,7 +736,7 @@ export const ResponseReplaceFetch: Record<string, (data: FetchReplaceType) => Pr
         const userInfo = space_account_info_map[params.mid]
         if (userInfo) data.res = Response.json(userInfo)
       }
-    }catch (e) {
+    } catch (e) {
       log.error('用户信息替换失败：', e)
     }
     return data.res
@@ -783,7 +782,7 @@ export const ResponseReplaceFetch: Record<string, (data: FetchReplaceType) => Pr
       }
       data.res = Response.json(resp)
       // debugger
-    }catch (e) {
+    } catch (e) {
       log.error('視頻信息修復失败：', e)
     }
     return data.res
@@ -796,7 +795,7 @@ export const ResponseReplaceFetch: Record<string, (data: FetchReplaceType) => Pr
    * @returns {Promise<Response>}
    */
   "https://api.bilibili.com/x/web-interface/wbi/index/top/feed/rcmd": async (data: FetchReplaceType) => {
-    
+
     const resp = await data.res.clone().json()
     // resp.data.item = resp.data.item.filter(e => e.goto !== 'ad')
     data.res = Response.json(resp)
