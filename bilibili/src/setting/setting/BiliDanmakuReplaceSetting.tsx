@@ -3,7 +3,9 @@ import { Button, Cascader, Col, Input, notification, Row } from "antd";
 import { useState } from "react";
 import { BiliBiliApi } from "../../common/bilibili-api";
 import { UTILS } from "../../common/utils";
-
+import { GET } from "../../common/http";
+import { createLogger } from "../../common/log";
+const log = createLogger('BiliDanmaku')
 export default function BiliDanmakuReplaceSetting() {
   const [notify, contextHolder] = notification.useNotification();
   const [danmakuReplace, updateSetting] = useState<{
@@ -15,125 +17,32 @@ export default function BiliDanmakuReplaceSetting() {
     selectOptions: ['', ''],
     searchResult: [],
   })
-  const updateSettingValue = (key: string, value: string | (string | number | null)[]) => {
+  const updateSettingValue = (key: string, value: any) => {
     updateSetting(pre => ({
       ...pre,
       [key]: value
     }))
   }
-  const doConfirm = () => {
-    console.log('selectOptions', danmakuReplace.selectOptions)
-    // const data: Record<string, string> = {}
-    HandleResult['bilibili']?.(danmakuReplace.selectOptions)
-      .then(res => {
-        notify.info({
-          description: res,
-          message: 'success'
-        })
-      }).catch(err => {
-        notify.info({
-          message: "出现错误",
-          description: err
-        })
-      })
-  }
 
+  const getBilibiliEpDetails = (seasonId: string, epId: string) => {
+    const api = new BiliBiliApi()
+    return api.getSeasonInfoPgcByEpId(seasonId || "", epId || "", UTILS.getAccessToken())
+      .then(seasonInfo => {
+        console.log('seasonInfo: ', seasonInfo)
+        if (seasonInfo.code !== 0) return Promise.reject(seasonInfo)
 
-  const HTTP = {
-    get(url: string) {
-      return new Promise<XMLHttpRequest>((resolve, reject) => {
-        const Http = new XMLHttpRequest()
-        Http.open('GET', url)
-        Http.send()
-        Http.onloadend = _e => {
-          resolve(Http)
-        }
-        Http.onerror = _e => reject
+        const ep = seasonInfo.data.modules[0].data.episodes.filter((ep: any) => ep.ep_id === parseInt(epId))
+        if (ep.length === 0) return Promise.reject(`剧集查找失败, target:${epId}`)
+        return Promise.resolve(ep[0])
       })
-    }
   }
-  const BilibiliAPI = {
-    getEpDetails: (seasonId: string, epId: string) => {
-      const api = new BiliBiliApi()
-      return api.getSeasonInfoPgcByEpId(seasonId || "", epId || "", UTILS.getAccessToken())
-        .then(seasonInfo => {
-          console.log('seasonInfo: ', seasonInfo)
-          if (seasonInfo.code !== 0) return Promise.reject(seasonInfo)
-
-          const ep = seasonInfo.data.modules[0].data.episodes.filter((ep: any) => ep.ep_id === parseInt(epId))
-          if (ep.length === 0) return Promise.reject(`剧集查找失败, target:${epId}`)
-          return Promise.resolve(ep[0])
-        })
-    }
-  }
-  const DandanAPI = {
-    getComment(epId: string, withRelated = false) {
-      const url = `https://api.dandanplay.net/api/v2/comment/${epId}?withRelated=${withRelated}`
-      return HTTP.get(url).then(res => {
-        const resp = JSON.parse(res.responseText || "{}")
-        return Promise.resolve(resp.comments || [])
-      })
-    }
-  }
-  const SearchAPI = {
-    bilibili: (str: string) => {
-      const url = `https://api.bilibili.com/x/web-interface/search/type?__refresh__=true&_extra=&context=&page=1&page_size=12&order=&duration=&from_source=&from_spmid=333.337&platform=pc&device=win&highlight=1&single_column=0&keyword=${str}&search_type=media_bangumi`
-      return HTTP.get(url).then(res => {
-        const resp = JSON.parse(res.responseText)
-        console.log('bilibili: ', resp)
-        const bangumiList = []
-        const result = resp.data?.result ?? []
-        console.log('result: ', result)
-        for (const bangumi of result) {
-          const children = []
-          if (!bangumi.eps) continue;
-          for (const ep of bangumi.eps) {
-            let title = ep.title || ep.org_title
-            title = title.replace(/<.*?>/g, '')
-            children.push({
-              label: title,
-              value: ep.id
-            })
-          }
-          bangumiList.push({
-            label: bangumi.title.replace(/<.*?>/g, ''),
-            value: bangumi.pgc_season_id,
-            children
-          })
-        }
-        return Promise.resolve(bangumiList)
-      })
-    },
-    dandanplay: (str: string) => {
-      const url = `https://api.dandanplay.net/api/v2/search/episodes?anime=${str}`
-      return HTTP.get(url).then(res => {
-        const resp = JSON.parse(res.responseText)
-        console.log('dandanplay: ', resp)
-        const bangumiList = []
-        const result = resp?.animes ?? []
-        console.log('dandanplay result: ', result)
-        for (const anime of result) {
-          const children = []
-          for (const ep of anime.episodes) {
-            children.push({
-              label: ep.episodeTitle,
-              value: ep.episodeId
-            })
-          }
-          bangumiList.push({
-            label: anime.animeTitle,
-            value: anime.animeId,
-            children
-          })
-        }
-        return Promise.resolve(bangumiList)
-      })
-    }
-  }
-  const HandleResult = {
-    bilibili: async (options: [string, string]) => {
+  const doConfirm = async () => {
+    try {
+      console.log('selectOptions', danmakuReplace.selectOptions)
+      // const data: Record<string, string> = {}
+      const options = danmakuReplace.selectOptions
       console.log('bilibili options: ', options)
-      const epDetails = await BilibiliAPI.getEpDetails(...options)
+      const epDetails = await getBilibiliEpDetails(...options)
       console.log('getEpDetails: ', epDetails)
 
       const danmakuManage: any = window.danmakuManage
@@ -145,68 +54,45 @@ export default function BiliDanmakuReplaceSetting() {
       danmakuManage.danmaku.clear()
       // 重载弹幕
       danmakuManage.danmakuStore.loadDmPbAll(true)
-      return Promise.resolve("操作成功")
-    },
-    dandanplay: async (options: [string, string], data: { dandanplayWithRelated: boolean, actionMode: string }) => {
-      console.log('dandanplay options: ', options)
-      const comments = await DandanAPI.getComment(options[1], data.dandanplayWithRelated || true)
-      console.log('getComment: ', comments)
-      const result = []
-      const nowTime = new Date().getTime() / 1000
-      for (const comment of comments) {
-        const p = comment.p.split(',')
-        // 出现时间,模式,颜色,用户ID
-        const time = parseFloat(p[0])
-        const mode = parseInt(p[1])
-        const color = parseInt(p[2])
-        result.push({
-          attr: -1,
-          color,
-          date: nowTime,
-          mode,
-          pool: 0,
-          renderAs: 1,
-          size: 25,
-          text: comment.m,
-          stime: time,
-          weight: 1,
+      notify.info({
+        description: '成功',
+        message: 'success'
+      })
+    } catch (err) {
+      notify.info({
+        message: "出现错误",
+        description: `${err}`
+      })
+    }
+  }
+  
+  const doSearch = async (keyword: string) => {
+    log.info('bili search:', keyword)
+    const url = `https://api.bilibili.com/x/web-interface/search/type?__refresh__=true&_extra=&context=&page=1&page_size=12&order=&duration=&from_source=&from_spmid=333.337&platform=pc&device=win&highlight=1&single_column=0&keyword=${keyword}&search_type=media_bangumi`
+      const res = await GET(url)
+      const resp = JSON.parse(res.responseText)
+      console.log('bilibili: ', resp)
+      const bangumiList = []
+      const result = resp.data?.result ?? []
+      console.log('result: ', result)
+      for (const bangumi of result) {
+        const children = []
+        if (!bangumi.eps) continue;
+        for (const ep of bangumi.eps) {
+          let title = ep.title || ep.org_title
+          title = title.replace(/<.*?>/g, '')
+          children.push({
+            label: title,
+            value: ep.id
+          })
+        }
+        bangumiList.push({
+          label: bangumi.title.replace(/<.*?>/g, ''),
+          value: bangumi.pgc_season_id,
+          children
         })
       }
-      /**
-       * attr: -1
-        color: 16777215
-        date: 1653221671
-        dmid: "1058059079576006912"
-        effect: {}
-        mode: 1
-        pool: 0
-        renderAs: 1
-        size: 25
-        stime: 8.295
-        text: "好！"
-        uhash: "c515e33f"
-        weight: 1
-       */
-      const danmakuManage: any = window.danmakuManage
-      // 弹幕池操作
-      danmakuManage.danmaku.reset()
-      const list = danmakuManage.danmaku.manager.dataBase.timeLine.list
-      if (data.actionMode === "1") {
-        list.splice(0, list.length)
-      }
-      list.push(...result)
-      // 清空当前屏幕的弹幕
-      danmakuManage.danmaku.clear()
-      // danmakuManage.danmakuStore.loadDmPbAll(true)
-
-      return Promise.resolve(`成功加载${comments.length}条弹幕`)
-    },
-  }
-  const doSearch = function (keyword: string) {
-    SearchAPI['bilibili'](keyword)
-      .then((resp: any) => {
-        updateSettingValue('searchResult', resp || [])
-      })
+      updateSettingValue('searchResult', bangumiList || [])
   }
   return (
     <>

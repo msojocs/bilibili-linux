@@ -3,6 +3,7 @@ import { dirname, resolve } from 'node:path'
 import react from '@vitejs/plugin-react-swc'
 import { fileURLToPath } from 'node:url'
 const __dirname = dirname(fileURLToPath(import.meta.url))
+const watch = process.argv.includes('--watch') ? {} : false
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -14,7 +15,7 @@ export default defineConfig({
       formats: ['es'],
     },
     emptyOutDir: false,
-    watch: {}
+    watch,
   },
   define: {
     'process.env.NODE_ENV': '"production"'
@@ -47,7 +48,7 @@ libraries.forEach(async (libItem) => {
       rollupOptions: {
         // other options
       },
-      watch: {}
+      watch,
     },
     define: {
       'process.env.NODE_ENV': '"production"'
