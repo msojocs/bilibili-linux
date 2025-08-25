@@ -27,3 +27,20 @@ export interface DandanPlayCommentType {
   p: string
   m: string
 }
+export interface BiliResponseType<T> {
+  code: number
+  data: T
+}
+
+export interface BiliSeasonInfoType {
+  modules: BiliSeasonInfoModuleType[]
+}
+export interface BiliSeasonInfoModuleType {
+  data: {
+    episodes: BiliSeasonInfoEpisodeType[]
+  }
+}
+export interface BiliSeasonInfoEpisodeType {
+  ep_id: number
+  cid: number
+}

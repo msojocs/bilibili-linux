@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, Cascader, Col, Input, notification, Row } from "antd";
 import { useState } from "react";
 import { BiliBiliApi } from "../../common/bilibili-api";
@@ -6,18 +5,26 @@ import { UTILS } from "../../common/utils";
 import { GET } from "../../common/http";
 import { createLogger } from "../../common/log";
 const log = createLogger('BiliDanmaku')
+interface SearchResultType {
+  label: string;
+  value: string;
+  children: {
+    label: string;
+    value: string;
+  }[]
+}
 export default function BiliDanmakuReplaceSetting() {
   const [notify, contextHolder] = notification.useNotification();
   const [danmakuReplace, updateSetting] = useState<{
     keyword: string,
     selectOptions: [string, string],
-    searchResult: any[],
+    searchResult: SearchResultType[],
   }>({
     keyword: '',
     selectOptions: ['', ''],
     searchResult: [],
   })
-  const updateSettingValue = (key: string, value: any) => {
+  const updateSettingValue = (key: string, value: string | (string | SearchResultType)[]) => {
     updateSetting(pre => ({
       ...pre,
       [key]: value
@@ -28,24 +35,24 @@ export default function BiliDanmakuReplaceSetting() {
     const api = new BiliBiliApi()
     return api.getSeasonInfoPgcByEpId(seasonId || "", epId || "", UTILS.getAccessToken())
       .then(seasonInfo => {
-        console.log('seasonInfo: ', seasonInfo)
+        log.info('seasonInfo: ', seasonInfo)
         if (seasonInfo.code !== 0) return Promise.reject(seasonInfo)
 
-        const ep = seasonInfo.data.modules[0].data.episodes.filter((ep: any) => ep.ep_id === parseInt(epId))
+        const ep = seasonInfo.data.modules[0].data.episodes.filter((ep) => ep.ep_id === parseInt(epId))
         if (ep.length === 0) return Promise.reject(`剧集查找失败, target:${epId}`)
         return Promise.resolve(ep[0])
       })
   }
   const doConfirm = async () => {
     try {
-      console.log('selectOptions', danmakuReplace.selectOptions)
+      log.info('selectOptions', danmakuReplace.selectOptions)
       // const data: Record<string, string> = {}
       const options = danmakuReplace.selectOptions
-      console.log('bilibili options: ', options)
+      log.info('bilibili options: ', options)
       const epDetails = await getBilibiliEpDetails(...options)
-      console.log('getEpDetails: ', epDetails)
+      log.info('getEpDetails: ', epDetails)
 
-      const danmakuManage: any = window.danmakuManage
+      const danmakuManage = window.danmakuManage
       // 弹幕池操作
       danmakuManage.rootStore.configStore.reload.cid = epDetails.cid
       // danmakuManage.rootStore.configStore.reload.aid = epDetails.aid
@@ -65,34 +72,34 @@ export default function BiliDanmakuReplaceSetting() {
       })
     }
   }
-  
+
   const doSearch = async (keyword: string) => {
     log.info('bili search:', keyword)
     const url = `https://api.bilibili.com/x/web-interface/search/type?__refresh__=true&_extra=&context=&page=1&page_size=12&order=&duration=&from_source=&from_spmid=333.337&platform=pc&device=win&highlight=1&single_column=0&keyword=${keyword}&search_type=media_bangumi`
-      const res = await GET(url)
-      const resp = JSON.parse(res.responseText)
-      console.log('bilibili: ', resp)
-      const bangumiList = []
-      const result = resp.data?.result ?? []
-      console.log('result: ', result)
-      for (const bangumi of result) {
-        const children = []
-        if (!bangumi.eps) continue;
-        for (const ep of bangumi.eps) {
-          let title = ep.title || ep.org_title
-          title = title.replace(/<.*?>/g, '')
-          children.push({
-            label: title,
-            value: ep.id
-          })
-        }
-        bangumiList.push({
-          label: bangumi.title.replace(/<.*?>/g, ''),
-          value: bangumi.pgc_season_id,
-          children
+    const res = await GET(url)
+    const resp = JSON.parse(res.responseText)
+    log.info('bilibili: ', resp)
+    const bangumiList: SearchResultType[] = []
+    const result = resp.data?.result ?? []
+    log.info('result: ', result)
+    for (const bangumi of result) {
+      const children = []
+      if (!bangumi.eps) continue;
+      for (const ep of bangumi.eps) {
+        let title = ep.title || ep.org_title
+        title = title.replace(/<.*?>/g, '')
+        children.push({
+          label: title,
+          value: ep.id
         })
       }
-      updateSettingValue('searchResult', bangumiList || [])
+      bangumiList.push({
+        label: bangumi.title.replace(/<.*?>/g, ''),
+        value: bangumi.pgc_season_id,
+        children
+      })
+    }
+    updateSettingValue('searchResult', bangumiList || [])
   }
   return (
     <>

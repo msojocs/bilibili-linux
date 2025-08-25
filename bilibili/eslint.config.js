@@ -4,6 +4,7 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
 import { globalIgnores } from 'eslint/config'
+import { parser } from 'typescript-eslint'
 
 export default tseslint.config([
   globalIgnores(['dist']),
@@ -17,9 +18,13 @@ export default tseslint.config([
     ],
     languageOptions: {
       ecmaVersion: 2020,
+      parser: parser,
       globals: globals.browser,
     },
     rules: {
+      "no-console": [
+        "error",
+      ],
       "@typescript-eslint/no-unused-vars": [
         "error",
         {

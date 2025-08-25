@@ -10,5 +10,39 @@ interface Window {
     }
     requestBackground: (action: string, data: unknown) => Promise<unknown>
     cookieStore: CookieStore
-    danmakuManage: unknown
+    danmakuManage: {
+      danmaku: {
+        manager: {
+          dataBase: {
+            timeLine: {
+              list: BiliDanmakuType[]
+            }
+          }
+        }
+        reset: () => void
+        clear: () => void
+      }
+      danmakuStore: {
+        loadDmPbAll: (all: boolean) => void
+      }
+      rootStore: {
+        configStore: {
+          reload: {
+            cid: number
+          }
+        }
+      }
+    }
+}
+interface BiliDanmakuType {
+    attr: number;
+    color: number;
+    date: number;
+    mode: number;
+    pool: number;
+    renderAs: number;
+    size: number;
+    text: string;
+    stime: number;
+    weight: number;
 }

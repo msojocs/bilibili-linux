@@ -2,6 +2,7 @@ import md5 from "md5";
 import { GET, POST } from "./http";
 import { createLogger, Logger } from "./log";
 import { UTILS } from "./utils";
+import type { BiliResponseType, BiliSeasonInfoType } from "./types";
 export type AreaType = 'hk' | 'th' | 'tw'
 
 export class BiliBiliApi {
@@ -116,7 +117,7 @@ export class BiliBiliApi {
       return Promise.resolve(JSON.parse(res.responseText || "{}"))
     });
   }
-  getSeasonInfoPgcByEpId(seasonId: string, epId: string, ak: string) {
+  async getSeasonInfoPgcByEpId(seasonId: string, epId: string, ak: string): Promise<BiliResponseType<BiliSeasonInfoType>> {
     const url = `https://${this.server}/pgc/view/v2/app/season`
     const param: Record<string, string | number> = {
       access_key: ak,
@@ -144,9 +145,8 @@ export class BiliBiliApi {
       param.ep_id = epId
     }
     const queryParam = this.genSignParam(param)
-    return GET(`${url}?${queryParam}`).then(res => {
-      return Promise.resolve(JSON.parse(res.responseText || "{}"))
-    });
+    const res = await GET(`${url}?${queryParam}`)
+    return JSON.parse(res.responseText || "{}")
   }
   getPlayURLThailand(params: string, _ak: string, _area: AreaType) {
     params = `?${params}&mobi_app=bstar_a&s_locale=zh_SG`;
@@ -169,7 +169,7 @@ export class BiliBiliApi {
       try {
         params.access_key = UTILS.getAccessToken()
       }catch (e) {
-        console.error('获取access token异常：', e)
+        this.log.error('获取access token异常：', e)
       }
       if (area === 'th') {
         path = "intl/gateway/v2/app/search/type"

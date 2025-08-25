@@ -1,15 +1,23 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, Cascader, Col, Input, notification, Radio, Row, Switch } from "antd";
 import { useState } from "react";
 import { convertDandanResponse } from "../../common/danmaku";
 import { dandanplaySearch, getComment } from "../../common/dandan-api";
-
+import { createLogger } from "../../common/log";
+const log = createLogger('DandanPlay')
+interface SearchResultType {
+  label: string;
+  value: string;
+  children: {
+    label: string;
+    value: string;
+  }[]
+}
 export default function DanDanPlaySetting() {
   const [notify, contextHolder] = notification.useNotification();
   const [danmakuReplace, updateSetting] = useState<{
     keyword: string,
     selectOptions: [string, string],
-    searchResult: any[],
+    searchResult: SearchResultType[],
     dandanplayWithRelated: boolean
     damakuMode: '1' | '2'
   }>({
@@ -19,14 +27,14 @@ export default function DanDanPlaySetting() {
     dandanplayWithRelated: false,
     damakuMode: '1',
   })
-  const updateSettingValue = (key: string, value: any) => {
+  const updateSettingValue = (key: string, value: string | boolean | (string | SearchResultType)[]) => {
     updateSetting(pre => ({
       ...pre,
       [key]: value
     }))
   }
   const doConfirm = async () => {
-    console.log('selectOptions', danmakuReplace.selectOptions)
+    log.info('selectOptions', danmakuReplace.selectOptions)
     const data: {
       dandanplayWithRelated: boolean
       actionMode: string
@@ -37,11 +45,11 @@ export default function DanDanPlaySetting() {
 
     const options = danmakuReplace.selectOptions
     try {
-      console.log('dandanplay options: ', options)
+      log.info('dandanplay options: ', options)
       const comments = await getComment(options[1], data.dandanplayWithRelated || true)
       const result = convertDandanResponse(comments)
-      console.log('getComment: ', comments)
-      const danmakuManage: any = window.danmakuManage
+      log.info('getComment: ', comments)
+      const danmakuManage = window.danmakuManage
       // 弹幕池操作
       danmakuManage.danmaku.reset()
       const list = danmakuManage.danmaku.manager.dataBase.timeLine.list
@@ -66,19 +74,19 @@ export default function DanDanPlaySetting() {
 
   const doSearch = async (keyword: string) => {
     const result = await dandanplaySearch(keyword)
-    const bangumiList = []
-    console.log('dandanplay result: ', result)
+    const bangumiList: SearchResultType[] = []
+    log.info('dandanplay result: ', result)
     for (const anime of result) {
       const children = []
       for (const ep of anime.episodes) {
         children.push({
           label: ep.episodeTitle,
-          value: ep.episodeId
+          value: `${ep.episodeId}`
         })
       }
       bangumiList.push({
         label: anime.animeTitle,
-        value: anime.animeId,
+        value: `${anime.animeId}`,
         children
       })
     }

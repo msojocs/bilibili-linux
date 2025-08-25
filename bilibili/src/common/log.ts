@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const LogLevel = {
   /** 追踪日志 */
   Trace: 0,
@@ -72,7 +73,6 @@ export class Logger {
     // 优先级小的不显示
     if (level < CurrentLogLevel) return
     this.beforeFuncs.forEach(e => e(this.config))
-    // eslint-disable-next-line no-console
     log[Methods[level]](`%c${this.config.namespace}`, Styles[level], ...args)
     this.afterFuncs.forEach(e => e(this.config))
   }

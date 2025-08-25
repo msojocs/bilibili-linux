@@ -12,7 +12,6 @@ export const UTILS = {
   enableReferer() {
     const referrerEle = document.getElementById('referrerMark')
     if (!referrerEle) return;
-
     referrerEle.setAttribute('content', "strict-origin-when-cross-origin")
   },
   disableReferer() {
