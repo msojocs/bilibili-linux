@@ -51,7 +51,7 @@ export const UTILS = {
         "media_mode": 2,
         "fix_pubtime_str": "",
         cover: item.cover.replace(/@.*?webp/, '').replace('https://pic.bstarstatic.com', 'roaming-thpic://pic.bstarstatic.com') + '?123',
-        url: item.uri.replace('bstar://bangumi/season/', 'https://www.bilibili.com/bangumi/play/ss'),
+        url: item.uri.replace('bstar://pgc/season/', 'https://www.bilibili.com/bangumi/play/ss'),
         is_avid: false,
         areas: "",
         cv: "",
@@ -553,3 +553,5 @@ export const getScript = (url: string) => {
   script.src = url; // js地址
   document.body.appendChild(script);// 插入body可改为head
 }
+
+export const sleep = (time: number) => new Promise((resolve) => setTimeout(resolve, time))
