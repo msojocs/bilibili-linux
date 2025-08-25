@@ -2,6 +2,7 @@
 import md5 from "md5"
 import { BiliBiliApi, type AreaType } from "./bilibili-api"
 import { createLogger } from "./log"
+import type { BiliAppSearchResultType } from "./types"
 
 const log = createLogger('Utils')
 export const UTILS = {
@@ -57,10 +58,10 @@ export const UTILS = {
     }
     return result
   },
-  handleAppSearchResult(itemList: Record<string, any>[]) {
+  handleAppSearchResult(itemList: BiliAppSearchResultType[]) {
     const result = []
     for (const item of itemList) {
-      const eps = (item.episodes || []).map((e: any) => {
+      const eps = (item.episodes || []).map((e) => {
         return {
           id: e.param,
           title: e.index,

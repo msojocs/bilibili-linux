@@ -316,7 +316,7 @@ export const ResponseReplaceXMLHttpRequest = {
             staff: seasonInfo.staff.info,
             stat: seasonInfo.stat,
             status: seasonInfo.status,
-            styles: seasonInfo.styles.map((e: {name: string}) => e.name),
+            styles: seasonInfo.styles.map((e) => e.name),
             subtitle: seasonInfo.subtitle,
             title: seasonInfo.title,
             total: seasonInfo.total,
@@ -522,7 +522,7 @@ export const ResponseReplaceXMLHttpRequest = {
           }
         }
       }catch (e) {
-        console.error('动态信息1:', e)
+        log.error('动态信息1:', e)
       }
 
     }
@@ -550,7 +550,7 @@ export const ResponseReplaceXMLHttpRequest = {
           }
         }
       }catch (e) {
-        console.error('动态信息2:', e)
+        log.error('动态信息2:', e)
       }
 
     }
@@ -593,8 +593,7 @@ export const ResponseReplaceXMLHttpRequest = {
           searchResult.data.result.push(...result)
           req.responseText = JSON.stringify(searchResult)
         } catch (err) {
-
-          console.error('搜索异常:', err)
+          log.error('搜索异常:', err)
         }
       }
     }
@@ -718,7 +717,7 @@ export const ResponseReplaceFetch: Record<string, (data: FetchReplaceType) => Pr
           searchResult.data.result.push(...result)
         } catch (err) {
 
-          console.error('搜索异常:', err)
+          log.error('搜索异常:', err)
         }
       }
       (data.res as any).data = searchResult
@@ -739,7 +738,7 @@ export const ResponseReplaceFetch: Record<string, (data: FetchReplaceType) => Pr
         if (userInfo) data.res = Response.json(userInfo)
       }
     }catch (e) {
-      console.error('用户信息替换失败：', e)
+      log.error('用户信息替换失败：', e)
     }
     return data.res
   },
