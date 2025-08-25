@@ -34,21 +34,9 @@ export default defineConfig({
 // page libraries
 const libraries: LibraryOptions[] = [
   {
-    entry: resolve(__dirname, 'src/page/login.ts'),
-    name: 'login',
-    fileName: (_format, entryName) => `page/${entryName}.js`,
-    formats: ['iife'],
-  },
-  {
-    entry: resolve(__dirname, 'src/page/home.ts'),
-    name: 'home',
-    fileName: (_format, entryName) => `page/${entryName}.js`,
-    formats: ['iife'],
-  },
-  {
-    entry: resolve(__dirname, 'src/page/search.ts'),
-    name: 'search',
-    fileName: (_format, entryName) => `page/${entryName}.js`,
+    entry: resolve(__dirname, 'src/page.ts'),
+    name: 'page',
+    fileName: (_format, entryName) => `${entryName}.js`,
     formats: ['iife'],
   },
 ];

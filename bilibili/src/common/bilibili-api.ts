@@ -163,43 +163,34 @@ export class BiliBiliApi {
     })
   }
 
-  searchBangumi(params: Record<string, string>, area: AreaType) {
-    return new Promise((resolve, reject) => {
-      let path = "x/v2/search/type"
-      try {
-        params.access_key = UTILS.getAccessToken()
-      } catch (e) {
-        this.log.error('获取access token异常：', e)
-      }
-      if (area === 'th') {
-        path = "intl/gateway/v2/app/search/type"
-        // let a = 'area=th'
-        // for (let k in params) {
-        //   a += `&${k}=${params[k]}`
-        // }
-        // params = a
-      }
-      const searchParams = UTILS.genSearchParam(params, area)
-      const url = `https://${this.server}/${path}?${searchParams}`
-      return GET(url).then(res => {
-        try {
-
-          const resp = JSON.parse(res.responseText)
-          this.log.info("searchBangumi: ", resp)
-          if (area === "th")
-            resolve(UTILS.handleTHSearchResult(resp.data?.items || []))
-          else {
-            if (resp.data?.items) {
-
-              resolve(UTILS.handleAppSearchResult(resp.data?.items || []))
-            } else
-              resolve(resp.data?.result || [])
-          }
-        } catch (e) {
-          reject(e)
-        }
-      })
-    })
+  async searchBangumi(params: Record<string, string>, area: AreaType) {
+    let path = "x/v2/search/type"
+    try {
+      params.access_key = UTILS.getAccessToken()
+    } catch (e) {
+      this.log.error('获取access token异常：', e)
+    }
+    if (area === 'th') {
+      path = "intl/gateway/v2/app/search/type"
+      // let a = 'area=th'
+      // for (let k in params) {
+      //   a += `&${k}=${params[k]}`
+      // }
+      // params = a
+    }
+    const searchParams = UTILS.genSearchParam(params, area)
+    const url = `https://${this.server}/${path}?${searchParams}`
+    const res = await GET(url)
+    const resp = JSON.parse(res.responseText)
+    this.log.info("searchBangumi: ", resp)
+    if (area === "th")
+      return UTILS.handleTHSearchResult(resp.data?.items || [])
+    else {
+      if (resp.data?.items) {
+        return UTILS.handleAppSearchResult(resp.data?.items || [])
+      } else
+        return resp.data?.result || []
+    }
   }
 
   /**

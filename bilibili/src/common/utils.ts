@@ -2,7 +2,7 @@
 import md5 from "md5"
 import { BiliBiliApi, type AreaType } from "./bilibili-api"
 import { createLogger } from "./log"
-import type { BiliAppSearchResultType } from "./types"
+import type { BiliAppSearchResultType, BiliWebSearchResultType, THSearchResultType } from "./types"
 
 const log = createLogger('Utils')
 export const UTILS = {
@@ -34,9 +34,9 @@ export const UTILS = {
     }
     return playURL
   },
-  handleTHSearchResult(itemList: Record<string, string>[]) {
+  handleTHSearchResult(itemList: THSearchResultType[]) {
     log.info('th:', itemList)
-    const result = []
+    const result: BiliWebSearchResultType[] = []
     for (const item of itemList) {
       result.push({
         type: "media_bangumi",
@@ -53,6 +53,21 @@ export const UTILS = {
         cover: item.cover.replace(/@.*?webp/, '').replace('https://pic.bstarstatic.com', 'roaming-thpic://pic.bstarstatic.com') + '?123',
         url: item.uri.replace('bstar://bangumi/season/', 'https://www.bilibili.com/bangumi/play/ss'),
         is_avid: false,
+        areas: "",
+        cv: "",
+        ep_size: 0,
+        eps: [],
+        is_follow: 0,
+        is_selection: 0,
+        media_id: 0,
+        media_score: {
+          score: 0,
+          user_count: 0
+        },
+        org_title: "",
+        pubtime: "",
+        staff: "",
+        styles: ""
       })
     }
     return result

@@ -19,9 +19,7 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "page/login.js",
-        "page/home.js",
-        "page/search.js"
+        "page.js"
       ],
       "matches": [
         "<all_urls>"

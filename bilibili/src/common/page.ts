@@ -8,6 +8,8 @@ export const getPageType = (): PageType => {
         return Page.Home
     if (fileName === 'search')
         return Page.Search
+    if (fileName === 'player')
+        return Page.Player
     return Page.Unknown
 }
 
