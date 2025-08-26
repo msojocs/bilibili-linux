@@ -2,13 +2,11 @@
 // Global object
 ////////////////////
 interface Window {
-    epId2seasonId: Record<string, string>;
-    __segment_base_map__: Record<string, string[]>
+    __segment_base_map__: Record<string, [string, string]>
     biliBridgePc: {
       callNative: (action: string, ...args: unknown[]) => Promise<unknown>
       callNativeSync: (action: string, ...args: unknown[]) => unknown
     }
-    requestBackground: (action: string, data: unknown) => Promise<unknown>
     cookieStore: CookieStore
     danmakuManage: {
       danmaku: {
@@ -19,11 +17,19 @@ interface Window {
             }
           }
         }
+        config: {
+          fn: {
+            filter: (t: {colorful: boolean, colorfulImg: string, weight: number}) => boolean
+          }
+        }
         reset: () => void
         clear: () => void
       }
       danmakuStore: {
         loadDmPbAll: (all: boolean) => void
+      }
+      nodes: {
+        controlBottomRight: Element
       }
       rootStore: {
         configStore: {
@@ -32,7 +38,10 @@ interface Window {
           }
         }
       }
+      initDanmaku: () => void
     }
+    epId2seasonId: Record<string, string>;
+    requestBackground: (action: string, data: unknown) => Promise<unknown>
 }
 interface BiliDanmakuType {
     attr: number;
@@ -42,7 +51,7 @@ interface BiliDanmakuType {
     pool: number;
     renderAs: number;
     size: number;
-    text: string;
     stime: number;
+    text: string;
     weight: number;
 }

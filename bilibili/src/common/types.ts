@@ -30,10 +30,15 @@ export interface DandanPlayCommentType {
    */
   p: string
 }
-export interface BiliResponseType<T> {
+export interface BiliResponseData<T> {
   code: number
   data: T
   message: string
+}
+export interface BiliResponseResult<T> {
+  code: number
+  message: string
+  result: T
 }
 
 export interface BiliSeasonInfoType {
@@ -247,4 +252,17 @@ export interface THPageType<T> {
   items: T[]
   pages: number
   total: number
+}
+
+
+export interface HDTokenInfoType {
+  access_token: string
+  expires_at: number
+  expires_in: number
+  mid: number
+  refresh_token: string
+  /**
+   * CN
+   */
+  region: string
 }

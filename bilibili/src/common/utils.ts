@@ -2,13 +2,15 @@
 import md5 from "md5"
 import { BiliBiliApi, type AreaType } from "./bilibili-api"
 import { createLogger } from "./log"
-import type { BiliAppSearchResultType, BiliWebSearchResultType, THSearchResultType } from "./types"
+import type { BiliAppSearchResultType, BiliResponseData, BiliResponseResult, BiliWebSearchResultType, HDTokenInfoType, THSearchResultType } from "./types"
+import type { ThPlayurlData } from "./interface/th-playurl/playurl.type"
+import type { BiliPlayUrlResult, VideoInfo } from "./interface/bili-playurl/playurl.type"
 
 const log = createLogger('Utils')
 export const UTILS = {
-  getAccessToken() {
-    const tokenInfo = JSON.parse(localStorage.bili_accessToken_hd || '{}')
-    return tokenInfo.access_token
+  getAccessToken(): string {
+    const tokenInfo = JSON.parse(localStorage.bili_accessToken_hd || '{}') as HDTokenInfoType
+    return tokenInfo.access_token || ''
   },
   enableReferer() {
     const referrerEle = document.getElementById('referrerMark')
@@ -27,7 +29,7 @@ export const UTILS = {
       referrerEle.setAttribute('content', "no-referrer")
     }
   },
-  replaceUpos(playURL: string, host: string, replaceAkamai: boolean = false, _area: AreaType = "hk") {
+  replaceUpos(playURL: string, host: string, replaceAkamai: boolean = false, _area: AreaType = "hk"): string {
     log.info('replaceUpos:', host, replaceAkamai)
     if (host && (!playURL.includes("akamaized.net") || replaceAkamai)) {
       playURL = playURL.replace(/:\\?\/\\?\/[^/]+\\?\//g, `://${host}/`);
@@ -174,7 +176,7 @@ export const UTILS = {
     const ciphertext = md5(plaintext);
     return `${mobi_api_params}sign=${ciphertext}`;
   },
-  async fixMobiPlayUrlJson(originJson: Record<string, any>) {
+  async fixMobiPlayUrlJson(source: VideoInfo): Promise<VideoInfo> {
       const codecsMap: Record<string, string> = {
         30112: 'avc1.640028',
         30102: 'hev1.1.6.L120.90',
@@ -229,8 +231,8 @@ export const UTILS = {
         30006: '16000/672',
         30005: '16000/672'
       };
-      let segmentBaseMap: Record<string, any> = {};
 
+      let segmentBaseMap: Record<string, [string, string]> = {}
       function getId(url: string, default_value: string, get_filename = false) {
         if (get_filename) {
           // 作为SegmentBaseMap的Key，在同一个页面下切换集数不至于出错
@@ -245,9 +247,8 @@ export const UTILS = {
           return default_value;
         }
       }
-
       function getSegmentBase(url: string, id: string, range = '5000') {
-        return new Promise((resolve, _reject) => {
+        return new Promise<[string, string]>((resolve, _reject) => {
           // 从 window 中读取已有的值
           if (window.__segment_base_map__) {
             if (Object.prototype.hasOwnProperty.call(window.__segment_base_map__, id)) {
@@ -266,7 +267,7 @@ export const UTILS = {
             const hex_data = Array.prototype.map.call(data, x => ('00' + x.toString(16)).slice(-2)).join(''); // 转换成 hex
             const indexRangeStart = hex_data.indexOf('73696478') / 2 - 4; // 73696478 是 'sidx' 的 hex ，前面还有 4 个字节才是 sidx 的开始
             const indexRagneEnd = hex_data.indexOf('6d6f6f66') / 2 - 5; // 6d6f6f66 是 'moof' 的 hex，前面还有 4 个字节才是 moof 的开始，-1为sidx结束位置
-            const result = ['0-' + String(indexRangeStart - 1), String(indexRangeStart) + '-' + String(indexRagneEnd)];
+            const result: [string, string] = ['0-' + String(indexRangeStart - 1), String(indexRangeStart) + '-' + String(indexRagneEnd)];
             // 储存在 window，切换清晰度不用重新解析
             if (window.__segment_base_map__) {
               window.__segment_base_map__[id] = result;
@@ -281,23 +282,19 @@ export const UTILS = {
         });
       }
 
-      const result = JSON.parse(JSON.stringify(originJson));
-      result.dash.duration = Math.round(result.timelength / 1000);
-      result.dash.minBufferTime = 1.5;
-      result.dash.min_buffer_time = 1.5;
       // 异步构建 segmentBaseMap
-      const taskList: unknown[] = [];
+      const taskList: Promise<[string, string]>[] = [];
       // SegmentBase 最大 range 和 duration 的比值大概在 2.5~3.2，保险这里取 3.5
       // let range = Math.round(result.dash.duration * 3.5).toString()
       // 乱猜 range 导致泡面番播不出
-      result.dash.video.forEach((video: any) => {
+      source.dash.video.forEach((video) => {
         if (video.backupUrl.length > 0 && video.backupUrl[0].indexOf('akamaized.net') > -1) {
           // 有时候返回 bcache 地址, 直接访问 bcache CDN 会报 403，如果备用地址有 akam，替换为 akam
           video.baseUrl = video.backupUrl[0];
         }
         taskList.push(getSegmentBase(video.baseUrl, getId(video.baseUrl, '30080', true)));
       });
-      result.dash.audio.forEach((audio: any) => {
+      source.dash.audio.forEach((audio) => {
         if (audio.backupUrl.length > 0 && audio.backupUrl[0].indexOf('akamaized.net') > -1) {
           audio.baseUrl = audio.backupUrl[0];
         }
@@ -307,7 +304,7 @@ export const UTILS = {
       if (window.__segment_base_map__)
         segmentBaseMap = window.__segment_base_map__;
       // 填充视频流数据
-      result.dash.video.forEach((video: any) => {
+      source.dash.video.forEach((video) => {
         // log.log('video: ', video)
         let video_id = getId(video.baseUrl, '30280');
         if (!Object.prototype.hasOwnProperty.call(codecsMap, video_id)) {
@@ -328,16 +325,11 @@ export const UTILS = {
         video_id = video_id.replace('nb2-1-', '');
         video.width = resolutionMap[video_id][0];
         video.height = resolutionMap[video_id][1];
-        video.mimeType = 'video/mp4';
-        video.mime_type = 'video/mp4';
         video.frameRate = frameRateMap[video_id];
         video.frame_rate = frameRateMap[video_id];
-        video.sar = "1:1";
-        video.startWithSAP = 1;
-        video.start_with_sap = 1;
       });
       // 填充音频流数据
-      result.dash.audio.forEach((audio: any) => {
+      source.dash.audio.forEach((audio) => {
         let audio_id = getId(audio.baseUrl, '30280');
         if (!Object.prototype.hasOwnProperty.call(codecsMap, audio_id)) {
           // https://github.com/ipcjs/bilibili-helper/issues/775
@@ -361,76 +353,141 @@ export const UTILS = {
         audio.height = 0;
         audio.width = 0;
       });
-      return result;
+      return source;
   },
-  async fixThailandPlayUrlJson(originJson: string) {
-      const origin = JSON.parse(JSON.stringify(originJson));
-      const result: Record<string, any> = {
-        'format': 'flv720',
-        'type': 'DASH',
-        'result': 'suee',
-        'video_codecid': 7,
-        'no_rexcode': 0,
-        'code': origin.code,
-        'message': +origin.message,
-        'timelength': origin.data.video_info.timelength || 0,
-        'quality': origin.data.video_info.quality,
-        'accept_format': 'hdflv2,flv,flv720,flv480,mp4',
-      };
-      const dash: Record<string, any> = {
-        'duration': 0,
-        'minBufferTime': 0.0,
-        'min_buffer_time': 0.0,
-        'audio': []
-      };
-      // 填充音频流数据
-      origin.data.video_info.dash_audio.forEach((audio: any) => {
-        log.info('填充音频流数据:', audio)
-        const backup_urls = audio.backup_url.filter((e: string) => !e.includes('akamaized.net'))
-        audio.base_url = backup_urls[0] || audio.base_url.replace('http://', 'https://');
-        audio.baseUrl = backup_urls[0] || audio.base_url;
-        audio.backupUrl = audio.backupUrl || [];
-        audio.backup_url = audio.backup_url || [];
-        dash.audio.push(audio);
-      });
-      // 填充视频流数据
-      const accept_quality: any[] = [];
-      const accept_description: any[] = [];
-      const support_formats: any[] = [];
-      const dash_video: any[] = [];
-      origin.data.video_info.stream_list.forEach((stream: any) => {
-        support_formats.push(stream.stream_info);
-        accept_quality.push(stream.stream_info.quality);
-        accept_description.push(stream.stream_info.new_description);
-        // 只加入有视频链接的数据
-        if (stream.dash_video && stream.dash_video.base_url) {
-          const backup_urls = stream.dash_video.backup_url.filter((e: string) => !e.includes('akamaized.net'))
-          stream.dash_video.base_url = backup_urls[0] || stream.dash_video.base_url.replace('http://', 'https://');
-          stream.dash_video.baseUrl = backup_urls[0] || stream.dash_video.base_url;
-          stream.dash_video.backupUrl = stream.dash_video.backupUrl || [];
-          stream.dash_video.backup_url = stream.dash_video.backup_url || [];
-          stream.dash_video.id = stream.stream_info.quality;
-          dash_video.push(stream.dash_video);
+  async fixThailandPlayUrlJson(originJson: BiliResponseData<ThPlayurlData>): Promise<BiliResponseResult<BiliPlayUrlResult>> {
+      const source = JSON.parse(JSON.stringify(originJson)) as BiliResponseData<ThPlayurlData>;
+      const result: BiliResponseResult<BiliPlayUrlResult> = {
+        code: 0,
+        message: "",
+        result: {
+          video_info: {
+            accept_description: source.data.video_info.stream_list.map(e => e.stream_info.description),
+            accept_format: "hdflv2,hdflv2,flv,flv720,flv480,mp4",
+            accept_quality: source.data.video_info.stream_list.map(e => e.stream_info.quality),
+            bp: 0,
+            code: source.code,
+            dash: {
+              audio: source.data.video_info.dash_audio.map(e => ({
+                backup_url: e.backup_url,
+                backupUrl: e.backup_url,
+                bandwidth: e.bandwidth,
+                base_url: e.backup_url[0],
+                baseUrl: e.backup_url[0],
+                codecid: e.codecid,
+                // 后面修正
+                codecs: '',
+                // 音频无此参数
+                frame_rate: '',
+                // 音频无此参数
+                frameRate: '',
+                // 音频无此参数
+                height: 0,
+                id: e.id,
+                md5: e.md5,
+                mime_type: 'audio/mp4',
+                mimeType: 'audio/mp4',
+                sar: '',
+                // 后面修正
+                segment_base: {
+                  initialization: '',
+                  index_range: ''
+                },
+                // 后面修正
+                SegmentBase: {
+                  Initialization: '',
+                  indexRange: ''
+                },
+                size: e.size,
+                start_with_sap: 1,
+                startWithSAP: 1,
+                // 音频无此参数
+                width: 0
+              })),
+              dolby: {
+                audio: [],
+                type: 0
+              },
+              duration: source.data.video_info.timelength / 1000,
+              min_buffer_time: 1.5,
+              minBufferTime: 1.5,
+              video: source.data.video_info.stream_list.map(e => ({
+                backup_url: e.dash_video.backup_url,
+                backupUrl: e.dash_video.backup_url,
+                bandwidth: e.dash_video.bandwidth,
+                base_url: e.dash_video.backup_url[0],
+                baseUrl: e.dash_video.backup_url[0],
+                codecid: e.dash_video.codecid,
+                // 后面修正
+                codecs: '',
+                // 后面修正
+                frame_rate: '',
+                // 后面修正
+                frameRate: '',
+                // 后面修正
+                height: 0,
+                // 后面修正
+                id: e.stream_info.quality,
+                md5: e.dash_video.md5,
+                mime_type: 'video/mp4',
+                mimeType: 'video/mp4',
+                sar: '1:1',
+                segment_base: {
+                  // 后面修正
+                  initialization: '',
+                  index_range: ''
+                },
+                SegmentBase: {
+                  Initialization: '',
+                  indexRange: ''
+                },
+                size: e.dash_video.size,
+                start_with_sap: 1,
+                startWithSAP: 1,
+                // 后面修正
+                width: 0
+              }))
+            },
+            durls: [],
+            fnval: 80,
+            fnver: 0,
+            type: 'DASH',
+            format: "flv",
+            from: "local",
+            has_paid: false,
+            is_preview: 0,
+            message: source.message,
+            no_rexcode: 0,
+            quality: source.data.video_info.quality,
+            result: "suee",
+            seek_param: "start",
+            seek_type: "offset",
+            status: 2,
+            support_formats: source.data.video_info.stream_list.map(e => ({
+              display_desc: e.stream_info.display_desc,
+              has_preview: false,
+              sub_description: '',
+              superscript: '',
+              need_login: e.stream_info.need_login,
+              codecs: [],
+              format: '',
+              description: e.stream_info.description,
+              need_vip: e.stream_info.need_vip,
+              attribute: 1,
+              quality: e.stream_info.quality,
+              new_description: e.stream_info.new_description,
+            })),
+            timelength: source.data.video_info.timelength,
+            video_codecid: 7,
+            video_project: false,
+            video_type: "",
+            vip_status: 1,
+            vip_type: 2,
+          }
         }
-      });
-      dash['video'] = dash_video;
-      result['accept_quality'] = accept_quality;
-      result['accept_description'] = accept_description;
-      result['support_formats'] = support_formats;
-      result['dash'] = dash;
-      // 下面参数取自安达(ep359333)，总之一股脑塞进去（
-      result['fnval'] = 80;
-      result['fnver'] = 0;
-      result['status'] = 2;
-      result['vip_status'] = 1;
-      result['vip_type'] = 2;
-      result['seek_param'] = 'start';
-      result['seek_type'] = 'offset';
-      result['bp'] = 0;
-      result['from'] = 'local';
-      result['has_paid'] = false;
-      result['is_preview'] = 0;
-      return await UTILS.fixMobiPlayUrlJson(result);
+      };
+      await UTILS.fixMobiPlayUrlJson(result.result.video_info);
+      return result
   },
   genSearchSign(params: Record<string, string | number>, area: AreaType) {
 

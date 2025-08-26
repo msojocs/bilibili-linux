@@ -115,13 +115,24 @@ export default function RoamingSetting() {
       description: "成功",
     })
   }
-
-  const [serverConfig, updateServer] = useState({
-    default: '',
-    mainLand: '',
-    hk: '',
-    tw: '',
-    th: ''
+  const [serverConfig, updateServer] = useState<{
+      default: string
+      mainLand: string
+      hk: string
+      tw: string
+      th: string
+    }>(() => {
+    
+    if (localStorage.serverList) {
+      return JSON.parse(localStorage.serverList)
+    }
+    return {
+      default: '',
+      mainLand: '',
+      hk: '',
+      tw: '',
+      th: ''
+    }
   })
   const updateServerValue = (key: string, value: string) => {
     updateServer(pre => ({

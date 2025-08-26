@@ -2,7 +2,9 @@ import md5 from "md5";
 import { GET, POST } from "./http";
 import { createLogger, Logger } from "./log";
 import { UTILS } from "./utils";
-import type { BiliResponseType, BiliSeasonInfoType } from "./types";
+import type { BiliResponseData, BiliResponseResult, BiliSeasonInfoType } from "./types";
+import type { ThPlayurlData } from "./interface/th-playurl/playurl.type";
+import type { BiliPlayUrlResult } from "./interface/bili-playurl/playurl.type";
 export type AreaType = 'hk' | 'th' | 'tw'
 
 export class BiliBiliApi {
@@ -55,7 +57,7 @@ export class BiliBiliApi {
   }
 
   getSeasonInfoByEpSsIdOnThailand(ep_id: string, season_id: string) {
-    const params = '?' + (ep_id !== '' ? `ep_id=${ep_id}` : `season_id=${season_id}`) + `&mobi_app=bstar_a&s_locale=zh_SG`;
+    const params = '?' + (season_id !== '' ? `season_id=${season_id}` : `ep_id=${ep_id}`) + `&mobi_app=bstar_a&s_locale=zh_SG`;
     const newParams = UTILS.generateMobiPlayUrlParams(params, 'th');
     return GET(`//${this.server}/intl/gateway/v2/ogv/view/app/season?` + newParams).then(res => {
       return Promise.resolve(JSON.parse(res.responseText || "{}"))
@@ -117,7 +119,7 @@ export class BiliBiliApi {
       return Promise.resolve(JSON.parse(res.responseText || "{}"))
     });
   }
-  async getSeasonInfoPgcByEpId(seasonId: string, epId: string, ak: string): Promise<BiliResponseType<BiliSeasonInfoType>> {
+  async getSeasonInfoPgcByEpId(seasonId: string, epId: string, ak: string): Promise<BiliResponseData<BiliSeasonInfoType>> {
     const url = `https://${this.server}/pgc/view/v2/app/season`
     const param: Record<string, string | number> = {
       access_key: ak,
@@ -148,19 +150,20 @@ export class BiliBiliApi {
     const res = await GET(`${url}?${queryParam}`)
     return JSON.parse(res.responseText || "{}")
   }
-  getPlayURLThailand(params: string, _ak: string, _area: AreaType) {
+  async getPlayURLThailand(params: string, _ak: string, _area: AreaType): Promise<BiliResponseResult<BiliPlayUrlResult>> {
     params = `?${params}&mobi_app=bstar_a&s_locale=zh_SG`;
     const newParams = UTILS.generateMobiPlayUrlParams(params, 'th');
-    return GET(`//${this.server}/intl/gateway/v2/ogv/playurl?${newParams}`).then(res => {
-      // 参考：哔哩漫游 油猴插件
-      // const upos = localStorage.upos||""
-      // const isReplaceAkamai = localStorage.replaceAkamai === "true"
-      // const _params = UTILS._params2obj(params)
-      // const responseText = UTILS.replaceUpos(res.responseText, uposMap[upos], isReplaceAkamai, 'th')
-      const result = JSON.parse(res.responseText || "{}")
-      if (result.code !== 0) return Promise.reject(result);
-      return Promise.resolve(UTILS.fixThailandPlayUrlJson(result));
-    })
+    const res = await GET(`//${this.server}/intl/gateway/v2/ogv/playurl?${newParams}`)
+    // 参考：哔哩漫游 油猴插件
+    // const upos = localStorage.upos||""
+    // const isReplaceAkamai = localStorage.replaceAkamai === "true"
+    // const _params = UTILS._params2obj(params)
+    // const responseText = UTILS.replaceUpos(res.responseText, uposMap[upos], isReplaceAkamai, 'th')
+    const result = JSON.parse(res.responseText || "{}") as BiliResponseData<ThPlayurlData>
+    if (result.code !== 0)
+       throw new Error(result.message)
+    return UTILS.fixThailandPlayUrlJson(result)
+  
   }
 
   async searchBangumi(params: Record<string, string>, area: AreaType) {

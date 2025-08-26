@@ -13,6 +13,7 @@ export const initPlayerPage = () => {
   replaceXMLHttpRequest()
   log.info('replace fetch...')
   replaceFetch()
+  window.epId2seasonId = {}
   window.addEventListener('load', async () => {
     let headerLeft: Element | null = null
 
@@ -34,5 +35,58 @@ export const initPlayerPage = () => {
       headerLeft.append(root)
     createRoot(root).render(SettingButton())
 
+    {
+      const createElement = (apeedRate: number) => {
+        const rate = document.createElement('li')
+        rate.className = "bpx-player-ctrl-playbackrate-menu-item"
+        rate.dataset.value = `${apeedRate}`
+        rate.textContent = `${apeedRate}x`
+        return rate
+      }
+      const speedRate = window.danmakuManage.nodes.controlBottomRight.querySelector('.bpx-player-ctrl-playbackrate-menu > li:nth-child(1)')
+      
+      speedRate!.after(createElement(1.75))
+      speedRate!.before(createElement(4.0))
+      speedRate!.before(createElement(3.5))
+      speedRate!.before(createElement(3.0))
+      speedRate!.before(createElement(2.5))
+    }
+    {
+      let originalFilter = window.danmakuManage.danmaku.config.fn.filter
+      const customFilter = (t: {colorful: boolean, colorfulImg: string, weight: number}) => {
+        log.info('filter....')
+        if (originalFilter(t)){
+          // log.info('default block:', t.weight)
+          return true
+        }
+        if (localStorage.getItem('dm-filter-blockvip') === 'true')
+        {
+          // 屏蔽大会员彩色
+          if (t.colorful || t.colorfulImg) {
+            log.info('block vip', JSON.stringify(t, null, 4))
+            return true
+          }
+          
+        }
+        const weight = parseInt(localStorage.getItem('dm-filter-weight') || '0')
+        if (t.weight <= weight) {
+          log.info('current weight:', weight)
+          log.info('block weight:', JSON.stringify(t, null, 4))
+          return true
+        }
+        return false
+      }
+      window.danmakuManage.danmaku.config.fn.filter = customFilter
+      {
+        const originalInitDanmaku = window.danmakuManage.initDanmaku
+        window.danmakuManage.initDanmaku = function () {
+          log.info('initDanmaku...')
+          originalInitDanmaku.apply(this)
+          log.info('update filter...')
+          originalFilter = this.danmaku.config.fn.filter
+          window.danmakuManage.danmaku.config.fn.filter = customFilter
+        }
+      }
+    }
   })
 }

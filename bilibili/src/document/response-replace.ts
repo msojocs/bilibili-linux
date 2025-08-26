@@ -2,7 +2,9 @@
 import { BiliBiliApi, type AreaType } from "../common/bilibili-api";
 import { ChineseConversionAPI } from "../common/chinese-conversion";
 import { CustomIndexedDB } from "../common/db";
+import type { BiliPlayUrlResult } from "../common/interface/bili-playurl/playurl.type";
 import { createLogger } from "../common/log";
+import type { BiliResponseData, BiliResponseResult, BiliSeasonInfoType } from "../common/types";
 import { UTILS } from "../common/utils";
 import type { FetchReplaceType } from "./types";
 import type { CustomXMLHttpRequest } from "./xml-http-request";
@@ -239,21 +241,26 @@ export const ResponseReplaceXMLHttpRequest = {
       const serverList = JSON.parse(localStorage.serverList || "{}")
       log.info('serverList: ', serverList)
 
-      let seasonInfo = null;
       const params = UTILS._params2obj(req._params)
       log.info('params: ', params)
+      if (!params.season_id) {
+        params.season_id = window.epId2seasonId[params.ep_id]
+      }
 
-      seasonInfo = await api.getSeasonInfoPgcByEpId(params.season_id, params.ep_id, UTILS.getAccessToken())
+      let seasonResp: BiliResponseData<BiliSeasonInfoType> = await api.getSeasonInfoPgcByEpId(params.season_id, params.ep_id, UTILS.getAccessToken())
 
-      // seasonInfo = await api.getSeasonInfoByEpSsIdOnBangumi(params.ep_id || "", params.season_id || "")
-      log.info('getSeasonInfo:', seasonInfo)
-      if (seasonInfo.code === 0) {
-        seasonInfo = seasonInfo.data
+      if (seasonResp.code !==0 ){
+        seasonResp = await api.getSeasonInfoByEpSsIdOnBangumi(params.ep_id || "", params.season_id || "")
+      }
+      log.info('getSeasonInfo:', seasonResp)
+      if (seasonResp.code === 0) {
+        const seasonInfo = seasonResp.data
         const eps = seasonInfo.modules[0].data.episodes
         for (const ep of eps) {
           ep.rights.area_limit = 0
           ep.badge_info.text = ''
           ep.rights.allow_dm = 1
+          window.epId2seasonId[`${ep.ep_id}`] = `${seasonInfo.season_id}`
         }
         const result = {
           code: 0,
@@ -338,14 +345,14 @@ export const ResponseReplaceXMLHttpRequest = {
 
       api.setServer(server)
 
-      seasonInfo = await api.getSeasonInfoByEpSsIdOnThailand(params.ep_id || "", params.season_id || "")
-      log.info('去th找:', seasonInfo)
-      if (seasonInfo.code !== 0 || seasonInfo.result.modules.length === 0) return;
+      const seasonResp2 = await api.getSeasonInfoByEpSsIdOnThailand(params.ep_id || "", params.season_id || "")
+      log.info('去th找:', seasonResp2)
+      if (seasonResp2.code !== 0 || seasonResp2.result.modules.length === 0) return;
       AREA_MARK_CACHE[params.ep_id] = 'th'
-      seasonInfo.result.episodes = seasonInfo.result.episodes || seasonInfo.result.modules[0].data.episodes
-      delete seasonInfo.result.modules
+      seasonResp2.result.episodes = seasonResp2.result.episodes || seasonResp2.result.modules[0].data.episodes
+      delete seasonResp2.result.modules
       // title id
-      seasonInfo.result.episodes.forEach((ep: any) => {
+      seasonResp2.result.episodes.forEach((ep: any) => {
         ep.title = ep.title || `第${ep.index}话 ${ep.index_title}`
         ep.id = ep.id || ep.ep_id
         ep.ep_id = ep.ep_id || ep.id
@@ -354,16 +361,17 @@ export const ResponseReplaceXMLHttpRequest = {
         ep.duration = ep.duration || 0
         ep.index_title = ep.long_title
         delete ep.long_title
+        window.epId2seasonId[ep.ep_id] = seasonResp2.result.season_id
       })
-      seasonInfo.result.status = seasonInfo.result.status || 2
-      if (seasonInfo.result.user_status) {
-        seasonInfo.result.user_status.login = seasonInfo.result.user_status?.login || 1
+      seasonResp2.result.status = seasonResp2.result.status || 2
+      if (seasonResp2.result.user_status) {
+        seasonResp2.result.user_status.login = seasonResp2.result.user_status?.login || 1
       }
-      seasonInfo.result.rights.watch_platform = 0
-      seasonInfo.result.rights.allow_download = 1
-      seasonInfo.result.seasons = []
-      log.info('seasonInfo2: ', seasonInfo)
-      req.responseText = JSON.stringify(seasonInfo)
+      seasonResp2.result.rights.watch_platform = 0
+      seasonResp2.result.rights.allow_download = 1
+      seasonResp2.result.seasons = []
+      log.info('seasonInfo2: ', seasonResp2)
+      req.responseText = JSON.stringify(seasonResp2)
 
     } else {
       // 一些番剧可以获取到信息，但是内部有限制区域
@@ -401,7 +409,7 @@ export const ResponseReplaceXMLHttpRequest = {
     UTILS.enableReferer()
 
     if (resp.code !== 0) {
-      log.warn('[player]: 播放链接获取出现问题')
+      log.warn('[player]: 播放链接获取出现问题，尝试替换')
       const params = UTILS._params2obj(req._params)
       const serverList: Record<AreaType, string> = JSON.parse(localStorage.serverList || "{}")
       const upos = localStorage.upos || ""
@@ -436,7 +444,7 @@ export const ResponseReplaceXMLHttpRequest = {
         if (server.length === 0) continue;
         api.setServer(server)
 
-        let playURL
+        let playURL: BiliResponseResult<BiliPlayUrlResult>
         if (area !== "th") {
           UTILS.enableReferer()
           playURL = await api.getPlayURLApp(req._params, accessKey || "", area as AreaType)
@@ -446,8 +454,6 @@ export const ResponseReplaceXMLHttpRequest = {
         }
         log.info("已获取播放链接", playURL)
         if (playURL.code !== 0) continue
-        playURL.result.is_preview = 0
-        playURL.result.status = 2
         log.info('playURL:', playURL)
         // 解析成功
         AREA_MARK_CACHE[params.ep_id] = area as AreaType
