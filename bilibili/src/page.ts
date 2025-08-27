@@ -6,6 +6,7 @@ import { initHomePage } from "./page/home"
 import { initLoginPage } from "./page/login"
 import { initPlayerPage } from "./page/player"
 import { initSearchPage } from "./page/search"
+import { initTranslation } from "./page/translation"
 
 (() => {
   Logger.moduleName = 'Page'
@@ -13,6 +14,7 @@ import { initSearchPage } from "./page/search"
   const pt = getPageType()
   log.info('page:', pt)
   registerMessagePage()
+  initTranslation()
   switch(pt) {
     case Page.Login:
       initLoginPage()

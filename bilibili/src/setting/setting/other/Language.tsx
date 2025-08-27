@@ -21,6 +21,7 @@ export default function LanguageSetting() {
   const updateLanguage = async (lang: string) => {
     setLang(lang)
     await requestContent('setStorage', {key: 'lang', value: lang})
+    window.switchLanguage(lang)
   }
   return (
     <>
