@@ -6,12 +6,12 @@ import { GET } from "../../common/http";
 import { createLogger } from "../../common/log";
 const log = createLogger('BiliDanmaku')
 interface SearchResultType {
-  label: string;
-  value: string;
   children: {
     label: string;
     value: string;
   }[]
+  label: string;
+  value: string;
 }
 export default function BiliDanmakuReplaceSetting() {
   const [notify, contextHolder] = notification.useNotification();
