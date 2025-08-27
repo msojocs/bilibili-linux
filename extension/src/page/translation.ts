@@ -610,7 +610,7 @@ const registerLanguageHandle = async () => {
       }
     },
   ]
-  // TODO: 用于切换语言时更新
+  // 用于切换语言时更新
   const node2keyword = new Map()
   let lang: string = await requestContent<string, { key: string }>('getStorage', { key: 'lang' }) || 'zhCn'
   window.switchLanguage = async (newLang: string) => {

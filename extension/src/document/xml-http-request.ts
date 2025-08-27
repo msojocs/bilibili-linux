@@ -1,6 +1,5 @@
-import { createLogger } from "../common/log";
+import { createLogger, Logger } from "../common/log";
 import { ResponseReplaceXMLHttpRequest } from "./response-replace";
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export class CustomXMLHttpRequest extends window.XMLHttpRequest {
   private _url: string;
@@ -11,7 +10,7 @@ export class CustomXMLHttpRequest extends window.XMLHttpRequest {
   private _onreadystatechange: ((this: XMLHttpRequest, ev: Event) => any) | null;
   private _onloadend: ((this: XMLHttpRequest, ev: ProgressEvent<EventTarget>) => any) | null;
   private _onload: ((this: XMLHttpRequest, ev: ProgressEvent<EventTarget>) => any) | null;
-  log: import("/home/msojocs/github/bilibili-linux/bilibili/src/common/log").Logger;
+  log: Logger;
   static get isHooked() {
     return true
   }
@@ -87,7 +86,7 @@ export class CustomXMLHttpRequest extends window.XMLHttpRequest {
         if (super.responseType === 'arraybuffer')
           this.response = super.response
       } catch (e) {
-        console.error('响应体处理异常：', e)
+        this.log.error('响应体处理异常：', e)
       }
       try {
         
