@@ -38,6 +38,11 @@ interface Window {
           }
         }
       }
+      storyStore: {
+        state: {
+          relatedAutoplay: boolean
+        }
+      }
       initDanmaku: () => void
     }
     epId2seasonId: Record<string, string>;

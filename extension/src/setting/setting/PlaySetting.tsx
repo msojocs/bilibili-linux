@@ -14,6 +14,7 @@ export default function PlaySetting() {
   }
   const saveSetting = () => {
     localStorage.setItem('related_auto_play', `${danmukuSetting.isRelatedAutoPlay}`)
+    window.danmakuManage.storyStore.state.relatedAutoplay = danmukuSetting.isRelatedAutoPlay
     notify.info({
       message: 'Success',
       description: '成功'
