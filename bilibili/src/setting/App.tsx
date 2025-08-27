@@ -28,6 +28,8 @@ function App() {
           cancelText={'关闭'}
           onCancel={handleCancel}
           centered={true}
+          width="60vw"
+          height="70vh"
         >
           <Setting />
         </Modal>

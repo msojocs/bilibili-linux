@@ -41,7 +41,7 @@ interface Window {
       initDanmaku: () => void
     }
     epId2seasonId: Record<string, string>;
-    requestBackground: (action: string, data: unknown) => Promise<unknown>
+    switchLanguage: (lang: string) => void
 }
 interface BiliDanmakuType {
     attr: number;

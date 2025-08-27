@@ -4,6 +4,7 @@ import DanDanPlayReplaceSetting from "./DanDanPlayReplaceSetting";
 import DanmakuSetting from "./DanmakuSetting";
 import RoamingSetting from "./RoamingSetting";
 import BiliDanmakuReplaceSetting from "./BiliDanmakuReplaceSetting";
+import OtherSetting from "./OtherSetting";
 
 export default function Setting() {
   const onChange = (_key: string) => {
@@ -34,6 +35,11 @@ export default function Setting() {
       key: '5',
       label: '播放设定',
       children: PlaySetting(),
+    },
+    {
+      key: '6',
+      label: '其它设定',
+      children: OtherSetting(),
     },
   ];
   return (
