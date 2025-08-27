@@ -31,12 +31,16 @@ jobs:
         with:
           submodules: 'recursive'
       - name: Use Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.15.0'
 
       - name: Prepare
         run: |
           sudo apt install wget exiftool
           sudo npm install asar -g
+          corepack enable
+          pnpm setup
           npm install
           echo "$UID, $GID"
 
@@ -70,7 +74,7 @@ jobs:
           mkdir -p tmp/build
           tar -zcf tmp/src/bilibili-asar-${{ steps.tag.outputs.tag }}.tar.gz bin app # electron
           cp tmp/src/bilibili-asar-${{ steps.tag.outputs.tag }}.tar.gz tmp/build/bilibili-asar-${{ steps.tag.outputs.tag }}.tar.gz
-          tar -zcf tmp/build/extensions-${{ steps.tag.outputs.tag }}.tar.gz extensions
+          tar -zcf tmp/build/extensions-${{ steps.tag.outputs.tag }}.tar.gz extension/dist
 
       - name: Fix name for continuous
         if: steps.tag.outputs.tag == 'continuous'
