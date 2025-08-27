@@ -1,0 +1,12 @@
+#root {
+  max-width: 1280px;
+  margin: 0 0 auto auto;
+  padding: 2rem;
+  text-align: center;
+  position: fixed;
+}
+
+.page_scroller {
+  height: 100%;
+  overflow-y: scroll;
+}

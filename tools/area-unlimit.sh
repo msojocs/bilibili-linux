@@ -22,9 +22,14 @@ fail() {
 res_dir="$root_dir/tmp/bili/resources"
 mkdir -p "$root_dir/app"
 
-notice "复制拓展"
+notice "构建拓展"
 rm -rf "$root_dir/app/extensions"
-cp -r "$root_dir/extensions" "$root_dir/app"
+cd "$root_dir/extension"
+pnpm install
+pnpm run build
+notice "复制拓展"
+mkdir -p "$root_dir/app/extensions"
+cp -r "$root_dir/extension/dist" "$root_dir/app/extensions/bilibili"
 
 cd "$res_dir"
 

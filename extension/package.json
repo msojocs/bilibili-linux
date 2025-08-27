@@ -1,0 +1,40 @@
+{
+  "name": "bilibili",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "eslint-config-check": "dlx eslint --print-config src/page/login.ts"
+  },
+  "dependencies": {
+    "@ant-design/icons": "5.x",
+    "antd": "^5.27.1",
+    "md5": "^2.3.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.33.0",
+    "@types/chrome": "^0.1.4",
+    "@types/md5": "^2.3.5",
+    "@types/node": "^24.3.0",
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
+    "@typescript-eslint/eslint-plugin": "^8.40.0",
+    "@typescript-eslint/parser": "^8.40.0",
+    "@vitejs/plugin-react-swc": "^4.0.0",
+    "electron": "^37.3.1",
+    "eslint": "^9.33.0",
+    "eslint-plugin-perfectionist": "^4.15.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.3.0",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.39.1",
+    "vite": "^7.1.2"
+  }
+}
