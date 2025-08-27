@@ -64,31 +64,31 @@ export default function HDLogin() {
   return (
     <>
     <div className="settings_content--item upos-item">
-            <h4 className="b_text mt_0">Access Token管理</h4>
-            <div className="mt_md">
-              <p className="b_text text2"><strong>AccessToken用于获取外区番剧的播放链接。</strong></p>
-              <div>
-                {
-                  tokenData.expired ? (<Button onClick={startHDLogin} type="primary">HD登录</Button>)
-                    :
-                    (<Popconfirm
-                      v-else
-                      title="你确定要删除吗？"
-                      onConfirm={deleteHDLogin}
-                    >
-                      <Button danger>删除</Button>
-                    </Popconfirm>
-                    )
-                }
-                <span>&nbsp;&nbsp;{tokenData.msg}</span>
-                {
-                  qrCode && (<div>
-                    <QRCode value={qrCode} />
-                  </div>)
-                }
-              </div>
-            </div>
-          </div>
+      <h4>Access Token管理</h4>
+      <div>
+        <p><strong>AccessToken用于获取外区番剧的播放链接。</strong></p>
+        <div>
+          {
+            tokenData.expired ? (<Button onClick={startHDLogin} type="primary">HD登录</Button>)
+              :
+              (<Popconfirm
+                v-else
+                title="你确定要删除吗？"
+                onConfirm={deleteHDLogin}
+              >
+                <Button danger>删除</Button>
+              </Popconfirm>
+              )
+          }
+          <span>&nbsp;&nbsp;{tokenData.msg}</span>
+          {
+            qrCode && (<div>
+              <QRCode value={qrCode} />
+            </div>)
+          }
+        </div>
+      </div>
+    </div>
     </>
   )
 }

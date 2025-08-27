@@ -26,6 +26,7 @@ export default function LanguageSetting() {
   return (
     <>
       <h2>语言设定</h2>
+      <br />
       <Select
         value={lang}
         style={{ width: '150px' }}

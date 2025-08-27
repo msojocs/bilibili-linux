@@ -163,29 +163,30 @@ export default function RoamingSetting() {
   return (
     <>
       {contextHolder}
-      <div className="v_scroller i_page_content min_h_100 settings_content page_scroller pt_lg" style={{ height: '50vh', overflowY: 'scroll' }}>
-        <div className="i_wrapper pb_x40 p_relative min_h_100">
-          <div className="settings_content--item login-item">
-            <div className="flex_start items_stretch">
+      <div style={{ height: '50vh', overflowY: 'scroll' }}>
+        <div>
+          <div>
+            <div>
               漫游设置页面
             </div>
           </div>
           <HDLogin />
           <br />
-          <div className="settings_content--item upos-item">
-            <h4 className="b_text mt_0">upos服务器设置</h4>
+          <div>
+            <h4>upos服务器设置</h4>
             <div className="mt_md">
-              <p className="b_text text2">
-                <strong>替换upos视频服务器：</strong>
+              <div style={{ margin: '.5rem'}}>
+                替换upos视频服务器：
                 <Select
                   value={upos.uposKey}
                   className="m-2"
                   placeholder="Select"
                   onChange={value => updateUposValue('uposKey', value)}
                   options={uposItemList}
+                  style={{width: '150px'}}
                 >
                 </Select>
-              </p>
+              </div>
               <div style={{ margin: '.5rem'}}>
                 替换Akamai：<Switch checked={upos.replaceAkamai} onChange={e => updateUposValue('replaceAkamai', e)}></Switch>
               </div>
