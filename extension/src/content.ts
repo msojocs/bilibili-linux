@@ -1,5 +1,5 @@
 import { createLogger, Logger } from "./common/log"
-import { getPageType, loadJS } from "./common/page"
+import { getPageType, loadCSS, loadJS } from "./common/page"
 import { registerMessageContent } from "./document/communication"
 
 (() => {
@@ -8,6 +8,12 @@ import { registerMessageContent } from "./document/communication"
   const pageType = getPageType()
   log.info('page:', pageType)
   registerMessageContent()
-  const url = window.chrome.runtime.getURL(`page.js`)
-  loadJS(url)
+  {
+    const url = window.chrome.runtime.getURL(`page.js`)
+    loadJS(url)
+  }
+  {
+    const url = window.chrome.runtime.getURL(`bilibili.css`)
+    loadCSS(url)
+  }
 })()

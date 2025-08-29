@@ -1,12 +1,15 @@
-#root {
-  max-width: 1280px;
-  margin: 0 0 auto auto;
-  padding: 2rem;
-  text-align: center;
-  position: fixed;
-}
 
-.page_scroller {
-  height: 100%;
-  overflow-y: scroll;
+.bpx-player-sponsor-panel-wrap {
+  bottom: 60px;
+  font-size: 14px;
+  font-size: var(--bpx-toast-font-size,14px);
+  right: 10px;
+  line-height: 28px;
+  pointer-events: none;
+  position: absolute;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  z-index: 65;
 }

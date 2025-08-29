@@ -4,6 +4,7 @@ import { ChineseConversionAPI } from "../common/chinese-conversion";
 import { CustomIndexedDB } from "../common/db";
 import type { BiliPlayUrlResult } from "../common/interface/bili-playurl/playurl.type";
 import { createLogger } from "../common/log";
+import { getSegments } from "../common/sponsor-block";
 import type { BiliResponseData, BiliResponseResult, BiliSeasonInfoType } from "../common/types";
 import { UTILS } from "../common/utils";
 import type { FetchReplaceType } from "./types";
@@ -221,7 +222,6 @@ const uposMap: Record<string, string> = {
 const AREA_MARK_CACHE: Record<string, AreaType> = {}
 
 export const ResponseReplaceXMLHttpRequest = {
-
 
   /**
    * 番剧信息
@@ -661,6 +661,29 @@ export const ResponseReplaceXMLHttpRequest = {
         zhHans.subtitle_url = `${zhHans.subtitle_url}&translate=zh-Hans`;
         (ResponseReplaceXMLHttpRequest as any)[zhHans.subtitle_url.split('?')[0]] = ResponseReplaceXMLHttpRequest.zhHansSubtitle
         resp.data.subtitle.subtitles.push(zhHans)
+      }
+    }
+    // SponsorBlock
+    if (resp.code === 0) {
+      try {
+        const segments = await getSegments({
+          videoID: resp.data.bvid,
+          cid: resp.data.cid,
+        })
+        for (const segment of segments) {
+          resp.data.view_points.push({
+            type: 1,
+            from: segment.segment[0],
+            to: segment.segment[1],
+            content: segment.category,
+            sponsor_info: {
+              actionType: segment.actionType,
+              category: segment.category,
+            }
+          })
+        }
+      } catch (err) {
+        log.error('获取SponsorBlock数据失败:', err)
       }
     }
     // log.info('subtitle result:', resp)

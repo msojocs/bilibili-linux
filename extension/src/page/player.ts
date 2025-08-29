@@ -5,6 +5,7 @@ import { replaceFetch, replaceXMLHttpRequest } from "../document/replace"
 import SettingButton from "../setting/main"
 import { getPageType } from "../common/page"
 import { Page } from "../common/types"
+import { registerSponsorBlock } from "../document/sponsor-block"
 
 export const initPlayerPage = () => {
   Logger.moduleName = 'Player'
@@ -42,6 +43,8 @@ export const initPlayerPage = () => {
         continue
       }
       log.info('找到弹幕管理器', danmakuManage)
+      
+      registerSponsorBlock()
       {
         const createElement = (apeedRate: number) => {
           const rate = document.createElement('li')

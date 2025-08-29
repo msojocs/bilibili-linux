@@ -18,3 +18,10 @@ export const loadJS = (src: string) => {
     loadJS.src = src;
     (document.head || document.documentElement).appendChild(loadJS);
 }
+
+export const loadCSS = (src: string) => {
+    const loadCSS = document.createElement('link');
+    loadCSS.rel = 'stylesheet';
+    loadCSS.href = src;
+    (document.head || document.documentElement).appendChild(loadCSS);
+}

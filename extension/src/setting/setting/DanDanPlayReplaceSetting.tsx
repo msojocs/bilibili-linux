@@ -5,12 +5,12 @@ import { dandanplaySearch, getComment } from "../../common/dandan-api";
 import { createLogger } from "../../common/log";
 const log = createLogger('DandanPlay')
 interface SearchResultType {
-  label: string;
-  value: string;
   children: {
     label: string;
     value: string;
   }[]
+  label: string;
+  value: string;
 }
 export default function DanDanPlaySetting() {
   const [notify, contextHolder] = notification.useNotification();

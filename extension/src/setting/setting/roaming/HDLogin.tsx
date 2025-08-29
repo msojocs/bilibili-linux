@@ -2,14 +2,31 @@ import { Button, Popconfirm, QRCode } from "antd"
 import { useState, useMemo } from "react"
 import { BiliBiliApi } from "../../../common/bilibili-api"
 import { createLogger } from "../../../common/log"
-
+interface TokenInfo {
+  access_token: string
+  expires_at: number
+  expires_in: number
+  mid: number
+  refresh_token: string
+  region: string
+}
 const log = createLogger('HDLogin')
 export default function HDLogin() {
   const [qrCode, setQrCode] = useState('')
-  const [tokenInfo, setTokenInfo] = useState({
-        access_token: '',
-        expires_at: 0,
-    })
+  const [tokenInfo, setTokenInfo] = useState<TokenInfo>(() => {
+    const data = localStorage.bili_accessToken_hd
+    if (data) {
+      return JSON.parse(data) as TokenInfo
+    }
+    return {
+      access_token: '',
+      expires_at: 0,
+      expires_in: 0,
+      mid: 0,
+      refresh_token: '',
+      region: ''
+    }
+  })
   const startHDLogin = async function () {
     log.info('HD Login')
     const login = new BiliBiliApi()
@@ -40,6 +57,10 @@ export default function HDLogin() {
     setTokenInfo({
       access_token: '',
       expires_at: 0,
+      expires_in: 0,
+      mid: 0,
+      refresh_token: '',
+      region: ''
     })
   }
   const tokenData = useMemo(() => {
@@ -63,32 +84,32 @@ export default function HDLogin() {
   }, [tokenInfo])
   return (
     <>
-    <div className="settings_content--item upos-item">
-      <h4>Access Token管理</h4>
-      <div>
-        <p><strong>AccessToken用于获取外区番剧的播放链接。</strong></p>
+      <div className="settings_content--item upos-item">
+        <h4>Access Token管理</h4>
         <div>
-          {
-            tokenData.expired ? (<Button onClick={startHDLogin} type="primary">HD登录</Button>)
-              :
-              (<Popconfirm
-                v-else
-                title="你确定要删除吗？"
-                onConfirm={deleteHDLogin}
-              >
-                <Button danger>删除</Button>
-              </Popconfirm>
-              )
-          }
-          <span>&nbsp;&nbsp;{tokenData.msg}</span>
-          {
-            qrCode && (<div>
-              <QRCode value={qrCode} />
-            </div>)
-          }
+          <p><strong>AccessToken用于获取外区番剧的播放链接。</strong></p>
+          <div>
+            <span>{tokenData.msg}&nbsp;&nbsp;</span>
+            {
+              tokenData.expired ? (<Button onClick={startHDLogin} type="primary">HD登录</Button>)
+                :
+                (<Popconfirm
+                  v-else
+                  title="你确定要删除吗？"
+                  onConfirm={deleteHDLogin}
+                >
+                  <Button danger>删除</Button>
+                </Popconfirm>
+                )
+            }
+            {
+              qrCode && (<div>
+                <QRCode value={qrCode} />
+              </div>)
+            }
+          </div>
         </div>
       </div>
-    </div>
     </>
   )
 }
