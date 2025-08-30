@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import SkipNoticeWrap from "../setting/sponsor-block/SkipNoticeWrap";
+import SkipNoticeWrap from "../ui/sponsor-block/SkipNoticeWrap";
 
 export const registerSponsorBlock = () => {
   const rootStore = window.danmakuManage.rootStore

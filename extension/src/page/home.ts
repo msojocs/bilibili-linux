@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client"
-import SettingButton from "../setting/main"
+import SettingButton from "../ui/main"
 import { createLogger, Logger } from "../common/log"
 import { replaceXMLHttpRequest } from "../document/replace"
 import { sleep } from "../common/utils"
