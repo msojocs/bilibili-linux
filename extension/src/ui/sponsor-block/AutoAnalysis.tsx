@@ -20,7 +20,7 @@ export default function AutoAnalysis() {
   const [isVisible, setIsVisible] = useState(false);
   // 重试计数器，用于强制重新渲染AnalysisStep
   const [retryKey, setRetryKey] = useState(0);
-  const isSponsorAIDetect = useSelector<RootState, boolean>(store => store.storage.isSponsorAIDetect)
+  const isSponsorAIDetect = useSelector<RootState, boolean>(store => store.sponsor.isSponsorAIDetect)
 
   if (!isSponsorAIDetect) return null
   enableAiPanel = () => {
