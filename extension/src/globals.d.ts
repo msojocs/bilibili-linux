@@ -90,7 +90,7 @@ interface SubtitleStore extends RootStore {
     hover: boolean
     isclosed: boolean
     lang: string
-    languageList: SubtitleLanguage[]
+    languageList?: SubtitleLanguage[]
     minorLan: string
     opacity: number
     position: string

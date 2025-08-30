@@ -13,7 +13,7 @@ interface SubtitleResponse {
 }
 const log = createLogger('AnalysisStep')
 export default function AnalysisStep() {
-  const [hasSubtitle] = useState(() => window.danmakuManage.rootStore.subtitleStore.state.languageList.length > 0);
+  const [hasSubtitle] = useState(() => window.danmakuManage.rootStore.subtitleStore.state.languageList && window.danmakuManage.rootStore.subtitleStore.state.languageList.length > 0);
   const [curStep, setCurStep] = useState(0);
   const [errorMsg, setErrorMsg] = useState('');
   const [curStatus, setCurStatus] = useState<"wait" | "process" | "finish" | "error" | undefined>('process');
@@ -25,6 +25,9 @@ export default function AnalysisStep() {
         // 获取字幕数据
         setCurStep(1);
         const { languageList } = window.danmakuManage.rootStore.subtitleStore.state
+        if (!languageList || languageList.length === 0) {
+          throw new Error('没有字幕数据')
+        }
         const { responseText } = await GET(languageList[0].subtitle_url)
         const subtitle = JSON.parse(responseText) as SubtitleResponse
 
