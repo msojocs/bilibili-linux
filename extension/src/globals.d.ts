@@ -19,7 +19,7 @@ interface Window {
 interface RootStore {
   configStore: ConfigStore
   danmakuStore: DanmakuStore
-  hostspotStore: HotspotStore
+  hotspotStore: HotspotStore
   mediaStore: MediaStore
   nodes: {
     videoArea: HTMLElement
@@ -166,14 +166,14 @@ interface BiliPlayer {
 type HotspotType = "StudyNote" | "WonderMoment" | "Division" | "OpenEnd" | "AIPoint"
 interface ProgressViewPoint {
   content: string
-  from : 0
-  imgUrl: string
-  logoUrl: string
+  from : number
+  imgUrl?: string
+  logoUrl?: string
   /**
    * 自定义的SponsorBlock数据
    */
   sponsor_info?: SponsorBlockInfo
-  team_name: string
+  team_name?: string
   to: number
   /**
    * 1: 高能

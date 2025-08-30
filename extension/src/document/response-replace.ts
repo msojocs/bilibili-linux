@@ -684,6 +684,7 @@ export const ResponseReplaceXMLHttpRequest = {
         }
       } catch (err) {
         log.error('获取SponsorBlock数据失败:', err)
+        document.dispatchEvent(new CustomEvent('sponsorblock.showAiAnalysis', { detail: err }))
       }
     }
     // log.info('subtitle result:', resp)

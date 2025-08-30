@@ -3,7 +3,7 @@
   bottom: 60px;
   font-size: 14px;
   font-size: var(--bpx-toast-font-size,14px);
-  right: 10px;
+  right: 0px;
   line-height: 28px;
   pointer-events: none;
   position: absolute;

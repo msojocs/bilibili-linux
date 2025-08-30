@@ -69,3 +69,22 @@ export interface UserStats {
   userName: string;
   viewCount: number;
 }
+
+export interface BigModelResponse {
+  choices: BigModelChioce[]
+  error?: {
+    code: string
+    message: string
+  }
+}
+export interface BigModelChioce {
+  message: {
+    role: string
+    content: string
+  }
+}
+export interface DetectResult {
+  desc: string
+  end: number
+  start: number
+}

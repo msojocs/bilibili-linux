@@ -3,6 +3,7 @@
   pointer-events: auto;
   opacity: 0.5;
   transition: opacity 0.2s ease;
+  margin-right: 31px;
 }
 
 .sponsor-overlay:hover {
@@ -12,7 +13,7 @@
 .sponsor-container {
   position: relative;
   width: 320px;
-  height: 120px;
+  /* height: 120px; */
   background: rgba(0, 0, 0, 0.8);
   border-radius: 8px;
   backdrop-filter: blur(4px);
@@ -24,13 +25,12 @@
 }
 
 /* 左上角：跳过信息区域 */
-.skip-notice-header {
-  position: absolute;
-  top: 16px;
-  left: 16px;
+.sponsor-header {
   display: flex;
   align-items: center;
   gap: 12px;
+  justify-content: space-between;
+  margin-bottom: .5rem;
 }
 
 .skip-text {
@@ -57,9 +57,6 @@
 
 /* 右上角：控制区域 */
 .skip-notice-controls {
-  position: absolute;
-  top: 16px;
-  right: 16px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -174,4 +171,14 @@
     transform: translateX(0);
     opacity: 1;
   }
+}
+
+.sponsor-expand-btn {
+  opacity: .2;
+}
+.sponsor-expand-btn:hover {
+  opacity: 1;
+}
+.bpx-state-no-cursor .sponsor-expand-btn {
+  opacity: 0;
 }

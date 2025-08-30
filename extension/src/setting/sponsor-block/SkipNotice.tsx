@@ -112,7 +112,7 @@ const SkipNotice = () => {
     <div className="sponsor-overlay">
       <div className="sponsor-container">
         {/* 左上角：跳过信息和取消按钮 */}
-        <div className="skip-notice-header">
+        <div className="sponsor-header">
           <span className="skip-text">赞助/恰饭 已跳过</span>
           <button
             className="cancel-skip-btn"
