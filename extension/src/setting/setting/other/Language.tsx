@@ -1,4 +1,4 @@
-import { Select } from "antd";
+import { Card, Select } from "antd";
 import { useState } from "react";
 import { requestContent } from "../../../document/communication";
 import { createLogger } from "../../../common/log";
@@ -20,31 +20,31 @@ export default function LanguageSetting() {
   })()
   const updateLanguage = async (lang: string) => {
     setLang(lang)
-    await requestContent('setStorage', {key: 'lang', value: lang})
+    await requestContent('setStorage', { key: 'lang', value: lang })
     window.switchLanguage(lang)
   }
   return (
     <>
-      <h2>语言设定</h2>
-      <br />
-      <Select
-        value={lang}
-        style={{ width: '150px' }}
-        onChange={updateLanguage}
-        loading={loading}
-        disabled={loading}
-        options={[
-          {
-            value: 'zhCn',
-            label: '中文'
-          },
-          {
-            value: 'en',
-            label: 'English'
-          }
-        ]}
-      >
-      </Select>
+      <Card title="语言设定">
+        <Select
+          value={lang}
+          style={{ width: '150px' }}
+          onChange={updateLanguage}
+          loading={loading}
+          disabled={loading}
+          options={[
+            {
+              value: 'zhCn',
+              label: '中文'
+            },
+            {
+              value: 'en',
+              label: 'English'
+            }
+          ]}
+        >
+        </Select>
+      </Card>
     </>
   )
 }

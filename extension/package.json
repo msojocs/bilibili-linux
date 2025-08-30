@@ -12,12 +12,14 @@
   },
   "dependencies": {
     "@ant-design/icons": "5.x",
+    "@reduxjs/toolkit": "^2.8.2",
     "antd": "^5.27.1",
     "antd-style": "^3.7.1",
     "md5": "^2.3.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "react-i18next": "^15.7.2"
+    "react-i18next": "^15.7.2",
+    "react-redux": "^9.2.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",

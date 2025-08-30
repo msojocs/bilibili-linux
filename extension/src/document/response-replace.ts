@@ -664,7 +664,7 @@ export const ResponseReplaceXMLHttpRequest = {
       }
     }
     // SponsorBlock
-    if (resp.code === 0) {
+    if (resp.code === 0 && localStorage.getItem('sponsor_block_enable') === 'true') {
       try {
         const segments = await getSegments({
           videoID: resp.data.bvid,

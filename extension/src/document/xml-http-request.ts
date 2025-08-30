@@ -26,6 +26,7 @@ export class CustomXMLHttpRequest extends window.XMLHttpRequest {
     this._onloadend = null;
     this._onload = null;
     this.log = createLogger('CustomXMLHttpRequest')
+    this.log.isEnabled = false
     super.onloadend = async (ev) => {
       if (this._onloadend) {
         const replace: any = ResponseReplaceXMLHttpRequest

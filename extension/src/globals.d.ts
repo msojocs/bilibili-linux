@@ -19,12 +19,14 @@ interface Window {
 interface RootStore {
   configStore: ConfigStore
   danmakuStore: DanmakuStore
+  hostspotStore: HotspotStore
   mediaStore: MediaStore
   nodes: {
     videoArea: HTMLElement
   }
   progressStore: ProgressStore
   storyStore: StoryStore
+  subtitleStore: SubtitleStore
   toastStore: ToastStore
 }
 interface ConfigStore extends RootStore {
@@ -41,23 +43,23 @@ interface HotspotStore extends RootStore {
   rootStore: RootStore
   state: {
     /**
-     * StudyNote
+     * StudyNote 笔记
      */
     '-1': ProgressViewPoint[]
     /**
-     * WonderMoment
+     * WonderMoment 高能
      */
     1: ProgressViewPoint[]
     /**
-     * Division
+     * Division 章节
      */
     2: ProgressViewPoint[]
     /**
-     * OpenEnd
+     * OpenEnd 片头片尾
      */
     3: ProgressViewPoint[]
     /**
-     * AIPoint
+     * AIPoint AI打点
      */
     4: ProgressViewPoint[]
   }
@@ -74,6 +76,25 @@ interface StoryStore extends RootStore {
   rootStore: RootStore
   state: {
     relatedAutoplay: boolean
+  }
+}
+interface SubtitleStore extends RootStore {
+  rootStore: RootStore
+  state: {
+    bilingual: boolean
+    color: string
+    enable: boolean
+    fade: boolean
+    fontSize: number
+    hover: boolean
+    isclosed: boolean
+    lang: string
+    languageList: SubtitleLanguage[]
+    minorLan: string
+    opacity: number
+    position: string
+    scale: number
+    shadow: string
   }
 }
 interface ToastStore extends RootStore {
@@ -163,6 +184,18 @@ interface ProgressViewPoint {
 interface SponsorBlockInfo {
   actionType: 'skip' | 'mute' | 'full' | 'poi' | 'chapter'
   category: 'sponsor' | 'selfpromo' | 'interaction' | 'intro' | 'outro' | 'preview' | 'hook' | 'filler'
+}
+interface SubtitleLanguage {
+  ai_status: number
+  ai_type: number
+  id: number
+  id_str: `${number}`
+  is_lock: boolean
+  lan: string
+  lan_doc: string
+  subtitle_url: string
+  subtitle_url_v2: string
+  type: number
 }
 interface ToastCreateParam {
   confirmText?: string

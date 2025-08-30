@@ -1,4 +1,4 @@
-import { Button, Form, Input, notification, Select, Switch } from "antd"
+import { Button, Card, Form, Input, notification, Select, Switch } from "antd"
 import { createLogger } from "../../common/log"
 import { useState } from "react"
 import HDLogin from "./roaming/HDLogin"
@@ -165,16 +165,10 @@ export default function RoamingSetting() {
       {contextHolder}
       <div style={{ height: '50vh', overflowY: 'scroll' }}>
         <div>
-          <div>
-            <div>
-              漫游设置页面
-            </div>
-          </div>
           <HDLogin />
           <br />
-          <div>
-            <h4>upos服务器设置</h4>
-            <div className="mt_md">
+          <Card title="upos服务器设置">
+            <div>
               <div style={{ margin: '.5rem'}}>
                 替换upos视频服务器：
                 <Select
@@ -200,12 +194,10 @@ export default function RoamingSetting() {
               <br />
               <Button onClick={saveUposConfig} type="primary">保存</Button>
             </div>
-          </div>
+          </Card>
           <br />
-          <div className="settings_content--item server-item">
-            <h4 className="b_text mt_0">自定义服务器设置</h4>
-            <br />
-            <div className="server-list">
+          <Card title="自定义服务器设置">
+            <div>
               <Form form={form} >
                 <Form.Item
                   label="首选"
@@ -267,8 +259,7 @@ export default function RoamingSetting() {
                 </Form.Item>
               </Form>
             </div >
-
-          </div>
+          </Card>
           <br />
           <div className="settings_content--item about-item">
             <h4 className="b_text mt_0">关于哔哩漫游</h4>

@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import './SkipNotice.css';
 import { createLogger } from '../../common/log';
 import { sleep } from '../../common/utils';
 type MediaTimeUpdateFunc = () => void;
@@ -110,8 +109,8 @@ const SkipNotice = () => {
     return null;
   }
   return (
-    <div className="skip-notice-overlay">
-      <div className="skip-notice-container">
+    <div className="sponsor-overlay">
+      <div className="sponsor-container">
         {/* 左上角：跳过信息和取消按钮 */}
         <div className="skip-notice-header">
           <span className="skip-text">赞助/恰饭 已跳过</span>

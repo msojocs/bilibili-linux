@@ -31,8 +31,6 @@ interface LoggerConfigType {
  */
 type InterceptorFuncType = (config: LoggerConfigType) => void
 
-const isLogEnabled = true
-
 const CurrentLogLevel: LogLevelType = (() => {
   const level = localStorage.getItem('LogLevel')
   if (level == null) return LogLevel.Info
@@ -51,6 +49,7 @@ export class Logger {
   private readonly beforeFuncs: InterceptorFuncType[] = []
   private readonly afterFuncs: InterceptorFuncType[] = []
   public static moduleName: string = ''
+  public isEnabled = true
   private readonly config: LoggerConfigType = {
     namespace: 'Bilibili',
   }
@@ -70,7 +69,7 @@ export class Logger {
   }
 
   private _log (level: LogLevelType, args: unknown[]) {
-    if (!isLogEnabled) return
+    if (!this.isEnabled) return
     // 优先级小的不显示
     if (level < CurrentLogLevel) return
     this.beforeFuncs.forEach(e => e(this.config))

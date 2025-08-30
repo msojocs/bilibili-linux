@@ -1,4 +1,4 @@
-import { Button, Popconfirm, QRCode } from "antd"
+import { Button, Card, Popconfirm, QRCode } from "antd"
 import { useState, useMemo } from "react"
 import { BiliBiliApi } from "../../../common/bilibili-api"
 import { createLogger } from "../../../common/log"
@@ -84,10 +84,10 @@ export default function HDLogin() {
   }, [tokenInfo])
   return (
     <>
-      <div className="settings_content--item upos-item">
-        <h4>Access Token管理</h4>
+      <Card title="Access Token管理">
         <div>
           <p><strong>AccessToken用于获取外区番剧的播放链接。</strong></p>
+          <br />
           <div>
             <span>{tokenData.msg}&nbsp;&nbsp;</span>
             {
@@ -109,7 +109,7 @@ export default function HDLogin() {
             }
           </div>
         </div>
-      </div>
+      </Card>
     </>
   )
 }

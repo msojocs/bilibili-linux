@@ -1,15 +1,15 @@
-.skip-notice-overlay {
+.sponsor-overlay {
   z-index: 9999;
   pointer-events: auto;
   opacity: 0.5;
   transition: opacity 0.2s ease;
 }
 
-.skip-notice-overlay:hover {
+.sponsor-overlay:hover {
   opacity: 1;
 }
 
-.skip-notice-container {
+.sponsor-container {
   position: relative;
   width: 320px;
   height: 120px;
@@ -137,12 +137,12 @@
 
 /* 响应式设计 */
 @media (max-width: 480px) {
-  .skip-notice-overlay {
+  .sponsor-overlay {
     top: 10px;
     right: 10px;
   }
   
-  .skip-notice-container {
+  .sponsor-container {
     width: 280px;
     height: 100px;
     padding: 12px;
@@ -161,7 +161,7 @@
 }
 
 /* 动画效果 */
-.skip-notice-container {
+.sponsor-container {
   animation: slideInFromRight 0.3s ease-out;
 }
 
