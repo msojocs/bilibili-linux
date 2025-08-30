@@ -1,11 +1,18 @@
 import { Button, Card, Form, Input, notification, Select, Switch } from "antd"
 import { createLogger } from "../../common/log"
-import { useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import type { RootState } from "../store"
+import { saveUposConfig, saveServerConfig, resetServerConfig, type UposConfig, type ServerConfig } from "../store/roaming"
 import HDLogin from "./roaming/HDLogin"
+import { useEffect, useState } from "react"
 
 export default function RoamingSetting() {
   const log = createLogger('RoamingSetting')
   const [notify, contextHolder] = notification.useNotification();
+  const dispatcher = useDispatch();
+  
+  const uposConfig = useSelector<RootState, UposConfig>(store => store.roaming.uposConfig);
+  const storeServerConfig = useSelector<RootState, ServerConfig>(store => store.roaming.serverConfig);
 
   const uposItemList = [
     {
@@ -93,71 +100,53 @@ export default function RoamingSetting() {
       label: "hk_bcache（Bilibili海外）",
     },
   ]
-  const [upos, updateUpos] = useState({
-    uposKey: localStorage.upos || 'none',
-    uposApplyAll: localStorage.uposApplyAll === 'true',
-    replaceAkamai: localStorage.replaceAkamai === "true",
-    pacLink: localStorage.pacLink || "",
-  })
+  const [upos, updateUpos] = useState(uposConfig)
   const updateUposValue = (key: string, value: string | boolean) => {
     updateUpos(pre => ({
       ...pre,
       [key]: value,
     }))
   }
-  const saveUposConfig = () => {
-    localStorage.upos = upos.uposKey
-    localStorage.uposApplyAll = upos.uposApplyAll
-    localStorage.replaceAkamai = upos.replaceAkamai
-    localStorage.pacLink = upos.pacLink
+  useEffect(() => {
+    updateUpos(uposConfig)
+  }, [uposConfig])
+  
+  const handleSaveUposConfig = () => {
+    dispatcher(saveUposConfig(upos));
     notify.info({
       message: 'Success',
       description: "成功",
-    })
+    });
   }
-  const [serverConfig, updateServer] = useState<{
-      default: string
-      mainLand: string
-      hk: string
-      tw: string
-      th: string
-    }>(() => {
-    
-    if (localStorage.serverList) {
-      return JSON.parse(localStorage.serverList)
-    }
-    return {
-      default: '',
-      mainLand: '',
-      hk: '',
-      tw: '',
-      th: ''
-    }
-  })
+  const [serverConfig, updateServer] = useState(storeServerConfig)
   const updateServerValue = (key: string, value: string) => {
     updateServer(pre => ({
       ...pre,
       [key]: value,
     }))
   }
+  useEffect(() => {
+    updateServer(storeServerConfig)
+  }, [storeServerConfig])
   const [form] = Form.useForm();
   const saveServer = async () => {
     log.info('saveServer: ', form)
     const valid = await form.validateFields()
 
     if (valid) {
-      // log.log(this.serverList)
+      dispatcher(saveServerConfig(serverConfig));
       notify.info({
         message: 'Success',
         description: "成功",
       })
-      localStorage.serverList = JSON.stringify(serverConfig)
     } else {
       log.info('error submit!')
       return false
     }
   }
+  
   const resetForm = function () {
+    dispatcher(resetServerConfig());
     form.resetFields()
   }
   return (
@@ -192,7 +181,7 @@ export default function RoamingSetting() {
                 <Input value={upos.pacLink} onChange={e => updateUposValue('pacLink', e.target.value)}></Input>
               </div>
               <br />
-              <Button onClick={saveUposConfig} type="primary">保存</Button>
+              <Button onClick={handleSaveUposConfig} type="primary">保存</Button>
             </div>
           </Card>
           <br />

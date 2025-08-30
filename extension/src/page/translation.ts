@@ -1,5 +1,4 @@
 import { createLogger } from "../common/log"
-import { requestContent } from "../document/communication"
 interface I18nItem {
   condition?: (match: Element) => boolean
   data: Record<string, string>
@@ -612,7 +611,7 @@ const registerLanguageHandle = async () => {
   ]
   // 用于切换语言时更新
   const node2keyword = new Map()
-  let lang: string = await requestContent<string, { key: string }>('getStorage', { key: 'lang' }) || 'zhCn'
+  let lang: string = localStorage.lang || 'zhCn'
   window.switchLanguage = async (newLang: string) => {
     if (newLang === lang) return
     log.info('switchLanguage', newLang)

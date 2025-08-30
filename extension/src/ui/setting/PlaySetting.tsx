@@ -1,24 +1,20 @@
-import { Button, notification, Switch } from "antd";
-import { useState } from "react";
+import { notification, Switch } from "antd";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState } from "../store";
+import { switchRelatedAutoPlay } from "../store/play";
 
 export default function PlaySetting() {
   const [notify, contextHolder] = notification.useNotification();
-  const [danmukuSetting, updateSetting] = useState({
-    isRelatedAutoPlay: localStorage.getItem('related_auto_play') === 'true'
-  })
-  const updateSettingValue = (key: string, value: number | boolean) => {
-    updateSetting(pre => ({
-      ...pre,
-      [key]: value
-    }))
-  }
-  const saveSetting = () => {
-    localStorage.setItem('related_auto_play', `${danmukuSetting.isRelatedAutoPlay}`)
-    window.danmakuManage.storyStore.state.relatedAutoplay = danmukuSetting.isRelatedAutoPlay
+  const dispatcher = useDispatch();
+  
+  const isRelatedAutoPlay = useSelector<RootState, boolean>(store => store.play.isRelatedAutoPlay);
+  
+  const updateRelatedAutoPlay = () => {
+    dispatcher(switchRelatedAutoPlay());
     notify.info({
       message: 'Success',
-      description: '成功'
-    })
+      description: '设置已保存'
+    });
   }
   return (
     <>
@@ -26,13 +22,9 @@ export default function PlaySetting() {
       <div>
         自动连播推荐视频：
         <Switch
-          checked={danmukuSetting.isRelatedAutoPlay}
-          onChange={e => updateSettingValue('isRelatedAutoPlay', e)}
+          checked={isRelatedAutoPlay}
+          onChange={updateRelatedAutoPlay}
         />
-      </div>
-      <br />
-      <div>
-        <Button onClick={saveSetting} type="primary">保存</Button>
       </div>
     </>
   )

@@ -2,10 +2,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 export interface CounterState {
-  isSponsorAIDetect: boolean
+  lang: string
 }
 const initialState: CounterState = {
-  isSponsorAIDetect: localStorage.sponsor_block_ai_detect === "true"
+  lang: localStorage.lang || 'zhCn'
 };
 
 // 创建一个 Slice 
@@ -14,14 +14,23 @@ export const counterSlice = createSlice({
   initialState,
   // 定义 reducers 并生成关联的操作
   reducers: {
-    // 定义一个加的方法
-    switchSponsorAIDetect: (state) => {
-      state.isSponsorAIDetect = !state.isSponsorAIDetect;
-      localStorage.setItem('sponsor_block_ai_detect', `${state.isSponsorAIDetect}`);
+    changeLanguage: (state, action) => {
+      state.lang = action.payload;
+      localStorage.setItem('lang', state.lang);
+      window.switchLanguage(state.lang)
+    },
+    // 数据同步方法
+    storageSync: (state, action) => {
+      // 合并同步的状态数据
+      window.switchLanguage(action.payload.lang)
+      return {
+        ...state,
+        ...action.payload
+      };
     },
   },
 });
-export const { switchSponsorAIDetect } = counterSlice.actions;
+export const { storageSync, changeLanguage } = counterSlice.actions;
 
 // 默认导出
 export default counterSlice.reducer;

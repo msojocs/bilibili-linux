@@ -1,37 +1,21 @@
 import { Card, Select } from "antd";
-import { useState } from "react";
-import { requestContent } from "../../../document/communication";
-import { createLogger } from "../../../common/log";
-const log = createLogger('LanguageSetting')
+import type { RootState } from "../../store";
+import { useDispatch, useSelector } from "react-redux";
+import { changeLanguage } from "../../store/storage";
 export default function LanguageSetting() {
-  const [lang, setLang] = useState('zhCn')
-  const [loading, setLoading] = useState(true);
-  (async () => {
-    try {
-      const l: string = await requestContent('getStorage', { key: 'lang' })
-      if (l)
-        setLang(l)
-    } catch (err) {
-      log.error('error:', err)
-    }
-    finally {
-      setLoading(false)
-    }
-  })()
+  const dispatcher = useDispatch()
+  const language = useSelector<RootState, string>(store => store.storage.lang)
+  
   const updateLanguage = async (lang: string) => {
-    setLang(lang)
-    await requestContent('setStorage', { key: 'lang', value: lang })
-    window.switchLanguage(lang)
+    dispatcher(changeLanguage(lang))
   }
   return (
     <>
       <Card title="语言设定">
         <Select
-          value={lang}
+          value={language}
           style={{ width: '150px' }}
           onChange={updateLanguage}
-          loading={loading}
-          disabled={loading}
           options={[
             {
               value: 'zhCn',

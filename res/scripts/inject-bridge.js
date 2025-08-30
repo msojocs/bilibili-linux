@@ -32,6 +32,6 @@ const originEW = String.prototype.endsWith
 String.prototype.endsWith = function (){
   // console.log('endsWith: ', arguments);
   if (arguments[0] === "config/roamingPAC"  || this == "config/roamingPAC") return true;
-  if (arguments[0] === "config/changeLanguage"  || this == "config/changeLanguage") return true;
+  if (arguments[0] === "config/dataSync"  || this == "config/dataSync") return true;
   return originEW.apply(this, arguments)
 }

@@ -3,26 +3,29 @@ import { useState } from "react"
 import { createLogger } from "../../../common/log"
 import { useDispatch, useSelector } from "react-redux"
 import type { RootState } from "../../store"
-import { switchSponsorAIDetect } from "../../store/storage"
+import { switchSponsorAIDetect, switchSponsorBlock, updateBigmodelToken } from "../../store/sponsor"
 import useNotification from "antd/es/notification/useNotification"
 const log = createLogger("sponsor-block")
 export default function SponsorBlock() {
   log.info('sponsor-block render')
-  const [enable, setEnable] = useState(() => localStorage.getItem('sponsor_block_enable') === 'true')
-  const [token, setToken] = useState(() => localStorage.getItem('sponsor_block_token_bigmodel') || '')
-  const isSponsorAIDetect = useSelector<RootState, boolean>(store => store.counter.isSponsorAIDetect)
-  const [notify, ctx] = useNotification()
   const dispatcher = useDispatch()
-  const updateEnable = (v: boolean) => {
-    setEnable(v)
-    localStorage.setItem('sponsor_block_enable', `${v}`)
+  const [notify, ctx] = useNotification()
+
+  const isSponsorAIDetect = useSelector<RootState, boolean>(store => store.sponsor.isSponsorAIDetect)
+  const enable = useSelector<RootState, boolean>(store => store.sponsor.enable)
+  const bigmodelToken = useSelector<RootState, string>(store => store.sponsor.bigmodelToken)
+  const [token, setToken] = useState(() => bigmodelToken)
+
+  const updateEnable = () => {
+    dispatcher(switchSponsorBlock())
   }
   const saveSetting = () => {
-    localStorage.setItem('sponsor_block_token_bigmodel', token)
+    dispatcher(updateBigmodelToken(token))
     notify.info({
       message: '设置已保存',
     })
   }
+
   return (
     <>
       {ctx}

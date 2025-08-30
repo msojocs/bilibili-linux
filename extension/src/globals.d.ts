@@ -11,6 +11,7 @@ interface Window {
     biliPlayer: BiliPlayer
     cookieStore: CookieStore
     danmakuManage: DanmakuManage
+    dataSync: (data: string) => void
     epId2seasonId: Record<string, string>;
     switchLanguage: (lang: string) => void
 }

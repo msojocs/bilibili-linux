@@ -1,25 +1,29 @@
-import { Button, notification, Slider, Switch } from "antd";
-import { useState } from "react";
+import { notification, Slider, Switch } from "antd";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState } from "../store";
+import { updateBlockLevel, switchBlockVipColor } from "../store/danmaku";
 
 export default function DanmakuSetting() {
   const [notify, contextHolder] = notification.useNotification();
-  const [danmukuSetting, updateSetting] = useState({
-    blockLevel: parseInt(localStorage.getItem('dm-filter-weight') || '0'),
-    isBlockVipColor: localStorage.getItem('dm-filter-blockvip') === 'true'
-  })
-  const updateSettingValue = (key: string, value: number | boolean) => {
-    updateSetting(pre => ({
-      ...pre,
-      [key]: value
-    }))
-  }
-  const saveSetting = () => {
-    localStorage.setItem('dm-filter-blockvip', `${danmukuSetting.isBlockVipColor}`)
-    localStorage.setItem('dm-filter-weight', `${danmukuSetting.blockLevel}`)
+  const dispatcher = useDispatch();
+  
+  const blockLevel = useSelector<RootState, number>(store => store.danmaku.blockLevel);
+  const isBlockVipColor = useSelector<RootState, boolean>(store => store.danmaku.isBlockVipColor);
+  
+  const handleBlockLevelChange = (value: number) => {
+    dispatcher(updateBlockLevel(value));
     notify.info({
       message: 'Success',
-      description: '成功'
-    })
+      description: '设置已保存'
+    });
+  }
+  
+  const handleBlockVipColorChange = () => {
+    dispatcher(switchBlockVipColor());
+    notify.info({
+      message: 'Success',
+      description: '设置已保存'
+    });
   }
   return (
     <>
@@ -27,20 +31,16 @@ export default function DanmakuSetting() {
       <div style={{ display: 'flex', width: '500px', alignItems: 'center' }}>
         <span style={{ width: '20%' }}>屏蔽等级：</span>
         <Slider
-          value={danmukuSetting.blockLevel}
+          value={blockLevel}
           min={0}
           step={1}
           max={10}
-          onChange={e => updateSettingValue('blockLevel', e)}
+          onChange={handleBlockLevelChange}
           style={{width: '72%'}}
         />
       </div>
       <div>
-        屏蔽大会员彩色弹幕：<Switch checked={danmukuSetting.isBlockVipColor} onChange={e => updateSettingValue('isBlockVipColor', e)} ></Switch>
-      </div>
-      <br />
-      <div>
-        <Button onClick={saveSetting} type="primary">保存</Button>
+        屏蔽大会员彩色弹幕：<Switch checked={isBlockVipColor} onChange={handleBlockVipColorChange} />
       </div>
     </>
   )
