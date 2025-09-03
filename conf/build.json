@@ -18,6 +18,10 @@
     {
       "from": "app/cursor-tool",
       "to": "cursor-tool"
+    },
+    {
+      "from": "app/transcribe.py",
+      "to": "transcribe.py"
     }
   ],
   "electronVersion": "28.2.1",

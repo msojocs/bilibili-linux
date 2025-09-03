@@ -50,13 +50,13 @@ store.subscribe(() => {
   // 数据同步，数据有更新，发送给mian process
   const state = store.getState()
   // log.info('state change result:', state)
-  window.biliBridgePc.callNativeSync('config/dataSync', JSON.stringify(state))
+  window.biliBridge.callNativeSync('config/dataSync', JSON.stringify(state))
 })
 // 多窗口数据同步
 window.dataSync = (dataStr: string) => {
   if (!dataStr) return
   try {
-    log.info('sysc data...')
+    log.info('sync data...')
     const data = JSON.parse(dataStr) as RootState
     isSyncing = true;
     // 全局setState - 动态支持多slice数据同步

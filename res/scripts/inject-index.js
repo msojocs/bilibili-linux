@@ -428,6 +428,66 @@ ipcMain.handle("roaming/queryDynamicDetail", (_, dynamicId, accessKey) => {
     });
   });
 });
+ipcMain.handle("sponsor/downloadAudio", async (_, url) => {
+  console.info('sponsor/downloadAudio:', url)
+  // 1. 下载文件
+  const tempfile = path.resolve(require('os').tmpdir(), 'bilibili-tanscribe.mp3')
+  await fetch(url, { method: 'GET', headers: { Referer: 'https://www.bilibili.com/' } }).then(async res => {
+    const fileStream = fs.createWriteStream(tempfile);
+    const writer = fileStream.getWriter ? fileStream : new WritableStream({
+      write(chunk) {
+        return new Promise((resolve, reject) => {
+          fileStream.write(chunk, error => {
+            if (error) reject(error);
+            else resolve();
+          });
+        });
+      },
+      close() {
+        fileStream.end();
+      }
+    });
+    if (res.status !== 200)
+      throw new Error(`${res.status} ${res.statusText}`);
+    await res.body.pipeTo(writer);
+  })
+  return tempfile
+});
+ipcMain.handle("sponsor/transcribeAudio", (_, options) => new Promise((resolve, reject) => {
+  // 2. 语音转文字
+  console.info('sponsor/transcribeAudio:', options)
+  const file = options.file
+  const proxy = options.proxy
+  const libPath = options.libPath
+  const cp = require('child_process')
+  const task = cp.spawn(path.resolve(__dirname, '../transcribe.py'), [file], {
+    env: {
+      HTTPS_PROXY: proxy,
+      HTTP_PROXY: proxy,
+      LD_LIBRARY_PATH: `${process.env.LD_LIBRARY_PATH}:${libPath}`
+    },
+  })
+  let stdout = ''
+  let stderr = ''
+  
+  task.stdout.on('data', (msg) => {
+    // console.info('stdout:', msg.toString())
+    stdout += msg.toString()
+  })
+  task.stderr.on('data', (msg) => {
+    // console.info('stderr:', msg.toString())
+    stderr += msg.toString()
+  })
+  task.on('close', (code) => {
+    console.info('close:', code, task.exitCode)
+    if (stderr) {
+      reject(stderr)
+    }
+    else {
+      resolve(stdout)
+    }
+  })
+}));
 {
   // 处理启动缓慢的问题
   ipcMain.on("app/getTheme", (event, data) => {

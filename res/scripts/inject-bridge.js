@@ -11,8 +11,16 @@ Function.prototype.constructor = function() {
     }
    return Function.prototype.__constructor_back.apply(this,arguments);
 };
+const {contextBridge, ipcRenderer } = require("electron");
+contextBridge.exposeInMainWorld(
+  'biliBridge',
+  {
+    callNativeSync: (...args) => ipcRenderer.sendSync(...args),
+    callNative: (...args) => ipcRenderer.invoke(...args),
+  }
+)
+
 // HOOK biliBridgePc.callNativeSync
-const {contextBridge} = require("electron");
 const originEIMW = contextBridge.exposeInMainWorld
 contextBridge.exposeInMainWorld = function(){
   // console.log('electron.contextBridge.exposeInMainWorld', arguments);
@@ -27,11 +35,3 @@ contextBridge.exposeInMainWorld = function(){
   }
   originEIMW.apply(this, arguments);
 };
-// 漫游pac设置
-const originEW = String.prototype.endsWith
-String.prototype.endsWith = function (){
-  // console.log('endsWith: ', arguments);
-  if (arguments[0] === "config/roamingPAC"  || this == "config/roamingPAC") return true;
-  if (arguments[0] === "config/dataSync"  || this == "config/dataSync") return true;
-  return originEW.apply(this, arguments)
-}

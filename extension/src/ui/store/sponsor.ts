@@ -1,16 +1,14 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
-export interface CounterState {
+export interface SponsorState {
   bigmodelToken: string
   enable: boolean
   isSponsorAIDetect: boolean
+  libPath: string
+  whisperProxy: string
 }
-const initialState: CounterState = {
-  enable: localStorage.sponsor_block_enable === "true",
-  isSponsorAIDetect: localStorage.sponsor_block_ai_detect === "true",
-  bigmodelToken: localStorage.sponsor_block_token_bigmodel || "",
-};
+const initialState: SponsorState = JSON.parse(localStorage.getItem('sponsor_block_setting') || '{}')
 
 // 创建一个 Slice 
 export const sponsorSlice = createSlice({
@@ -21,15 +19,23 @@ export const sponsorSlice = createSlice({
     // 定义一个加的方法
     switchSponsorBlock: (state) => {
       state.enable = !state.enable;
-      localStorage.setItem('sponsor_block_enable', `${state.enable}`);
     },
     switchSponsorAIDetect: (state) => {
       state.isSponsorAIDetect = !state.isSponsorAIDetect;
-      localStorage.setItem('sponsor_block_ai_detect', `${state.isSponsorAIDetect}`);
     },
     updateBigmodelToken: (state, action) => {
       state.bigmodelToken = action.payload;
-      localStorage.sponsor_block_token_bigmodel = action.payload;
+    },
+    updateWhisperProxy: (state, action) => {
+      state.whisperProxy = action.payload;
+    },
+    saveSponsorSetting: (state, action) => {
+      state.enable = action.payload.enable;
+      state.isSponsorAIDetect = action.payload.isSponsorAIDetect;
+      state.bigmodelToken = action.payload.bigmodelToken;
+      state.whisperProxy = action.payload.whisperProxy;
+      state.libPath = action.payload.libPath;
+      localStorage.setItem('sponsor_block_setting', JSON.stringify(state));
     },
     // 数据同步方法
     sponsorSyncState: (state, action) => {
@@ -44,8 +50,10 @@ export const sponsorSlice = createSlice({
 export const {
   switchSponsorAIDetect,
   updateBigmodelToken,
+  updateWhisperProxy,
   switchSponsorBlock,
-  sponsorSyncState
+  sponsorSyncState,
+  saveSponsorSetting,
 } = sponsorSlice.actions;
 
 // 默认导出

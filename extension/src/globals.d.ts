@@ -4,6 +4,10 @@
 ////////////////////
 interface Window {
     __segment_base_map__: Record<string, [string, string]>
+    biliBridge: {
+      callNative: <T>(action: string, ...args: unknown[]) => Promise<T>
+      callNativeSync: (action: string, ...args: unknown[]) => unknown
+    }
     biliBridgePc: {
       callNative: (action: string, ...args: unknown[]) => Promise<unknown>
       callNativeSync: (action: string, ...args: unknown[]) => unknown
@@ -22,6 +26,7 @@ interface RootStore {
   danmakuStore: DanmakuStore
   hotspotStore: HotspotStore
   mediaStore: MediaStore
+  mpdStore: MpdStore
   nodes: {
     videoArea: HTMLElement
   }
@@ -68,6 +73,19 @@ interface HotspotStore extends RootStore {
 interface MediaStore extends RootStore {
   rootStore: RootStore
   video: HTMLVideoElement
+}
+interface MpdStore extends RootStore {
+  body: {
+    mediaDataSource: {
+      duration: number
+      type: string
+      url: {
+        audio: ParsedAudioInfo[]
+      }
+    }
+    parsedFragmentVideoInfoList: ParsedFragmentVideoInfo[]
+  }
+  rootStore: RootStore
 }
 interface ProgressStore extends RootStore {
   rootStore: RootStore
@@ -156,6 +174,19 @@ interface BiliPlayer {
   addViewPoints: (data: string) => void
   on: (event: string, callback: (...args: unknown[]) => void) => this
   seek: (time: number, cfg?: {initiator: string}) => Promise<void>
+}
+interface ParsedFragmentVideoInfo {
+  acceptDescription: string[]
+  mediaDataSource: {
+    duration: number
+    url: {
+      audio: ParsedAudioInfo[]
+    }
+  }
+}
+interface ParsedAudioInfo {
+  backup_url: string[]
+  base_url: string
 }
 /**
  *  -1 = "StudyNote"

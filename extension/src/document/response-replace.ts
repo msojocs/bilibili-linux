@@ -663,8 +663,10 @@ export const ResponseReplaceXMLHttpRequest = {
         resp.data.subtitle.subtitles.push(zhHans)
       }
     }
+    document.dispatchEvent(new CustomEvent('sponsorblock.showAiAnalysis', { detail: false }))
     // SponsorBlock
-    if (resp.code === 0 && localStorage.getItem('sponsor_block_enable') === 'true') {
+    const config = JSON.parse(localStorage.getItem('sponsor_block_setting') || '{}')
+    if (resp.code === 0 && config.enable) {
       try {
         const segments = await getSegments({
           videoID: resp.data.bvid,
@@ -684,7 +686,7 @@ export const ResponseReplaceXMLHttpRequest = {
         }
       } catch (err) {
         log.error('获取SponsorBlock数据失败:', err)
-        document.dispatchEvent(new CustomEvent('sponsorblock.showAiAnalysis', { detail: err }))
+        document.dispatchEvent(new CustomEvent('sponsorblock.showAiAnalysis', { detail: true }))
       }
     }
     // log.info('subtitle result:', resp)
@@ -793,7 +795,7 @@ export const ResponseReplaceFetch: Record<string, (data: FetchReplaceType) => Pr
         // 获取动态详情
         const bili = new BiliBiliApi();
         const detail = await bili.getDynamicDetail(b2d.dynamic_id)
-        const dynamicDetail: any = await window.biliBridgePc.callNative('roaming/queryDynamicDetail', b2d.dynamic_id, UTILS.getAccessToken())
+        const dynamicDetail: any = await window.biliBridge.callNative('roaming/queryDynamicDetail', b2d.dynamic_id, UTILS.getAccessToken())
         log.info('dynamic detail phone:', dynamicDetail)
         const dynamic = dynamicDetail.item.modules.find((e: { module_type: string; }) => e.module_type === 'module_dynamic')
         const epid = dynamic.module_dynamic.dyn_archive.uri.match(/ep\d+/)[0]

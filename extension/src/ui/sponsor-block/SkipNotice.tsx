@@ -88,7 +88,7 @@ const SkipNotice = () => {
     const viewpoint = rootStore.progressStore.viewpoint
       .find(e => e.from <= currentTime && e.to >= currentTime && e.sponsor_info && e.sponsor_info.actionType === 'skip')
     if (viewpoint === undefined) return
-    log.info('广告跳过')
+    log.info('赞助跳过')
     // 3. 弹出广告跳过提示，toastStore
     if (!viewpoint.sponsor_info) return
     if (!isVisible) {

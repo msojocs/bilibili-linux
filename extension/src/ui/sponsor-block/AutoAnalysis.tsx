@@ -1,30 +1,35 @@
 import { useSelector } from "react-redux"
 import { createLogger } from "../../common/log"
 import type { RootState } from "../store"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import AnalysisStep from "./AnalysisStep"
 const log = createLogger('AutoAnalysis')
-type ShowPanel = (() => void) | undefined
-let enableAiPanel: ShowPanel = undefined
-let tempIsPanelShow: boolean = false
-document.addEventListener("sponsorblock.showAiAnalysis", function (_event) {
-  log.info('ShowAiAnalysis')
-  tempIsPanelShow = true
-  enableAiPanel?.()
+type ShowPanel = ((b: boolean) => void) | undefined
+let changeAiPanel: ShowPanel = undefined
+// 第一次加载播放器，showAiAnalysis事件会相对早，changeAiPanel未附值导致不显示。
+let isShowAiPanel = false
+document.addEventListener("sponsorblock.showAiAnalysis", function (event: CustomEventInit<boolean>) {
+  if (changeAiPanel === undefined) {
+    log.warn('changeAiPanel not defined')
+  }
+  isShowAiPanel = !!event.detail
+  changeAiPanel?.(!!event.detail)
 })
 export default function AutoAnalysis() {
   log.info('AutoAnalysis')
+  const child = useRef<{
+    restart: () => void
+  }>(null)
   // 是否启用
-  const [isEnable, setIsEnable] = useState(tempIsPanelShow);
+  const [isEnable, setIsEnable] = useState(isShowAiPanel);
   // 主面板是否可见
   const [isVisible, setIsVisible] = useState(false);
-  // 重试计数器，用于强制重新渲染AnalysisStep
-  const [retryKey, setRetryKey] = useState(0);
   const isSponsorAIDetect = useSelector<RootState, boolean>(store => store.sponsor.isSponsorAIDetect)
 
   if (!isSponsorAIDetect) return null
-  enableAiPanel = () => {
-    setIsEnable(true);
+  changeAiPanel = (b) => {
+    log.info('changeAiPanel:', b)
+    setIsEnable(b);
   };
   if (!isEnable) return null
   // 关闭按钮处理
@@ -39,7 +44,7 @@ export default function AutoAnalysis() {
 
   // 重试按钮处理
   const handleRetry = () => {
-    setRetryKey(prev => prev + 1);
+    child.current?.restart();
   };
 
   // 如果主面板不可见，显示右侧展开按钮
@@ -70,7 +75,7 @@ export default function AutoAnalysis() {
         <div className="sponsor-header">
           {/* 左上角：跳过信息和重试按钮 */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span className="skip-text">AI识别赞助广告</span>
+            <span className="skip-text">AI识别关键节点</span>
             <button
               onClick={handleRetry}
               title="重试"
@@ -115,7 +120,7 @@ export default function AutoAnalysis() {
             </button>
           </div>
         </div>
-        <AnalysisStep key={retryKey} />
+        <AnalysisStep ref={child} />
       </div>
     </div>
     </>

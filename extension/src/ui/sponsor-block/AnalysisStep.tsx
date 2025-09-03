@@ -1,9 +1,11 @@
 import { Steps, type StepProps } from "antd";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useImperativeHandle, useMemo, useState } from "react";
 import { createLogger } from "../../common/log";
 import { GET } from "../../common/http";
 import { bigModelDetect } from "../../common/sponsor-block/sponsor-detect";
 import { LoadingOutlined, StopOutlined } from "@ant-design/icons";
+import { useSelector } from "react-redux";
+import type { RootState } from "../store";
 interface SubtitleResponse {
   body: {
     from: number,
@@ -11,14 +13,29 @@ interface SubtitleResponse {
     content: string
   }[]
 }
+interface Options {
+  file: string
+  libPath: string
+  proxy: string
+}
+interface Props {
+  ref: React.RefObject<{
+    restart: () => void
+  } | null>
+}
+
 const log = createLogger('AnalysisStep')
-export default function AnalysisStep() {
+export default function AnalysisStep({ ref }: Props) {
   const [hasSubtitle] = useState(() => window.danmakuManage.rootStore.subtitleStore.state.languageList && window.danmakuManage.rootStore.subtitleStore.state.languageList.length > 0);
   const [curStep, setCurStep] = useState(0);
   const [errorMsg, setErrorMsg] = useState('');
   const [curStatus, setCurStatus] = useState<"wait" | "process" | "finish" | "error" | undefined>('process');
+  const whisperProxy = useSelector<RootState, string>(state => state.sponsor.whisperProxy)
+  const libPath = useSelector<RootState, string>(state => state.sponsor.libPath)
   const task = async () => {
     log.info('execute task...')
+    setErrorMsg('')
+    setCurStatus('process')
     try {
       let subtitleText = ''
       if (hasSubtitle) {
@@ -40,13 +57,33 @@ export default function AnalysisStep() {
       }
       else {
         setCurStep(2);
-        throw new Error('开发中...')
         // 1. 获取音频数据
+        let file = ''
+        try {
+          const url = window.danmakuManage.rootStore.mpdStore.body.mediaDataSource.url.audio[0].base_url
+          file = await window.biliBridge.callNative<string>('sponsor/downloadAudio', url)
+        }
+        catch (err) {
+          log.error('Download audio error:', err)
+          const url = window.danmakuManage.rootStore.mpdStore.body.mediaDataSource.url.audio[0].backup_url[0]
+          file = await window.biliBridge.callNative<string>('sponsor/downloadAudio', url)
+        }
+        log.info('download audio success:', file)
+        const options: Options = {
+          file,
+          proxy: whisperProxy,
+          libPath,
+        }
         // 2. 音频转字幕
+        setCurStep(3);
+        const subtitle = await window.biliBridge.callNative<string>('sponsor/transcribeAudio', options)
+        log.info('subtitle:', subtitle)
+        subtitleText = subtitle.split('\n').filter(e => e[0] === '[').join('\n')
       }
-      // AI识别字幕广告
+      // AI识别关键节点
       setCurStep(4);
-      const detectResult = await bigModelDetect(localStorage.getItem('sponsor_block_token_bigmodel') || '', subtitleText)
+      const config = JSON.parse(localStorage.getItem('sponsor_block_setting') || '{}')
+      const detectResult = await bigModelDetect(config.bigmodelToken || '', subtitleText)
       setCurStep(5);
       // 添加标记
       const { state } = window.danmakuManage.rootStore.hotspotStore
@@ -70,6 +107,12 @@ export default function AnalysisStep() {
       setCurStatus('error')
     }
   }
+  useImperativeHandle(ref, () => {
+    return {
+      // ... your methods ...
+      restart: task
+    };
+  }, []);
   useEffect(() => {
     task()
     // 空数组，仅执行一次，不能删除（
@@ -92,14 +135,14 @@ export default function AnalysisStep() {
         disabled: hasSubtitle,
       },
       {
-        title: 'AI识别字幕赞助',
+        title: 'AI识别关键节点',
       },
       {
         title: '添加标记',
       },
     ]
     result[curStep].icon = curStatus === 'process'? <LoadingOutlined /> : undefined
-    result[curStep].description = curStatus === 'error'? errorMsg : undefined
+    result[curStep].description = curStatus === 'error'? errorMsg.substring(0, 150) : undefined
     for (let i = 0; i < curStep; i++) {
       if (result[i].disabled)
         result[i].icon = <StopOutlined />

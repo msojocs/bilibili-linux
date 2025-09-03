@@ -89,12 +89,6 @@ https://www.electronjs.org/docs/latest/api/command-line-switches
    --key=value
    ```
 
-## Wayland 窗口置顶操作
-
-从 v1.15.2-3 开始支持。
-
-参考设置：https://github.com/msojocs/bilibili-linux/issues/136#issuecomment-2480558792
-
 ## 开发者工具
 
 现已支持自行打开开发者工具，方法如下：
@@ -116,9 +110,19 @@ https://areweloongyet.com/docs/loong-or-loongarch
 |RPM 系|`loongarch64`|
 |Slackware|`loong64`|
 
-## English
+## 空降助手
 
-在主界面按下<kbd>Ctrl + T</kbd>，左下角会出现弹窗；选择语言后，点击OK，重启。
+自动帮助阁下空降至关键位置。
+
+| 选项 | 说明 |
+|------|-----|
+| Whisper代理 | 模型下载需要代理, 形如：`http://127.0.0.1:1080` |
+| LD_LIBRARY_PATH | 可能遇到 `cudnn` 库找不到，[参考此处](https://github.com/MahmoudAshraf97/whisper-diarization/issues/259) |
+| AI识别TOKEN | https://www.bigmodel.cn/的Token，使用免费模型 `glm-4.5-flash` |
+
+## 更新日志
+
+[CHANGELOG.md](CHANGELOG.md)
 
 ## 预览
 
@@ -136,6 +140,7 @@ https://areweloongyet.com/docs/loong-or-loongarch
 
 1. [BiliRoaming](https://github.com/yujincheng08/BiliRoaming)
 2. [解除B站区域限制](https://github.com/ipcjs/bilibili-helper)
+3. [小电视空降助手](https://github.com/hanydd/BilibiliSponsorBlock)
 
 ## 免责声明
 

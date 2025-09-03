@@ -31,14 +31,6 @@ notice "复制拓展"
 mkdir -p "$root_dir/app/extensions"
 cp -r "$root_dir/extension/dist" "$root_dir/app/extensions/bilibili"
 
+notice "复制AI脚本"
+cp "$root_dir/res/scripts/transcribe.py" "$root_dir/app"
 cd "$res_dir"
-
-asar e "app.asar" app
-
-# notice "暴露弹幕管理接口"
-# grep -lr "this.initDanmaku(),this" --exclude="app.asar" .
-# sed -i 's#this.initDanmaku(),this#this.initDanmaku(),window.danmakuManage = this,this#' "app/render/assets/lib/core.js"
-
-
-asar p app app.asar
-rm -rf app
