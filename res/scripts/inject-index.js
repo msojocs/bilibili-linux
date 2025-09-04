@@ -595,7 +595,7 @@ app.on("ready", () => {
     const original = screen.getCursorScreenPoint;
     const cp = require("child_process");
     screen.getCursorScreenPoint = function () {
-      if (process.env["XDG_SESSION_TYPE"] == "wayland") {
+      if (process.env["XDG_SESSION_TYPE"] == "wayland" && !this.cursorToolError) {
         (async () => {
           try {
             const point = (await cursorTool()).replace("\n", "");
@@ -607,6 +607,7 @@ app.on("ready", () => {
               y: this.oldY,
             };
           } catch (err) {
+            this.cursorToolError = true
             console.error("error:", err.replace("\n", ""));
             if (err.includes("failed to add device")) {
               console.info(

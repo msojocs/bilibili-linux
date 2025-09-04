@@ -1,6 +1,6 @@
 [Desktop Entry]
 Categories=AudioVideo;Video;TV;
-Comment=哔哩哔哩桌面版
+Comment=Bilibili Desktop
 Comment[zh_CN]=哔哩哔哩桌面版
 Comment[zh_TW]=嗶哩嗶哩桌面版
 Exec=bilibili %u
@@ -9,10 +9,10 @@ GenericName=
 Icon=bilibili
 StartupWMClass=bilibili
 MimeType=
-Name=哔哩哔哩
+Name=Bilibili
 Name[zh_CN]=哔哩哔哩
 Name[zh_TW]=嗶哩嗶哩
-Keywords=animation;anime;drama;live;movie;player;tv;video;
+Keywords=animation;anime;drama;live;movie;player;tv;video;bilibili;
 Keywords[zh_CN]=animation;anime;bilibili;drama;live;movie;player;tv;video;B站;播放器;电视;动画;动漫;电影;番剧;视频;直播;
 Keywords[zh_TW]=animation;anime;bilibili;drama;live;movie;player;tv;video;B站;播放器;电视;動畫;動漫;电影;番劇;視頻;直播;
 StartupNotify=true

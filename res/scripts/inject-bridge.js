@@ -1,16 +1,4 @@
-// 去除无限debugger
-Function.prototype.__constructor_back = Function.prototype.constructor;
-Function.prototype.constructor = function() {
-    if(arguments && typeof arguments[0]==='string'){
-        // console.log("arguments: ", arguments);
-        if("debugger" === arguments[0]){
-            //arguments[0]="console.log(\"anti debugger\");";
-            //arguments[0]=";";
-            return
-        }
-    }
-   return Function.prototype.__constructor_back.apply(this,arguments);
-};
+
 const {contextBridge, ipcRenderer } = require("electron");
 contextBridge.exposeInMainWorld(
   'biliBridge',
@@ -35,3 +23,4 @@ contextBridge.exposeInMainWorld = function(){
   }
   originEIMW.apply(this, arguments);
 };
+
