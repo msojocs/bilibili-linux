@@ -13,7 +13,10 @@
     }
   ],
   "extraResources": [
-    "extensions",
+    {
+      "from": "app/extensions",
+      "to": "extensions"
+    },
     "app/app-update.yml",
     {
       "from": "app/cursor-tool",
