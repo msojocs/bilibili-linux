@@ -9,8 +9,8 @@ const watch = process.argv.includes('--watch') ? {} : false
 export default defineConfig({
   build: {
     lib: {
-      entry: resolve(__dirname, 'src/content.ts'),
-      fileName: (_format, entryName) => `${entryName}.js`,
+      entry: resolve(__dirname, 'src/extension/content.ts'),
+      fileName: (_format, entryName) => `extension/${entryName}.js`,
       formats: ['iife'],
       name: 'content'
     },
@@ -24,7 +24,7 @@ export default defineConfig({
 })
 
 /**
- * 为什么不在content.js里面？
+ * 为什么不合并在content.js里面？
  * 权限不够：
  * 1. content.js里面访问不到danmakuMange
  * 2. content.js里面访问不到webview.isDevToolsOpened
@@ -34,9 +34,16 @@ export default defineConfig({
 // page libraries
 const libraries: LibraryOptions[] = [
   {
-    entry: resolve(__dirname, 'src/page.ts'),
+    entry: resolve(__dirname, 'src/extension/page.ts'),
     name: 'page',
-    fileName: (_format, entryName) => `${entryName}.js`,
+    fileName: (_format, entryName) => `extension/${entryName}.js`,
+    formats: ['iife'],
+    cssFileName: 'extension/bilibili'
+  },
+  {
+    entry: resolve(__dirname, 'src/inject/index.ts'),
+    name: 'index',
+    fileName: (_format, entryName) => `inject/${entryName}.js`,
     formats: ['iife'],
   },
 ];
