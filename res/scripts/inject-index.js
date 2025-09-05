@@ -513,14 +513,6 @@ ipcMain.handle("sponsor/transcribeAudio", (_, options) => new Promise((resolve, 
 app.on("ready", () => {
   const extPath = path.join(path.dirname(app.getAppPath()), "extensions");
   session.defaultSession
-    .loadExtension(extPath + "/area_unlimit", {
-      allowFileAccess: true,
-    })
-    .then(({ id }) => {
-      // ...
-      console.log("-----Load Extension:", id);
-    });
-  session.defaultSession
     .loadExtension(extPath + "/bilibili", {
       allowFileAccess: true,
     })
