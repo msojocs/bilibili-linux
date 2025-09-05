@@ -1,6 +1,6 @@
 import { Button, Card, Col, Input, Row, Switch, Tooltip } from "antd"
 import { useState } from "react"
-import { createLogger } from "../../../common/log"
+import { createLogger } from "../../../../common/log"
 import { useDispatch, useSelector } from "react-redux"
 import type { RootState } from "../../store"
 import { saveSponsorSetting, type SponsorState } from "../../store/sponsor"

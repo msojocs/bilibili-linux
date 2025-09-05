@@ -1,4 +1,4 @@
-import { createLogger } from "../common/log"
+import { createLogger } from "../../common/log"
 interface I18nItem {
   condition?: (match: Element) => boolean
   data: Record<string, string>

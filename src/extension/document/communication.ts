@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createLogger } from "../common/log"
+import { createLogger } from "../../common/log"
 interface MessageRequest<T> {
   action: string
   data: T

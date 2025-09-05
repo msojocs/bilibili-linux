@@ -1,11 +1,12 @@
 import { Steps, type StepProps } from "antd";
 import { useEffect, useImperativeHandle, useMemo, useState } from "react";
-import { createLogger } from "../../common/log";
+import { createLogger } from "../../../common/log";
 import { GET } from "../../common/http";
 import { bigModelDetect } from "../../common/sponsor-block/sponsor-detect";
 import { LoadingOutlined, StopOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import type { RootState } from "../store";
+import type { ProgressViewPoint } from "../../../globals";
 interface SubtitleResponse {
   body: {
     from: number,

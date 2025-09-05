@@ -24,13 +24,16 @@ mkdir -p "$root_dir/app"
 
 notice "构建拓展"
 rm -rf "$root_dir/app/extensions"
-cd "$root_dir/extension"
+
 pnpm install
 pnpm run build
 notice "复制拓展"
 mkdir -p "$root_dir/app/extensions"
-cp -r "$root_dir/extension/dist" "$root_dir/app/extensions/bilibili"
+cp -r "$root_dir/dist/extension" "$root_dir/app/extensions/bilibili"
 
 notice "复制AI脚本"
 cp "$root_dir/res/scripts/transcribe.py" "$root_dir/app"
 cd "$res_dir"
+asar e app.asar app
+cp "$root_dir/dist/inject/index.js" "app/index.js"
+asar p app app.asar

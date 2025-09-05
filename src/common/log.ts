@@ -32,7 +32,7 @@ interface LoggerConfigType {
 type InterceptorFuncType = (config: LoggerConfigType) => void
 
 const CurrentLogLevel: LogLevelType = (() => {
-  const level = localStorage.getItem('LogLevel')
+  const level = globalThis?.window?.localStorage?.getItem('LogLevel') ?? 'Info'
   if (level == null) return LogLevel.Info
   if (level === 'Trace') return LogLevel.Trace
   if (level === 'Info') return LogLevel.Info

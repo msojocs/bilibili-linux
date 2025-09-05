@@ -1,6 +1,6 @@
 
 import type { WebviewTag } from "electron";
-import { createLogger, Logger } from "../common/log";
+import { createLogger, Logger } from "../../common/log";
 export const initLoginPage = () => {
   Logger.moduleName = 'Login'
   const log = createLogger('Entry')

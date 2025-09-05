@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { createLogger } from '../../common/log';
-import { sleep } from '../../common/utils';
+import { createLogger } from '../../../common/log';
+import { sleep } from '../../../common/utils';
+import type { ProgressViewPoint } from '../../../globals';
 type MediaTimeUpdateFunc = () => void;
 let mediaTimeUpdate: MediaTimeUpdateFunc | undefined = undefined;
 (async () => {

@@ -2,7 +2,7 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import storageSlice, { storageSync } from "./storage.ts";
-import { createLogger } from "../../common/log.ts";
+import { createLogger } from "../../../common/log.ts";
 import sponsorSlice, { sponsorSyncState } from "./sponsor.ts";
 import playSlice, { playSyncState } from "./play.ts";
 import danmakuSlice, { danmakuSyncState } from "./danmaku.ts";

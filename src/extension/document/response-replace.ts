@@ -3,7 +3,7 @@ import { BiliBiliApi, type AreaType } from "../common/bilibili-api";
 import { ChineseConversionAPI } from "../common/chinese-conversion";
 import { CustomIndexedDB } from "../common/db";
 import type { BiliPlayUrlResult } from "../common/interface/bili-playurl/playurl.type";
-import { createLogger } from "../common/log";
+import { createLogger } from "../../common/log";
 import { getSegments } from "../common/sponsor-block";
 import type { BiliResponseData, BiliResponseResult, BiliSeasonInfoType } from "../common/types";
 import { UTILS } from "../common/utils";

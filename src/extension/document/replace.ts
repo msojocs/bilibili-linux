@@ -1,4 +1,4 @@
-import { createLogger } from "../common/log"
+import { createLogger } from "../../common/log"
 import { ResponseReplaceFetch } from "./response-replace"
 import { CustomXMLHttpRequest } from "./xml-http-request"
 

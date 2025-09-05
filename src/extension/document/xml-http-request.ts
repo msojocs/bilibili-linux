@@ -1,4 +1,4 @@
-import { createLogger, Logger } from "../common/log";
+import { createLogger, Logger } from "../../common/log";
 import { ResponseReplaceXMLHttpRequest } from "./response-replace";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export class CustomXMLHttpRequest extends window.XMLHttpRequest {

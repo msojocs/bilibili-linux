@@ -26,15 +26,6 @@ notice "解密"
 "$root_dir/tools/js-decode.js" "$res_dir/app/main/app.orgi.js" "$res_dir/app/main/app.js"
 "$root_dir/tools/bridge-decode.js" "$res_dir/app/main/assets/bili-bridge.js" "$res_dir/app/main/assets/bili-bridge.js"
 
-notice "====index.js===="
-# 修复新版不能启动的问题
-notice "修复不能启动的问题 index.js -- $root_dir"
-cat "$root_dir/res/scripts/inject-index.js" > "app/index.js"
-# 从app.js加载 ok
-# grep -lr '!import_electron2' --exclude="app.asar" .
-# sed -i 's#!import_electron2#import_electron2#' app/main/index.js
-# grep -lr 'global;import_electron2' --exclude="app.asar" .
-# sed -i 's#global;import_electron2#global;!import_electron2#' app/main/index.js
 notice "====app.js===="
 
 notice "屏蔽检测"
@@ -75,15 +66,7 @@ cat "$root_dir/res/scripts/inject-bridge.js" > "app/main/assets/temp.js"
 cat "app/main/assets/bili-preload.js" >> "app/main/assets/temp.js"
 rm "app/main/assets/bili-preload.js"
 mv "app/main/assets/temp.js" "app/main/assets/bili-preload.js"
-cp "$root_dir/res/protos/dynamic.proto" "app/main/assets/protos/dynamic.proto"
-mkdir tmp
-cd tmp
-echo "{}" > package.json
-npm install @grpc/grpc-js @expo/sudo-prompt
-cd ..
 
-cp -rf tmp/node_modules/* app/node_modules
-rm -rf tmp
 asar p app app.asar
 rm -rf app
 

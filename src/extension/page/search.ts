@@ -1,4 +1,4 @@
-import { createLogger, Logger } from "../common/log"
+import { createLogger, Logger } from "../../common/log"
 import { replaceFetch, replaceXMLHttpRequest } from "../document/replace"
 
 export const initSearchPage = () => {

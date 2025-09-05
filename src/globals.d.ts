@@ -2,7 +2,14 @@
 // Global object
 
 ////////////////////
-interface Window {
+
+// 导入 EventEmitter 类型
+import { EventEmitter } from 'events';
+
+// 正确定义 NodeJS 全局变量
+declare global {
+  // 保持 Window 接口的定义
+  interface Window {
     __segment_base_map__: Record<string, [string, string]>
     biliBridge: {
       callNative: <T>(action: string, ...args: unknown[]) => Promise<T>
@@ -18,7 +25,23 @@ interface Window {
     dataSync: (data: string) => void
     epId2seasonId: Record<string, string>;
     switchLanguage: (lang: string) => void
+  }
+  
+  // Node.js 全局变量
+  var bootstrapEvents: EventEmitter;
+  var isFiredByEntry: boolean;
+  var bootstrapApp: () => void
+  var biliApp = {
+    configService: {
+      openMainWindowPage$: {
+        next: (_value: unknown) => {},
+      },
+      loginWindow: object,
+      loginRiskWindow: object
+    }
+  }
 }
+
 // #region Store
 
 interface RootStore {

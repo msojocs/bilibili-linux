@@ -1,6 +1,6 @@
 import md5 from "md5";
 import { GET, POST } from "./http";
-import { createLogger, Logger } from "./log";
+import { createLogger, Logger } from "../../common/log";
 import { UTILS } from "./utils";
 import type { BiliResponseData, BiliResponseResult, BiliSeasonInfoType } from "./types";
 import type { ThPlayurlData } from "./interface/th-playurl/playurl.type";

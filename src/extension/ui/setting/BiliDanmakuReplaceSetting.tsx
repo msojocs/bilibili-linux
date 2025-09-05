@@ -3,7 +3,7 @@ import { useState } from "react";
 import { BiliBiliApi } from "../../common/bilibili-api";
 import { UTILS } from "../../common/utils";
 import { GET } from "../../common/http";
-import { createLogger } from "../../common/log";
+import { createLogger } from "../../../common/log";
 const log = createLogger('BiliDanmaku')
 interface SearchResultType {
   children: {

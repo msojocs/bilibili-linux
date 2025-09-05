@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import md5 from "md5"
 import { BiliBiliApi, type AreaType } from "./bilibili-api"
-import { createLogger } from "./log"
+import { createLogger } from "../../common/log"
 import type { BiliAppSearchResultType, BiliResponseData, BiliResponseResult, BiliWebSearchResultType, HDTokenInfoType, THSearchResultType } from "./types"
 import type { ThPlayurlData } from "./interface/th-playurl/playurl.type"
 import type { BiliPlayUrlResult, VideoInfo } from "./interface/bili-playurl/playurl.type"
@@ -610,5 +610,3 @@ export const getScript = (url: string) => {
   script.src = url; // js地址
   document.body.appendChild(script);// 插入body可改为head
 }
-
-export const sleep = (time: number) => new Promise((resolve) => setTimeout(resolve, time))

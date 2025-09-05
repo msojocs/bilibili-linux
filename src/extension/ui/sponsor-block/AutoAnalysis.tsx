@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux"
-import { createLogger } from "../../common/log"
+import { createLogger } from "../../../common/log"
 import type { RootState } from "../store"
 import { useRef, useState } from "react"
 import AnalysisStep from "./AnalysisStep"

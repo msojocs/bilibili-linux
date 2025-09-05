@@ -1,0 +1,25 @@
+import { app } from "electron";
+import { createBilibiliServer } from "./common/bilibili";
+import { electronOverwrite, electronOverwriteAfterReady, hookIsPackaged, nodeJsOverWrite, parseElectronFlag, registerExtension, registerIpcHandle, registerProtocol, replaceBrowserWindow } from "./common/electron-tool";
+import { Logger } from "../common/log";
+(() => {
+  Logger.moduleName = 'Index'
+  parseElectronFlag()
+  hookIsPackaged()
+  createBilibiliServer()
+  replaceBrowserWindow()
+  electronOverwrite()
+  nodeJsOverWrite()
+  registerIpcHandle()
+  // 加载主代码
+  module.require("./main/app.js")
+  // 启动app
+  app.whenReady().then(() => {
+    registerProtocol()
+    registerExtension()
+    electronOverwriteAfterReady()
+    global.bootstrapApp();
+  });
+  // https://github.com/msojocs/bilibili-linux/issues/147
+  process.on("uncaughtException", () => {});
+})()

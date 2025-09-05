@@ -22,6 +22,6 @@ pnpm install
 "$root_dir/tools/update-electron"
 "$root_dir/tools/update-bilibili"
 "$root_dir/tools/fix-other.sh"
-"$root_dir/tools/area-unlimit.sh"
+"$root_dir/tools/extension.sh"
 
 mv "$res_dir/"* "$root_dir/app"

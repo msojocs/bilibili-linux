@@ -1,6 +1,6 @@
 import { createRoot } from "react-dom/client"
-import { createLogger, Logger } from "../common/log"
-import { sleep } from "../common/utils"
+import { createLogger, Logger } from "../../common/log"
+import { sleep } from "../../common/utils"
 import { replaceFetch, replaceXMLHttpRequest } from "../document/replace"
 import SettingButton from "../ui/main"
 import { getPageType } from "../common/page"

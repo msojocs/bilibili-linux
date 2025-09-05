@@ -1,5 +1,5 @@
 import { Button, Card, Form, Input, notification, Select, Switch } from "antd"
-import { createLogger } from "../../common/log"
+import { createLogger } from "../../../common/log"
 import { useDispatch, useSelector } from "react-redux"
 import type { RootState } from "../store"
 import { saveUposConfig, saveServerConfig, resetServerConfig, type UposConfig, type ServerConfig } from "../store/roaming"

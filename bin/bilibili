@@ -20,7 +20,7 @@ elif [ "$DEBUG" == '2' ]; then
     asar e app.asar app
     cd "$root_dir/app/extensions"
     rm -rf bilibili
-    ln -s ../../extension/dist bilibili
+    ln -s ../../dist/extension bilibili
   fi
   cd "$root_dir"
   ELECTRON_FORCE_IS_PACKAGED=true "$root_dir/electron/electron" "$root_dir/app/app" --no-sandbox "$@"

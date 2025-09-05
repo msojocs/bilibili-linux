@@ -2,7 +2,7 @@ import { Button, Cascader, Col, Input, notification, Radio, Row, Switch } from "
 import { useState } from "react";
 import { convertDandanResponse } from "../../common/danmaku";
 import { dandanplaySearch, getComment } from "../../common/dandan-api";
-import { createLogger } from "../../common/log";
+import { createLogger } from "../../../common/log";
 const log = createLogger('DandanPlay')
 interface SearchResultType {
   children: {

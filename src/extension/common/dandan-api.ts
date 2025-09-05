@@ -1,5 +1,5 @@
 import { GET } from "./http"
-import { createLogger } from "./log"
+import { createLogger } from "../../common/log"
 import type { DandanPlayAnimeType, DandanPlayCommentType } from "./types"
 const log = createLogger('DandanApi')
 export const getComment = async (epId: string, withRelated = false): Promise<DandanPlayCommentType[]> => {

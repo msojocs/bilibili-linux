@@ -1,4 +1,4 @@
-import { createLogger, Logger } from "./common/log"
+import { createLogger, Logger } from "../common/log"
 import { getPageType } from "./common/page"
 import { Page } from "./common/types"
 import { registerMessagePage } from "./document/communication"

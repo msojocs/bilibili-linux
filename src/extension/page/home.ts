@@ -1,8 +1,8 @@
 import { createRoot } from "react-dom/client"
 import SettingButton from "../ui/main"
-import { createLogger, Logger } from "../common/log"
+import { createLogger, Logger } from "../../common/log"
 import { replaceXMLHttpRequest } from "../document/replace"
-import { sleep } from "../common/utils"
+import { sleep } from "../../common/utils"
 
 export const initHomePage = () => {
   Logger.moduleName = 'Home'

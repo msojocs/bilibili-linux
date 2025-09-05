@@ -1,7 +1,7 @@
 import { Button, Card, Popconfirm, QRCode } from "antd"
 import { useState, useMemo } from "react"
 import { BiliBiliApi } from "../../../common/bilibili-api"
-import { createLogger } from "../../../common/log"
+import { createLogger } from "../../../../common/log"
 interface TokenInfo {
   access_token: string
   expires_at: number
