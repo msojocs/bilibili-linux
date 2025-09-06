@@ -105,7 +105,7 @@ export const UTILS = {
         is_selection: item.is_selection || 1,
         eps: eps,
         badges: [],
-        cover: item.cover,
+        cover: item.cover.replace(/@.*?webp/, '').replace('.webp', ''),
         areas: item.area || "",
         styles: item.style,
         goto_url: item.uri,
@@ -539,12 +539,8 @@ export const UTILS = {
       type: 7,
       sign: ''
     }
-    if(area === 'th'){
-      result.access_key = params.access_key
-      result.sign = UTILS.genSearchSign(result, area)
-    }else{
-      result.area = area
-    }
+    result.access_key = params.access_key
+    result.sign = UTILS.genSearchSign(result, area)
     let a = ''
     for (const k in result) {
       a += `${k}=${result[k]}&`

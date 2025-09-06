@@ -7,7 +7,7 @@ interface PropType {
 }
 export default function EntryButton({ onClick }: PropType) {
   const type = getPageType()
-  if (type === Page.Home) {
+  if (type === Page.Home || type === Page.Search) {
     return (
       <button
         className="vui_button vui_button--active-shrink p_relative"
