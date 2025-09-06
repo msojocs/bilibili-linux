@@ -64,7 +64,7 @@ jobs:
           ls -l
           tools/update-bilibili
           tools/fix-other.sh
-          tools/area-unlimit.sh
+          tools/extension.sh
           mv tmp/bili/resources/* app
   
       - name: Compress Resources
@@ -74,7 +74,7 @@ jobs:
           mkdir -p tmp/build
           tar -zcf tmp/src/bilibili-asar-${{ steps.tag.outputs.tag }}.tar.gz bin app # electron
           cp tmp/src/bilibili-asar-${{ steps.tag.outputs.tag }}.tar.gz tmp/build/bilibili-asar-${{ steps.tag.outputs.tag }}.tar.gz
-          tar -zcf tmp/build/extensions-${{ steps.tag.outputs.tag }}.tar.gz extension/dist
+          tar -zcf tmp/build/extensions-${{ steps.tag.outputs.tag }}.tar.gz dist/extension
 
       - name: Fix name for continuous
         if: steps.tag.outputs.tag == 'continuous'

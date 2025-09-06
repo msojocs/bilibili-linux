@@ -7,7 +7,7 @@
   "scripts": {
     "pkg-win": "electron-builder --win --x64 --arm64 -c conf/build.json",
     "pkg-mac": "electron-builder --mac --x64 -c conf/build.json",
-    "pkg-linux": "electron-builder --linux --x64 --arm64 -c conf/build.json",
+    "pkg-linux": "electron-builder --linux --x64 --arm64 -c conf/build.json --publish never",
     "pkg-loongarch": "node tools/build-loongarch.js",
     "test": "node tools/build-loongarch.js",
     "gen-proto": "npx protoc --ts_out src/inject/common --proto_path res/protos res/protos/dynamic.proto",
