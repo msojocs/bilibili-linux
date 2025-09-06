@@ -1,22 +1,22 @@
 
 import { createSlice } from '@reduxjs/toolkit';
+import { requestContent } from '../../document/communication';
 
 export interface CounterState {
   lang: string
 }
 const initialState: CounterState = {
-  lang: localStorage.lang || 'zhCn'
+  lang: 'zhCn'
 };
-
 // 创建一个 Slice 
-export const counterSlice = createSlice({
+export const storageSlice = createSlice({
   name: 'storage',
   initialState,
   // 定义 reducers 并生成关联的操作
   reducers: {
     changeLanguage: (state, action) => {
       state.lang = action.payload;
-      localStorage.setItem('lang', state.lang);
+      requestContent<string>('setStorage', { key: 'lang', value: state.lang });
       window.switchLanguage(state.lang)
     },
     // 数据同步方法
@@ -30,8 +30,8 @@ export const counterSlice = createSlice({
     },
   },
 });
-export const { storageSync, changeLanguage } = counterSlice.actions;
+export const { storageSync, changeLanguage } = storageSlice.actions;
 
 // 默认导出
-export default counterSlice.reducer;
+export default storageSlice.reducer;
 
