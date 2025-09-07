@@ -2,7 +2,7 @@ import { createRoot } from "react-dom/client"
 import { createLogger, Logger } from "../../common/log"
 import { sleep } from "../../common/utils"
 import { replaceFetch, replaceXMLHttpRequest } from "../document/replace"
-import SettingButton from "../ui/main"
+import SettingEntry from "../ui/main"
 import { getPageType } from "../common/page"
 import { Page } from "../common/types"
 import { registerSponsorBlock } from "../document/sponsor-block"
@@ -34,7 +34,7 @@ export const initPlayerPage = () => {
       headerLeft.prepend(root)
     else
       headerLeft.append(root)
-    createRoot(root).render(SettingButton())
+    createRoot(root).render(SettingEntry())
 
     for (let i=0;;i++){
       const danmakuManage = window.danmakuManage

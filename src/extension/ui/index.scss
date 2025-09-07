@@ -1,0 +1,15 @@
+body[lang="en"] {
+  bili-comments::part(options) {
+    width: 200px;
+  }
+
+  .app_video--detail-unfold:after {
+    content: 'Expand';
+    width: 70px;
+  }
+
+  .app_video--detail.app_video--unfold .app_video--detail-unfold:after {
+    content: 'Collapse';
+    width: 70px;
+  }
+}

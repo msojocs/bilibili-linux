@@ -2,7 +2,7 @@ import { createRoot } from "react-dom/client"
 import { createLogger, Logger } from "../../common/log"
 import { sleep } from "../../common/utils"
 import { replaceFetch, replaceXMLHttpRequest } from "../document/replace"
-import SettingButton from "../ui/main"
+import SettingEntry from "../ui/main"
 
 export const initSearchPage = () => {
   Logger.moduleName = 'Search'
@@ -21,8 +21,9 @@ export const initSearchPage = () => {
         continue
       }
       const root = document.createElement('div')
+      root.classList.add('custom-setting')
       buttonArea.prepend(root)
-      createRoot(root).render(SettingButton())
+      createRoot(root).render(SettingEntry())
       break
     }
   })

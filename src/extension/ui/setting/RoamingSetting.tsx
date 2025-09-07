@@ -5,11 +5,13 @@ import type { RootState } from "../store"
 import { saveUposConfig, saveServerConfig, resetServerConfig, type UposConfig, type ServerConfig } from "../store/roaming"
 import HDLogin from "./roaming/HDLogin"
 import { useEffect, useState } from "react"
+import { useTranslation } from "react-i18next"
 
 export default function RoamingSetting() {
   const log = createLogger('RoamingSetting')
   const [notify, contextHolder] = notification.useNotification();
   const dispatcher = useDispatch();
+  const {t} = useTranslation()
   
   const uposConfig = useSelector<RootState, UposConfig>(store => store.roaming.uposConfig);
   const storeServerConfig = useSelector<RootState, ServerConfig>(store => store.roaming.serverConfig);
@@ -185,7 +187,7 @@ export default function RoamingSetting() {
             </div>
           </Card>
           <br />
-          <Card title="自定义服务器设置">
+          <Card title={t("自定义服务器设置")}>
             <div>
               <Form form={form} >
                 <Form.Item

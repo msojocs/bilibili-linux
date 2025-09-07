@@ -46,6 +46,7 @@
     "app-builder-bin": "5.0.0-alpha.3",
     "app-builder-lib": "24.13.3",
     "builder-util": "24.13.1",
+    "chrome-remote-interface": "^0.33.3",
     "electron": "^37.3.1",
     "electron-builder": "^24.13.3",
     "eslint": "^9.33.0",
@@ -55,6 +56,7 @@
     "globals": "^16.3.0",
     "protobufjs": "^7.5.4",
     "protoc": "^32.0.0",
+    "sass-embedded": "^1.92.1",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.1",
     "vite": "^7.1.2"
@@ -68,10 +70,12 @@
     "@reduxjs/toolkit": "^2.8.2",
     "antd": "^5.27.1",
     "antd-style": "^3.7.1",
+    "get-xpath": "^3.3.0",
+    "i18next": "^25.5.2",
     "md5": "^2.3.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "react-i18next": "^15.7.2",
+    "react-i18next": "^15.7.3",
     "react-redux": "^9.2.0"
   },
   "packageManager": "pnpm@10.2.1+sha512.398035c7bd696d0ba0b10a688ed558285329d27ea994804a52bad9167d8e3a72bcb993f9699585d3ca25779ac64949ef422757a6c31102c12ab932e5cbe5cc92"

@@ -2,7 +2,6 @@ import { Card, Select } from "antd";
 import type { RootState } from "../../store";
 import { useDispatch, useSelector } from "react-redux";
 import { changeLanguage } from "../../store/storage";
-import { requestContent } from "../../../document/communication";
 export default function LanguageSetting() {
   const dispatcher = useDispatch()
   const language = useSelector<RootState, string>(store => store.storage.lang)
@@ -10,11 +9,6 @@ export default function LanguageSetting() {
   const updateLanguage = async (lang: string) => {
     dispatcher(changeLanguage(lang))
   }
-  requestContent<string>('getStorage', { key: 'lang' })
-  .then(res => {
-    res = res || 'zhCn'
-    updateLanguage(res)
-  })
   return (
     <>
       <Card title="语言设定">
