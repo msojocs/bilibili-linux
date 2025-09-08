@@ -2,6 +2,7 @@ import { Button, Card, Popconfirm, QRCode } from "antd"
 import { useState, useMemo } from "react"
 import { BiliBiliApi } from "../../../common/bilibili-api"
 import { createLogger } from "../../../../common/log"
+import { useTranslation } from "react-i18next"
 interface TokenInfo {
   access_token: string
   expires_at: number
@@ -12,6 +13,7 @@ interface TokenInfo {
 }
 const log = createLogger('HDLogin')
 export default function HDLogin() {
+  const { t } = useTranslation();
   const [qrCode, setQrCode] = useState('')
   const [tokenInfo, setTokenInfo] = useState<TokenInfo>(() => {
     const data = localStorage.bili_accessToken_hd
@@ -68,37 +70,37 @@ export default function HDLogin() {
       msg: '',
       expired: true,
     }
-    if (!tokenInfo) ret.msg = '本地没有token数据！'
+    if (!tokenInfo) ret.msg = t('本地没有token数据！')
     if (tokenInfo && tokenInfo.expires_at) {
       const expiredAt = new Date(tokenInfo.expires_at * 1000)
       if (expiredAt.getTime() < Date.now()) {
-        ret.msg = `token已过期`
+        ret.msg = t(`token已过期`)
         ret.expired = true
       }
       else {
         ret.expired = false
-        ret.msg = `过期时间：${expiredAt.toLocaleString()}`
+        ret.msg = `${t('过期时间')}：${expiredAt.toLocaleString()}`
       }
     }
     return ret
   }, [tokenInfo])
   return (
     <>
-      <Card title="Access Token管理">
+      <Card title={t("Access Token管理")}>
         <div>
-          <p><strong>AccessToken用于获取外区番剧的播放链接。</strong></p>
+          <p><strong>{t("AccessToken用于获取外区番剧的播放链接。")}</strong></p>
           <br />
           <div>
             <span>{tokenData.msg}&nbsp;&nbsp;</span>
             {
-              tokenData.expired ? (<Button onClick={startHDLogin} type="primary">HD登录</Button>)
+              tokenData.expired ? (<Button onClick={startHDLogin} type="primary">{t("HD登录")}</Button>)
                 :
                 (<Popconfirm
                   v-else
-                  title="你确定要删除吗？"
+                  title={t("你确定要删除吗？")}
                   onConfirm={deleteHDLogin}
                 >
-                  <Button danger>删除</Button>
+                  <Button danger>{t("删除")}</Button>
                 </Popconfirm>
                 )
             }

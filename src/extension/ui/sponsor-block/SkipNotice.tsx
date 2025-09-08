@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { createLogger } from '../../../common/log';
 import { sleep } from '../../../common/utils';
 import type { ProgressViewPoint } from '../../../globals';
+import { useTranslation } from 'react-i18next';
 type MediaTimeUpdateFunc = () => void;
 let mediaTimeUpdate: MediaTimeUpdateFunc | undefined = undefined;
 (async () => {
@@ -17,6 +18,7 @@ let mediaTimeUpdate: MediaTimeUpdateFunc | undefined = undefined;
   }
 })();
 const SkipNotice = () => {
+  const { t } = useTranslation();
   const log = createLogger('SkipNotice');
   const [isVisible, setIsVisible] = useState(false);
   const [countdown, setCountdown] = useState(0);
@@ -114,13 +116,13 @@ const SkipNotice = () => {
       <div className="sponsor-container">
         {/* 左上角：跳过信息和取消按钮 */}
         <div className="sponsor-header">
-          <span className="skip-text">赞助/恰饭 已跳过</span>
+          <span className="skip-text">{t('赞助/恰饭 已跳过')}</span>
           <button
             className="cancel-skip-btn"
             onClick={handleCancelSkip}
-            title={isSkip ? "取消跳过" : '自动跳过'}
+            title={isSkip ? t("取消跳过") : t('自动跳过')}
           >
-            {isSkip ? '取消跳过' : '自动跳过'}
+            {isSkip ? t('取消跳过') : t('自动跳过')}
           </button>
         </div>
 
@@ -130,7 +132,7 @@ const SkipNotice = () => {
             <button
               className="countdown-btn"
               onClick={togglePause}
-              title={isPaused ? "继续倒计时" : "暂停倒计时"}
+              title={isPaused ? t("继续倒计时") : t("暂停倒计时")}
             >
               {isPaused ? (
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
@@ -146,7 +148,7 @@ const SkipNotice = () => {
           <button
             className="close-btn"
             onClick={handleClose}
-            title="关闭"
+            title={t("关闭")}
           >
             ✕
           </button>
@@ -157,9 +159,9 @@ const SkipNotice = () => {
           <button
             className="never-show-btn"
             onClick={handleNeverShow}
-            title="本次观看不再显示此通知"
+            title={t("本次观看不再显示此通知")}
           >
-            不再显示
+            {t("不再显示")}
           </button>
         </div>
       </div>

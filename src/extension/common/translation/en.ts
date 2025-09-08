@@ -487,6 +487,8 @@ export const enSimple: Record<string, string> = {
   '大会员专属颜色': 'VIP Exclusive Color',
   '相关回复共': 'Related replies: ',
   '条': '.',
+  '内容不感兴趣': 'Not interested',
+  '不想看此UP主': 'Don\'t want to watch this UP',
 }
 
 export const enReg: Record<string, string> = {

@@ -7,6 +7,7 @@ import { LoadingOutlined, StopOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import type { RootState } from "../store";
 import type { ProgressViewPoint } from "../../../globals";
+import { useTranslation } from "react-i18next";
 interface SubtitleResponse {
   body: {
     from: number,
@@ -27,6 +28,7 @@ interface Props {
 
 const log = createLogger('AnalysisStep')
 export default function AnalysisStep({ ref }: Props) {
+  const { t } = useTranslation();
   const [hasSubtitle] = useState(() => window.danmakuManage.rootStore.subtitleStore.state.languageList && window.danmakuManage.rootStore.subtitleStore.state.languageList.length > 0);
   const [curStep, setCurStep] = useState(0);
   const [errorMsg, setErrorMsg] = useState('');
@@ -44,7 +46,7 @@ export default function AnalysisStep({ ref }: Props) {
         setCurStep(1);
         const { languageList } = window.danmakuManage.rootStore.subtitleStore.state
         if (!languageList || languageList.length === 0) {
-          throw new Error('没有字幕数据')
+          throw new Error(t('没有字幕数据'))
         }
         const { responseText } = await GET(languageList[0].subtitle_url)
         const subtitle = JSON.parse(responseText) as SubtitleResponse
@@ -121,25 +123,25 @@ export default function AnalysisStep({ ref }: Props) {
   const steps = useMemo<StepProps[]>(() => {
     const result: StepProps[] = [
       {
-        title: '检查字幕数据',
+        title: t('检查字幕数据'),
       },
       {
-        title: '获取字幕数据',
+        title: t('获取字幕数据'),
         disabled: !hasSubtitle,
       },
       {
-        title: '获取音频数据',
+        title: t('获取音频数据'),
         disabled: hasSubtitle,
       },
       {
-        title: '音频转字幕',
+        title: t('音频转字幕'),
         disabled: hasSubtitle,
       },
       {
-        title: 'AI识别关键节点',
+        title: t('AI识别关键节点'),
       },
       {
-        title: '添加标记',
+        title: t('添加标记'),
       },
     ]
     result[curStep].icon = curStatus === 'process'? <LoadingOutlined /> : undefined

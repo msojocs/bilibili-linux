@@ -2,8 +2,10 @@ import { notification, Slider, Switch } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../store";
 import { updateBlockLevel, switchBlockVipColor } from "../store/danmaku";
+import { useTranslation } from "react-i18next";
 
 export default function DanmakuSetting() {
+  const { t } = useTranslation();
   const [notify, contextHolder] = notification.useNotification();
   const dispatcher = useDispatch();
   
@@ -13,23 +15,23 @@ export default function DanmakuSetting() {
   const handleBlockLevelChange = (value: number) => {
     dispatcher(updateBlockLevel(value));
     notify.info({
-      message: 'Success',
-      description: '设置已保存'
+      message: t('成功'),
+      description: t('设置已保存')
     });
   }
   
   const handleBlockVipColorChange = () => {
     dispatcher(switchBlockVipColor());
     notify.info({
-      message: 'Success',
-      description: '设置已保存'
+      message: t('成功'),
+      description: t('设置已保存')
     });
   }
   return (
     <>
       {contextHolder}
       <div style={{ display: 'flex', width: '500px', alignItems: 'center' }}>
-        <span style={{ width: '20%' }}>屏蔽等级：</span>
+        <span style={{ width: '20%' }}>{t("屏蔽等级")}：</span>
         <Slider
           value={blockLevel}
           min={0}
@@ -40,7 +42,7 @@ export default function DanmakuSetting() {
         />
       </div>
       <div>
-        屏蔽大会员彩色弹幕：<Switch checked={isBlockVipColor} onChange={handleBlockVipColorChange} />
+        {t("屏蔽大会员彩色弹幕")}：<Switch checked={isBlockVipColor} onChange={handleBlockVipColorChange} />
       </div>
     </>
   )

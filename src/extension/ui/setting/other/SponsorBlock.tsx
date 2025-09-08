@@ -5,8 +5,11 @@ import { useDispatch, useSelector } from "react-redux"
 import type { RootState } from "../../store"
 import { saveSponsorSetting, type SponsorState } from "../../store/sponsor"
 import useNotification from "antd/es/notification/useNotification"
+import { useTranslation } from "react-i18next"
+
 const log = createLogger("sponsor-block")
 export default function SponsorBlock() {
+  const { t } = useTranslation();
   log.info('sponsor-block render')
   const dispatcher = useDispatch()
   const [notify, ctx] = useNotification()
@@ -35,18 +38,18 @@ export default function SponsorBlock() {
   const saveSetting = () => {
     dispatcher(saveSponsorSetting(sponsorSetting))
     notify.info({
-      message: '设置已保存',
+      message: t('设置已保存'),
     })
   }
 
   return (
     <>
       {ctx}
-      <Card title="自动识别关键节点">
+      <Card title={t("自动识别关键节点")}>
         <div>
           <Row>
             <Col span={6}>
-              功能开关：
+              {t("功能开关")}：
             </Col>
             <Col>
               <Switch checked={sponsorSetting.enable} onChange={e => updateSettingValue('enable', e)} />
@@ -55,7 +58,7 @@ export default function SponsorBlock() {
           <br />
           <Row>
             <Col span={6}>
-              AI自动识别：
+              {t("AI自动识别")}：
             </Col>
             <Col>
               <Switch checked={sponsorSetting.isSponsorAIDetect} onChange={(e) => updateSettingValue('isSponsorAIDetect', e)} />
@@ -64,10 +67,10 @@ export default function SponsorBlock() {
           <br />
           <Row style={{ alignItems: 'center' }}>
             <Col span={6}>
-              Whisper代理：
+              {t("Whisper代理")}：
             </Col>
             <Col>
-              <Tooltip title="AI自动识别需要配置代理">
+              <Tooltip title={t("AI自动识别需要配置代理")}>
                 <Input value={sponsorSetting.whisperProxy} onChange={(e) => updateSettingValue('whisperProxy', e.target.value)} />
               </Tooltip>
             </Col>
@@ -78,7 +81,7 @@ export default function SponsorBlock() {
               LD_LIBRARY_PATH:
             </Col>
             <Col>
-              <Tooltip title="AI自动识别需要配置代理">
+              <Tooltip title={t("AI自动识别需要配置代理")}>
                 <Input value={sponsorSetting.libPath} onChange={(e) => updateSettingValue('libPath', e.target.value)} />
               </Tooltip>
             </Col>
@@ -86,17 +89,17 @@ export default function SponsorBlock() {
           <br />
           <Row style={{ alignItems: 'center' }}>
             <Col span={6}>
-              AI识别TOKEN：
+              {t("AI识别TOKEN")}：
             </Col>
             <Col>
-              <Tooltip title="AI自动识别需要配置TOKEN，平台：https://www.bigmodel.cn/">
+              <Tooltip title={t("AI自动识别需要配置TOKEN，平台：https://www.bigmodel.cn/")}>
                 <Input value={sponsorSetting.bigmodelToken} onChange={(e) => updateSettingValue('bigmodelToken', e.target.value)} />
               </Tooltip>
             </Col>
           </Row>
           <br />
           <Row>
-            <Button onClick={saveSetting}>保存</Button>
+            <Button onClick={saveSetting}>{t("保存")}</Button>
           </Row>
         </div>
       </Card>

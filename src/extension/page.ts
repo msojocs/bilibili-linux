@@ -15,6 +15,9 @@ import { initTranslation } from "./page/translation"
   log.info('page:', pt)
   registerMessagePage()
   initTranslation()
+  if (!window.biliBridge?.callNative) {
+    window.biliBridge = parent?.window?.biliBridge
+  }
   switch(pt) {
     case Page.Login:
       initLoginPage()

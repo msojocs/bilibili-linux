@@ -19,7 +19,7 @@ export default function RoamingSetting() {
   const uposItemList = [
     {
       value: 'none',
-      label: '不替换'
+      label: t('不替换')
     },
     {
       value: "ali",
@@ -116,8 +116,8 @@ export default function RoamingSetting() {
   const handleSaveUposConfig = () => {
     dispatcher(saveUposConfig(upos));
     notify.info({
-      message: 'Success',
-      description: "成功",
+      message: t('成功'),
+      description: t("成功"),
     });
   }
   const [serverConfig, updateServer] = useState(storeServerConfig)
@@ -138,8 +138,8 @@ export default function RoamingSetting() {
     if (valid) {
       dispatcher(saveServerConfig(serverConfig));
       notify.info({
-        message: 'Success',
-        description: "成功",
+        message: t('成功'),
+        description: t("成功"),
       })
     } else {
       log.info('error submit!')
@@ -158,10 +158,10 @@ export default function RoamingSetting() {
         <div>
           <HDLogin />
           <br />
-          <Card title="upos服务器设置">
+          <Card title={t("upos服务器设置")}>
             <div>
               <div style={{ margin: '.5rem'}}>
-                替换upos视频服务器：
+                {t("替换upos视频服务器")}：
                 <Select
                   value={upos.uposKey}
                   className="m-2"
@@ -173,17 +173,17 @@ export default function RoamingSetting() {
                 </Select>
               </div>
               <div style={{ margin: '.5rem'}}>
-                替换Akamai：<Switch checked={upos.replaceAkamai} onChange={e => updateUposValue('replaceAkamai', e)}></Switch>
+                {t("替换Akamai")}：<Switch checked={upos.replaceAkamai} onChange={e => updateUposValue('replaceAkamai', e)}></Switch>
               </div>
               <div style={{ margin: '.5rem'}}>
-                应用到所有视频：<Switch checked={upos.uposApplyAll} onChange={e => updateUposValue('uposApplyAll', e)}></Switch>
+                {t("应用到所有视频")}：<Switch checked={upos.uposApplyAll} onChange={e => updateUposValue('uposApplyAll', e)}></Switch>
               </div>
               <div style={{ margin: '.5rem'}}>
-                PAC代理(例如：https://bili.api.jysafe.cn/pac.php?proxy=127.0.0.1:7890)：
+                {t("PAC代理")}({t("例如")}：https://bili.api.jysafe.cn/pac.php?proxy=127.0.0.1:7890)：
                 <Input value={upos.pacLink} onChange={e => updateUposValue('pacLink', e.target.value)}></Input>
               </div>
               <br />
-              <Button onClick={handleSaveUposConfig} type="primary">保存</Button>
+              <Button onClick={handleSaveUposConfig} type="primary">{t("保存")}</Button>
             </div>
           </Card>
           <br />
@@ -191,7 +191,7 @@ export default function RoamingSetting() {
             <div>
               <Form form={form} >
                 <Form.Item
-                  label="首选"
+                  label={t("首选")}
                 >
                   <Input
                     value={serverConfig.default}
@@ -201,7 +201,7 @@ export default function RoamingSetting() {
                   />
                 </Form.Item>
                 <Form.Item
-                  label="大陆"
+                  label={t("大陆")}
                 >
                   <Input
                     value={serverConfig.mainLand}
@@ -211,7 +211,7 @@ export default function RoamingSetting() {
                   />
                 </Form.Item>
                 <Form.Item
-                  label="香港"
+                  label={t("香港")}
                 >
                   <Input
                     value={serverConfig.hk}
@@ -221,7 +221,7 @@ export default function RoamingSetting() {
                   />
                 </Form.Item>
                 <Form.Item
-                  label="台湾"
+                  label={t("台湾")}
                 >
                   <Input
                     value={serverConfig.tw}
@@ -231,7 +231,7 @@ export default function RoamingSetting() {
                   />
                 </Form.Item>
                 <Form.Item
-                  label="泰国/东南亚"
+                  label={t("泰国/东南亚")}
                 >
                   <Input
                     value={serverConfig.th}
@@ -244,16 +244,16 @@ export default function RoamingSetting() {
                   <Button
                     type="primary"
                     onClick={saveServer}
-                  >保存</Button>
+                  >{t("保存")}</Button>
                   &nbsp;
-                  <Button onClick={resetForm}>重置</Button>
+                  <Button onClick={resetForm}>{t("重置")}</Button>
                 </Form.Item>
               </Form>
             </div >
           </Card>
           <br />
           <div className="settings_content--item about-item">
-            <h4 className="b_text mt_0">关于哔哩漫游</h4>
+            <h4 className="b_text mt_0">{t("关于哔哩漫游")}</h4>
 
           </div>
         </div>

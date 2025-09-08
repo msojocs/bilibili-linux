@@ -3,6 +3,8 @@ import { useState } from "react";
 import { convertDandanResponse } from "../../common/danmaku";
 import { dandanplaySearch, getComment } from "../../common/dandan-api";
 import { createLogger } from "../../../common/log";
+import { useTranslation } from "react-i18next";
+
 const log = createLogger('DandanPlay')
 interface SearchResultType {
   children: {
@@ -13,6 +15,7 @@ interface SearchResultType {
   value: string;
 }
 export default function DanDanPlaySetting() {
+  const { t } = useTranslation();
   const [notify, contextHolder] = notification.useNotification();
   const [danmakuReplace, updateSetting] = useState<{
     keyword: string,
@@ -61,12 +64,12 @@ export default function DanDanPlaySetting() {
       danmakuManage.danmaku.clear()
       // danmakuManage.danmakuStore.loadDmPbAll(true)
       notify.info({
-        message: "Success",
-        description: '成功'
+        message: t("成功"),
+        description: t('成功')
       })
     } catch (err) {
       notify.info({
-        message: "出现错误",
+        message: t("出现错误"),
         description: `${err}`
       })
     }
@@ -97,7 +100,7 @@ export default function DanDanPlaySetting() {
       {contextHolder}
       <div>
         <Row>
-          <Col span="4" className="flex_center">搜索:</Col>
+          <Col span="4" className="flex_center">{t("搜索")}:</Col>
           <Col span="19">
             <Input
               value={danmakuReplace.keyword}
@@ -107,7 +110,7 @@ export default function DanDanPlaySetting() {
         </Row>
         <span style={{ display: 'block', height: '10px' }}></span>
         <Row>
-          <Col span="4" className="flex_center">结果：</Col>
+          <Col span="4" className="flex_center">{t("结果")}：</Col>
           <Col span="19">
             <Cascader.Panel
               onChange={e => updateSettingValue("selectOptions", e)}
@@ -117,7 +120,7 @@ export default function DanDanPlaySetting() {
         </Row>
         <span style={{ display: 'block', height: '10px' }}></span>
         <Row>
-          <Col span="4" className="flex_center">第三方弹幕：</Col>
+          <Col span="4" className="flex_center">{t("第三方弹幕")}：</Col>
           <Col span="19">
             <Switch
               checked={danmakuReplace.dandanplayWithRelated}
@@ -127,21 +130,21 @@ export default function DanDanPlaySetting() {
         </Row>
         <span style={{ display: 'block', height: '10px' }}></span>
         <Row>
-          <Col span="4" className="flex_center">模式：</Col>
+          <Col span="4" className="flex_center">{t("模式")}：</Col>
           <Col span="19">
             <Radio.Group
               value={danmakuReplace.damakuMode}
               onChange={e => updateSettingValue('damakuMode', e.target.value)}
             >
-              <Radio value="1">替换弹幕池</Radio>
-              <Radio value="2">追加弹幕池</Radio>
+              <Radio value="1">{t("替换弹幕池")}</Radio>
+              <Radio value="2">{t("追加弹幕池")}</Radio>
             </Radio.Group>
           </Col>
         </Row>
       </div>
       <br />
       <div>
-        <Button onClick={doConfirm} type="primary">确定</Button>
+        <Button onClick={doConfirm} type="primary">{t("确定")}</Button>
       </div>
     </>
   )

@@ -3,6 +3,7 @@ import { createLogger } from "../../../common/log"
 import type { RootState } from "../store"
 import { useRef, useState } from "react"
 import AnalysisStep from "./AnalysisStep"
+import { useTranslation } from "react-i18next"
 const log = createLogger('AutoAnalysis')
 type ShowPanel = ((b: boolean) => void) | undefined
 let changeAiPanel: ShowPanel = undefined
@@ -16,6 +17,7 @@ document.addEventListener("sponsorblock.showAiAnalysis", function (event: Custom
   changeAiPanel?.(!!event.detail)
 })
 export default function AutoAnalysis() {
+  const { t } = useTranslation()
   log.info('AutoAnalysis')
   const child = useRef<{
     restart: () => void
@@ -68,17 +70,17 @@ export default function AutoAnalysis() {
         pointerEvents: 'auto',
         display: isVisible ? 'none' : 'block'
       }} onClick={handleExpand}>
-        展开
+        {t('展开')}
       </div>
     <div className="sponsor-overlay" style={{ display: isVisible ? 'block' : 'none' }}>
       <div className="sponsor-container">
         <div className="sponsor-header">
           {/* 左上角：跳过信息和重试按钮 */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span className="skip-text">AI识别关键节点</span>
+            <span className="skip-text">{t('AI识别关键节点')}</span>
             <button
               onClick={handleRetry}
-              title="重试"
+              title={t("重试")}
               style={{
                 background: 'none',
                 border: 'none',
@@ -114,7 +116,7 @@ export default function AutoAnalysis() {
             <button
               className="close-btn"
               onClick={handleClose}
-              title="关闭"
+              title={t("关闭")}
             >
               ✕
             </button>
