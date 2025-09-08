@@ -113,7 +113,8 @@ const options = {
   
   await builder.build({
     targets: Platform.LINUX.createTarget(),
-    config: options
+    config: options,
+    publish: "never"
   })
   .then((result) => {
     console.log(JSON.stringify(result))

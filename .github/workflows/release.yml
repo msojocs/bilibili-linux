@@ -10,6 +10,9 @@ on:
     tags:        
       - v*
     branches: [ master, dev, ci]
+    paths-ignore:
+      - 'README.md'
+      - 'CHANGELOG.md'
   pull_request:
     branches: [ master ]
   # # Allows you to run this workflow manually from the Actions tab
