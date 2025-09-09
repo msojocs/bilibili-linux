@@ -19,7 +19,7 @@ i18n
     resources: {
       en: {
         translation: {
-          "其它设定": "Other Settings",
+          "其它设定": "Other",
           "插件设置": "Extension Settings",
           "关闭": "Close",
           "扩展功能": "Extension Features",
@@ -29,11 +29,11 @@ i18n
           "成功": "Success",
           "设置已保存": "Settings saved",
           "出现错误": "Error occurred",
-          "漫游设置": "Roaming Settings",
-          "B站弹幕": "Bilibili Danmaku",
+          "漫游设置": "Roaming",
+          "B站弹幕": "Danmaku",
           "弹弹Play": "DanDanPlay",
-          "弹幕设定": "Danmaku Settings",
-          "播放设定": "Playback Settings",
+          "弹幕设定": "Danmaku",
+          "播放设定": "Playback",
           "弹幕时间轴": "Danmaku Timeline",
           "弹幕时间轴调整": "Danmaku Timeline Adjustment",
           "时间轴偏移": "Timeline Offset",

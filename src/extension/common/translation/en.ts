@@ -54,7 +54,6 @@ export const enSimple: Record<string, string> = {
   '自动平衡不同视频间的音量大小': 'Automatically balance volume between different videos',
   '优先使用播放器内置策略播放': 'Prioritize player built-in playback strategy',
   '锁定宽高比': 'Lock Aspect Ratio',
-  '其他设置': 'Other Settings',
   '关闭': 'Close',
   '高动态': 'High Dynamic',
   '标准': 'Standard',
@@ -73,7 +72,6 @@ export const enSimple: Record<string, string> = {
   '恢复默认设置': 'Restore Default Settings',
   '淡入淡出': 'Fade In/Out',
   '等比缩放': 'Proportional Scaling',
-  '其它设置': 'Other Settings',
   '背景不透明度': 'Background Opacity',
   '右上角': 'Top Right',
   '顶部居中': 'Top Center',
@@ -489,6 +487,9 @@ export const enSimple: Record<string, string> = {
   '条': '.',
   '内容不感兴趣': 'Not interested',
   '不想看此UP主': 'Don\'t want to watch this UP',
+  '在线详情页': 'Online Page',
+  '更新弹幕': 'Update Danmaku',
+  '播放': 'Play',
 }
 
 export const enReg: Record<string, string> = {

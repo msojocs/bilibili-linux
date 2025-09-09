@@ -27,6 +27,25 @@ const registerLanguageHandle = async () => {
   let currentDict = trnaslationData[lang]
   document.body.setAttribute('lang', lang)
   
+  {
+    // 用于动态的“展开/收起”
+    // 这些元素直接更新nodeValue，不会触发Observer
+    document.createTextNode = (data?: string) => {
+      return new (class extends Text{
+        constructor(data?: string) {
+          super(data)
+        }
+        get nodeValue(): string | null {
+          return super.nodeValue
+        }
+        set nodeValue(value: string) {
+          super.nodeValue = value
+          node2keyword.set(this, value)
+          translate(this);
+        }
+      })(data)
+    }
+  };
   const getSingleNode = (node: HTMLElement | ShadowRoot) => {
     // element get
     const eles: (HTMLElement | Node)[] = [node];
@@ -64,10 +83,10 @@ const registerLanguageHandle = async () => {
               child.className.includes("custom-setting") ||
               child.className.includes("dynamic_live--ups") ||
               child.className.includes("dynamic_card_live_rcmd--mask") ||
-              child.className.includes("dynamic_rich_text--content") ||
               child.className.includes("dynamic_card_archive--mask") ||
               child.className.includes("dynamic_card_module_author--info--name") ||
               child.className.includes("dynamic_card_module_forward_author") ||
+              child.className.includes("dynamic_rich_text--content") ||
               child.className.includes("desc-info desc-v2") ||
               child.className.includes("home_live--users-wrap") ||
               child.className.includes("im-li-info") || // 消息
@@ -89,28 +108,18 @@ const registerLanguageHandle = async () => {
             )
           ) continue
           eles.push(child);
-        }
-        if (ele instanceof HTMLElement) {
-          const title = ele.attributes.getNamedItem("title");
-          if (title && title.textContent && title.textContent.length > 0) {
-            result.push(title);
-          }
-          const placeholder = ele.attributes.getNamedItem("placeholder");
-          if (placeholder && placeholder.textContent && placeholder.textContent.length > 0) {
-            result.push(placeholder);
+          if (child instanceof HTMLElement) {
+            const title = child.attributes.getNamedItem("title");
+            if (title && title.textContent && title.textContent.length > 0) {
+              result.push(title);
+            }
+            const placeholder = child.attributes.getNamedItem("placeholder");
+            if (placeholder && placeholder.textContent && placeholder.textContent.length > 0) {
+              result.push(placeholder);
+            }
           }
         }
         continue;
-      }
-      if (ele instanceof HTMLElement) {
-        const title = ele.attributes.getNamedItem("title");
-        if (title && title.textContent && title.textContent.length > 0) {
-          result.push(title);
-        }
-        const placeholder = ele.attributes.getNamedItem("placeholder");
-        if (placeholder && placeholder.textContent && placeholder.textContent.length > 0) {
-          result.push(placeholder);
-        }
       }
       // 单元素节点
       if (!ele.textContent || ele.textContent.length === 0) continue;
@@ -118,7 +127,7 @@ const registerLanguageHandle = async () => {
       if (!isNaN(Number(ele.textContent))) continue
       
       result.push(ele);
-    }
+    } // end while
     return result;
   };
   const translate = (node: HTMLElement | Node) => {
@@ -145,6 +154,7 @@ const registerLanguageHandle = async () => {
       }
       return false
     }
+    // 使用replace，因为trim会把换行空格移除掉
     node.textContent = node.textContent.replace(key, langText)
     return true
   }
@@ -224,7 +234,7 @@ const registerLanguageHandle = async () => {
   observer.observe(document.body, {
     childList: true,
     subtree: true,
-    attributes: false,
+    attributes: true,
   });
   {
     const shadow = Element.prototype.attachShadow
