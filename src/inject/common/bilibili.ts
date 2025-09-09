@@ -25,6 +25,9 @@ export const createBilibiliServer = () => {
       res.end();
     }
   );
+  server.on("error", (err) => {
+    log.error(err);
+  });
   server.listen(3031);
   app.commandLine.appendSwitch(
     "host-rules",

@@ -1,4 +1,4 @@
-import { Tabs, type TabsProps } from "antd";
+import { Tabs } from "antd";
 import PlaySetting from "./PlaySetting";
 import DanDanPlayReplaceSetting from "./DanDanPlayReplaceSetting";
 import DanmakuSetting from "./DanmakuSetting";
@@ -12,7 +12,9 @@ export default function Setting() {
   const onChange = (_key: string) => {
   };
 
-  const items: TabsProps['items'] = [
+  return (
+    <>
+      <Tabs defaultActiveKey="1" items={[
     {
       key: '1',
       label: t('漫游设置'),
@@ -43,10 +45,7 @@ export default function Setting() {
       label: t('其它设定'),
       children: OtherSetting(),
     },
-  ];
-  return (
-    <>
-      <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
+  ]} onChange={onChange} />
     </>
   )
 }

@@ -3,13 +3,17 @@ import type { RootState } from "../../store";
 import { useDispatch, useSelector } from "react-redux";
 import { changeLanguage } from "../../store/storage";
 import { useTranslation } from "react-i18next";
+import { createLogger } from "../../../../common/log";
 
+const log = createLogger('LanguageSetting')
 export default function LanguageSetting() {
   const { t } = useTranslation();
   const dispatcher = useDispatch()
   const language = useSelector<RootState, string>(store => store.storage.lang)
+
+  log.info('render', language)
   
-  const updateLanguage = async (lang: string) => {
+  const updateLanguage = (lang: string) => {
     dispatcher(changeLanguage(lang))
   }
   return (

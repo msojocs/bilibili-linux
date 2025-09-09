@@ -148,7 +148,7 @@ const registerLanguageHandle = async () => {
     node.textContent = node.textContent.replace(key, langText)
     return true
   }
-  window.switchLanguage = (newLang: string) => {
+  const switchLanguage = (newLang: string) => {
     if (newLang === lang) return
     document.body.setAttribute('lang', newLang)
     log.info('switchLanguage', newLang)
@@ -161,6 +161,12 @@ const registerLanguageHandle = async () => {
       }
     }
   }
+  const targetDocument = parent === window ? document : parent.document
+  targetDocument.addEventListener('changeLanguage', (e: CustomEventInit<string>) => {
+    if (!e.detail) return
+    switchLanguage(e.detail)
+  })
+  
 
   const observer = new MutationObserver((mutations) => {
     // log.info('[MutationObserver]: mutations', mutations);

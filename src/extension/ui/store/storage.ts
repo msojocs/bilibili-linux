@@ -1,6 +1,10 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 import { requestContent } from '../../document/communication';
+import { createLogger } from '../../../common/log';
+
+
+const log = createLogger('storage')
 
 export interface CounterState {
   lang: string
@@ -17,12 +21,17 @@ export const storageSlice = createSlice({
     changeLanguage: (state, action) => {
       state.lang = action.payload;
       requestContent<string>('setStorage', { key: 'lang', value: state.lang });
-      window.switchLanguage(state.lang)
+      const targetDocument = parent === window ? document : parent.document
+      targetDocument.dispatchEvent(new CustomEvent('changeLanguage', { detail: state.lang }))
     },
     // 数据同步方法
     storageSync: (state, action) => {
       // 合并同步的状态数据
-      window.switchLanguage(action.payload.lang)
+      log.info('check lang', state.lang, action.payload.lang)
+      if (state.lang !== action.payload.lang) {
+        const targetDocument = parent === window ? document : parent.document
+        targetDocument.dispatchEvent(new CustomEvent('changeLanguage', { detail: action.payload.lang }))
+      }
       return {
         ...state,
         ...action.payload

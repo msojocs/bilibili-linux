@@ -1,12 +1,13 @@
 // index.ts 文件
 
 import { configureStore } from "@reduxjs/toolkit";
-import storageSlice, { storageSync } from "./storage.ts";
+import storageSlice, { changeLanguage, storageSync } from "./storage.ts";
 import { createLogger } from "../../../common/log.ts";
 import sponsorSlice, { sponsorSyncState } from "./sponsor.ts";
 import playSlice, { playSyncState } from "./play.ts";
 import danmakuSlice, { danmakuSyncState } from "./danmaku.ts";
 import roamingSlice, { roamingSyncState } from "./roaming.ts";
+import { requestContent } from "../../document/communication.ts";
 
 // slice actions映射，用于多slice数据同步
 const sliceActions = {
@@ -52,6 +53,16 @@ store.subscribe(() => {
   // log.info('state change result:', state)
   window.biliBridge.callNativeSync('config/dataSync', JSON.stringify(state))
 })
+
+// 初始化时获取存储的语言设置，并同步到 Redux
+requestContent<string>('getStorage', { key: 'lang' })
+  .then(res => {
+    const lang = res || 'zhCn'
+    log.info('Initial language from storage:', lang)
+    
+    store.dispatch(changeLanguage(lang))
+  })
+
 // 多窗口数据同步
 window.dataSync = (dataStr: string) => {
   if (!dataStr) return

@@ -120,6 +120,7 @@ export const replaceBrowserWindow = () => {
           log.info("receive config/dataSync:", ...args);
           const windows = BrowserWindow.getAllWindows();
           for (const win of windows) {
+            if (win.id === instance.id) continue;
             log.info("notify dataSync to window:", win.id, args[1]);
             win.webContents
               .executeJavaScript(`window.dataSync('${args[1]}')`)

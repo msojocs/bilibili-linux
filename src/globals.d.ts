@@ -24,7 +24,6 @@ declare global {
     danmakuManage: DanmakuManage
     dataSync: (data: string) => void
     epId2seasonId: Record<string, string>;
-    switchLanguage: (lang: string) => void
   }
   
   // Node.js 全局变量

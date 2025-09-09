@@ -1,32 +1,21 @@
-import { StrictMode, useMemo } from "react";
+import { StrictMode, useMemo, useEffect } from "react";
 import './index.scss'
 import App from './App.tsx'
 import { ConfigProvider, theme } from "antd";
-import { Provider, useDispatch, useSelector } from 'react-redux'
+import { Provider, useSelector, useDispatch } from 'react-redux'
 import store, { type RootState } from "./store/index.ts";
 import enUS from 'antd/locale/en_US';
 import zhCN from 'antd/locale/zh_CN';
 import { initReactI18next } from "react-i18next";
 import i18n from 'i18next'
-import { requestContent } from "../document/communication.ts";
-import { changeLanguage } from "./store/storage.ts";
+import { createLogger } from "../../common/log.ts";
 
-// 创建一个内部组件，在这里使用 hooks
-function AppWithLocale() {
-  const language = useSelector((state: RootState) => state.storage.lang);
-  const dispatcher = useDispatch()
-  
-  requestContent<string>('getStorage', { key: 'lang' })
-  .then(res => {
-    res = res || 'zhCn'
-    dispatcher(changeLanguage(res))
-  })
-  i18n
-  .use(initReactI18next) // passes i18n down to react-i18next
+const log = createLogger('main')
+
+// 初始化 i18n（只初始化一次）
+i18n
+  .use(initReactI18next)
   .init({
-    // the translations
-    // (tip move them in a JSON file and import them,
-    // or even better, manage them via a UI: https://react.i18next.com/guides/multiple-translation-files#manage-your-translations-with-a-management-gui)
     resources: {
       en: {
         translation: {
@@ -111,21 +100,51 @@ function AppWithLocale() {
           "Access Token管理": "Access Token Management",
           "AccessToken用于获取外区番剧的播放链接。": "AccessToken is used to get playback links for overseas anime."
         }
+      },
+      zhCn: {
+        translation: {}
       }
     },
-    // lng: language, // if you're using a language detector, do not define the lng option
+    lng: 'zhCn', // 设置默认语言
     fallbackLng: "zhCn",
-
     interpolation: {
-      escapeValue: false // react already safes from xss => https://www.i18next.com/translation-function/interpolation#unescape
+      escapeValue: false
     }
   });
+
+// 创建一个内部组件，在这里使用 hooks
+function AppWithLocale() {
+  const language = useSelector((state: RootState) => state.storage.lang);
+  const dispatch = useDispatch();
+  
+  // 当 Redux 中的语言状态改变时，同步更新 i18n
+  useEffect(() => {
+    if (language) {
+      log.info('Redux language changed:', language)
+      i18n.changeLanguage(language)
+    }
+  }, [language]);
+
+  // 监听外部语言切换事件
+  useEffect(() => {
+    const targetDocument = parent === window ? document : parent.document
+    const handleLanguageChange = (e: CustomEventInit<string>) => {
+      if (e.detail) {
+        log.info('External language change event:', e.detail)
+        i18n.changeLanguage(e.detail)
+      }
+    }
+    
+    targetDocument.addEventListener('changeLanguage', handleLanguageChange)
+    
+    return () => {
+      targetDocument.removeEventListener('changeLanguage', handleLanguageChange)
+    }
+  }, [language, dispatch]);
   const locale = useMemo(() => {
     if (language === 'en') {
-      i18n.changeLanguage('en');
       return enUS;
     }
-    i18n.changeLanguage('zhCn');
     return zhCN;
   }, [language]);
   return (
