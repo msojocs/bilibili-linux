@@ -83,7 +83,7 @@ export default function HDLogin() {
       }
     }
     return ret
-  }, [tokenInfo])
+  }, [tokenInfo, t])
   return (
     <>
       <Card title={t("Access Token管理")}>

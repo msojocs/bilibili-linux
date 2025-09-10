@@ -195,7 +195,7 @@ export const enSimple: Record<string, string> = {
   '缓存设置': 'Cache Settings',
   '下载时电脑不休眠': 'Prevent computer sleep during downloads',
   '启动时自动继续下载': 'Automatically continue downloads at startup',
-  '同时缓存视频个数': 'Number of videos to cache simultaneously',
+  '同时缓存视频个数': 'Parallel download count',
   '恢复默认地址': 'Restore default address',
   '更改目录': 'Change directory',
   '视频离线缓存目录：': 'Video offline cache directory: ',
@@ -490,6 +490,15 @@ export const enSimple: Record<string, string> = {
   '在线详情页': 'Online Page',
   '更新弹幕': 'Update Danmaku',
   '播放': 'Play',
+  '确认修改吗？': 'Confirm to modify?',
+  '修改视频下载目录，可能会导致已下载或下载中的视频丢失': 'Changing the video download directory may cause downloaded or downloading videos to be lost',
+  '仍要修改': 'Continue',
+  '客户端缓存清理完成': 'Client cache clean up completed',
+  '窗口状态已恢复': 'Window status restored',
+  '系统DNS缓存清理完成': 'System DNS cache clean up completed',
+  '客户端快捷键': 'Client Shortcut Key',
+  '开启多媒体会话服务：指允许键盘、鼠标或蓝牙等设备的多媒体按钮控制客户端的视频播放，并在设备的媒体控制中心显示播放信息。': 'Enable multimedia session service: Allows multimedia buttons such as keyboard, mouse or Bluetooth devices to control the video playback of the client and display playback information in the device\'s media control center.',
+  '设置老板键快捷键~': 'Customize the shortcut key of the boss key~',
 }
 
 export const enReg: Record<string, string> = {
