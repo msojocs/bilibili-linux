@@ -25,3 +25,10 @@ body[lang="en"] {
     width: 418px;
   }
 }
+@media (max-width: 1040px) {
+  .extension {
+    .text {
+      display: none;
+    }
+  }
+}
