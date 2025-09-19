@@ -29,6 +29,9 @@ declare global {
   // Node.js 全局变量
   var bootstrapEvents: EventEmitter;
   var isFiredByEntry: boolean;
+  var runtimeConf: {
+    exWebPreferences: Record<string, unknown>
+  }
   var bootstrapApp: () => void
   var biliApp = {
     configService: {

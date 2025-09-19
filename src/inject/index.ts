@@ -1,11 +1,13 @@
 import { app } from "electron";
 import { createBilibiliServer } from "./common/bilibili";
-import { electronOverwrite, electronOverwriteAfterReady, hookIsPackaged, nodeJsOverWrite, parseElectronFlag, registerExtension, registerIpcHandle, registerProtocol, replaceBrowserWindow } from "./common/electron-tool";
-import { Logger } from "../common/log";
+import { electronOverwrite, electronOverwriteAfterReady, hookIsPackaged, initializeGlobalData, nodeJsOverWrite, parseElectronFlag, registerExtension, registerIpcHandle, registerProtocol, replaceBrowserWindow } from "./common/electron-tool";
+import { createLogger, Logger } from "../common/log";
 (() => {
+  const log = createLogger('Index')
   Logger.moduleName = 'Index'
   parseElectronFlag()
   hookIsPackaged()
+  initializeGlobalData()
   createBilibiliServer()
   replaceBrowserWindow()
   electronOverwrite()
@@ -21,5 +23,7 @@ import { Logger } from "../common/log";
     global.bootstrapApp();
   });
   // https://github.com/msojocs/bilibili-linux/issues/147
-  process.on("uncaughtException", () => {});
+  process.on("uncaughtException", (err) => {
+    log.error("uncaughtException", err);
+  });
 })()

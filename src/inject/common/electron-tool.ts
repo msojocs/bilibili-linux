@@ -68,9 +68,15 @@ export const hookIsPackaged = () => {
       return ret;
     },
   });
+};
+
+export const initializeGlobalData = () => {
   global.isFiredByEntry = true;
   global.bootstrapEvents = new EventEmitter();
-};
+  global.runtimeConf = {
+    exWebPreferences: {}
+  }
+}
 
 export const replaceBrowserWindow = () => {
   const originalBrowserWindow = BrowserWindow;
