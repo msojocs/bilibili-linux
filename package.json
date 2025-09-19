@@ -1,7 +1,7 @@
 {
   "name": "bilibili-linux",
   "private": true,
-  "version": "1.17.1-5",
+  "version": "1.17.2-1",
   "description": "bilibili client",
   "main": "index.js",
   "scripts": {
