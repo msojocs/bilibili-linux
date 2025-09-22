@@ -17,6 +17,5 @@ Keywords[zh_CN]=animation;anime;bilibili;drama;live;movie;player;tv;video;B站;�
 Keywords[zh_TW]=animation;anime;bilibili;drama;live;movie;player;tv;video;B站;播放器;电视;動畫;動漫;电影;番劇;視頻;直播;
 StartupNotify=true
 Terminal=false
-TerminalOptions=
 Type=Application
 SingleMainWindow=true
