@@ -32,8 +32,8 @@ notice "屏蔽检测"
 # grep -lr 'if (!dj' --exclude="app.asar" .
 # sed -i 's#if (!dj#if(false\&\&!dj#g' "app/main/app.js"
 # ==='win';if(! 警告11
-grep -lr 'if (!ju)' --exclude="app.asar" .
-sed -i 's#if (!ju)#if(false\&\&!ju)#' "app/main/app.js"
+grep -lr 'if (!jv)' --exclude="app.asar" .
+sed -i 's#if (!jv)#if(false\&\&!jv)#' "app/main/app.js"
 # global['bootstrapApp']();
 # grep -lr 'if (dj)' --exclude="app.asar" .
 # sed -i 's#if (dj)#if(!dj)#' "app/main/app.js"
