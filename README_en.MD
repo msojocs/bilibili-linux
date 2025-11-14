@@ -72,6 +72,10 @@ https://github.com/msojocs/bilibili-linux/releases/tag/continuous
 
 Please use [AppImageLauncher](https://github.com/TheAssassin/AppImageLauncher)
 
+## Gentoo Linux
+
+Emerge from [gentoo-zh overlay](https://github.com/microcai/gentoo-zh/tree/master/media-video/bilibili).
+
 ### Additional Notes
 
 If you don't want to install another Electron on your computer, you can extract `app.asar` from the release version and run it with your already installed Electron. The recommended Electron version is: `28.2.1`
