@@ -69,6 +69,10 @@ https://github.com/msojocs/bilibili-linux/releases/tag/continuous
 
 请使用 [AppImageLauncher](https://github.com/TheAssassin/AppImageLauncher)
 
+## Gentoo Linux
+
+Emerge from [gentoo-zh overlay](https://github.com/microcai/gentoo-zh/tree/master/media-video/bilibili).
+
 ### 额外补充
 
 如果阁下不喜欢电脑多装一个 Electron，可以自行提取发布版的 `app.asar` 并使用已安装 Electron 启动，建议的 Electron 版本是：`28.2.1`
@@ -115,6 +119,8 @@ https://areweloongyet.com/docs/loong-or-loongarch
 自动帮助阁下空降至关键位置。
 
 你需要提前安装`python3`软件包与`faster_whisper` `torch`模块。
+
+参考文档：[AiTranscribe](docs/AiTranscribe.MD)
 
 | 选项 | 说明 |
 |------|-----|

@@ -72,6 +72,10 @@ https://github.com/msojocs/bilibili-linux/releases/tag/continuous
 
 請使用 [AppImageLauncher](https://github.com/TheAssassin/AppImageLauncher)
 
+## Gentoo Linux
+
+Emerge from [gentoo-zh overlay](https://github.com/microcai/gentoo-zh/tree/master/media-video/bilibili).
+
 ### 額外補充
 
 如果閣下不喜歡電腦多裝一個 Electron，可以自行提取發行版的 `app.asar` 並使用已安裝 Electron 啟動，建議的 Electron 版本是：`28.2.1`
