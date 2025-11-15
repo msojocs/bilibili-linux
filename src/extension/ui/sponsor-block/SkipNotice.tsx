@@ -85,13 +85,13 @@ const SkipNotice = () => {
     const rootStore = window.danmakuManage.rootStore
     // 监听视频播放时间
     // 1. 获取当前播放时间
-    const currentTime = rootStore.mediaStore.video.currentTime
+    const currentTime = Math.round(rootStore.mediaStore.video.currentTime)
     // 2. 检查时间是否处于广告时间
     if (!rootStore.progressStore.viewpoint) return
     const viewpoint = rootStore.progressStore.viewpoint
-      .find(e => e.from <= currentTime && e.to >= currentTime && e.sponsor_info && e.sponsor_info.actionType === 'skip')
+      .find(e => e.from <= currentTime && Math.floor(e.to) > currentTime && e.sponsor_info && e.sponsor_info.actionType === 'skip')
     if (viewpoint === undefined) return
-    log.info('赞助跳过')
+    log.info('赞助跳过, current:', currentTime, 'viewpoint:', viewpoint);
     // 3. 弹出广告跳过提示，toastStore
     if (!viewpoint.sponsor_info) return
     if (!isVisible) {
