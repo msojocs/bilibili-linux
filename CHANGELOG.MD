@@ -63,6 +63,7 @@
 
 ## 🚀 版本
 - bilibili: update to v1.17.0.4380
+- electron: downgrade to v28.2.1
 ## 🐞 修复
 - 小窗：按钮无法消失 https://github.com/msojocs/bilibili-linux/issues/170
 
