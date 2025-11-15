@@ -220,13 +220,21 @@ const registerLanguageHandle = async () => {
         } else if (node.nodeType === Node.TEXT_NODE) {
           translate(node as Node);
         }
+      } else if (mutation.type === 'characterData') {
+        const {target} = mutation
+        if (!node2keyword.has(target)) return
+        if (target.nodeValue === '展开'
+           || target.nodeValue === '收起'
+           || target.nodeValue === '小黄脸'
+           || target.nodeValue === '颜文字'
+           || target.nodeValue === 'tv_小电视'
+          ) {
+          translate(target);
+        }
       } else if (mutation.type === 'attributes') {
-        // if (
-        //   mutation.attributeName !== 'class'
-        //   && mutation.attributeName !== 'style'
-        // )
-        // 处理属性变化
-        // translate(mutation.target as Node);
+        const {target} = mutation
+        if (!node2keyword.has(target)) return
+        translate(target);
       }
     });
   });
@@ -246,6 +254,7 @@ const registerLanguageHandle = async () => {
         childList: true,
         subtree: true,
         attributes: false,
+        characterData: true,
       })
       return shadowRoot
     }

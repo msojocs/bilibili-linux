@@ -12,6 +12,42 @@ body[lang="en"] {
     content: 'Collapse';
     width: 70px;
   }
+  // 播放设置
+  .bpx-player-control-bottom-right {
+    .bpx-player-ctrl-setting {
+      &.bpx-state-show {
+        .bpx-player-ctrl-setting-box {
+          .bui-panel-wrap {
+            width: 221px !important;
+            .bui-panel-move {
+              width: 571px !important;
+              .bui-panel-item:nth-child(1).bui-panel-item-active {
+                width: 221px !important;
+              }
+            }
+          }
+        }
+      }
+      &.bpx-state-right {
+        .bpx-player-ctrl-setting-box {
+          .bui-panel-wrap {
+            width: 286px !important;
+            .bui-panel-move {
+              width: 418px !important;
+              .bui-panel-item:nth-child(1).bui-panel-item-active {
+                width: 136px !important;
+              }
+              .bui-panel-item:nth-child(2) {
+                .bpx-player-ctrl-setting-highenergy {
+                  width: 100%;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
   .group-more-button {
     width: 130px;
   }

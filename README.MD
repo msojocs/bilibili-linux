@@ -114,6 +114,8 @@ https://areweloongyet.com/docs/loong-or-loongarch
 
 自动帮助阁下空降至关键位置。
 
+你需要提前安装`python3`软件包与`faster_whisper` `torch`模块。
+
 | 选项 | 说明 |
 |------|-----|
 | Whisper代理 | 模型下载需要代理, 形如：`http://127.0.0.1:1080` |

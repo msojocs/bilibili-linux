@@ -3,20 +3,23 @@ const LogLevel = {
   /** 追踪日志 */
   Trace: 0,
   /** 普通日志 */
-  Info: 1,
+  Debug: 1,
+  /** 普通日志 */
+  Info: 2,
   /** 警告日志 */
-  Warning: 2,
+  Warning: 3,
   /** 错误日志 */
-  Error: 3,
+  Error: 4,
 } as const
 type LogLevelType = typeof LogLevel[keyof typeof LogLevel];
-const Styles = ['color: black;', 'color: green;', 'color: orange;', 'color: red;']
-const Methods = ['log', 'info', 'warn', 'error'] as const
+const Styles = ['color: black;', 'color: gray;',  'color: green;', 'color: orange;', 'color: red;']
+const Methods = ['log', 'debug', 'info', 'warn', 'error'] as const
 const log = {
   log: console.log,
   warn: console.warn,
   error: console.error,
   info: console.info,
+  debug: console.debug,
   trace: console.trace,
 }
 /**
@@ -35,6 +38,7 @@ const CurrentLogLevel: LogLevelType = (() => {
   const level = globalThis?.window?.localStorage?.getItem('LogLevel') ?? 'Info'
   if (level == null) return LogLevel.Info
   if (level === 'Trace') return LogLevel.Trace
+  if (level === 'Debug') return LogLevel.Debug
   if (level === 'Info') return LogLevel.Info
   if (level === 'Warning') return LogLevel.Warning
   if (level === 'Error') return LogLevel.Error
@@ -126,6 +130,15 @@ export class Logger {
     return this
   }
 
+  /**
+   * 打印输出信息调试 🐛
+   *
+   * @param args 任意参数
+   */
+  public debug (...args: unknown[]) {
+    this._log(LogLevel.Debug, args)
+    return this
+  }
   /**
    * 打印输出信息 🐛
    *
