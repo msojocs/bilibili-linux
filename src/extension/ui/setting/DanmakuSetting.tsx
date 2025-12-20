@@ -3,8 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../store";
 import { updateBlockLevel, switchBlockVipColor } from "../store/danmaku";
 import { useTranslation } from "react-i18next";
+import { memo } from "react";
 
-export default function DanmakuSetting() {
+const DanmakuSetting = () => {
   const { t } = useTranslation();
   const [notify, contextHolder] = notification.useNotification();
   const dispatcher = useDispatch();
@@ -47,3 +48,4 @@ export default function DanmakuSetting() {
     </>
   )
 }
+export default memo(DanmakuSetting);

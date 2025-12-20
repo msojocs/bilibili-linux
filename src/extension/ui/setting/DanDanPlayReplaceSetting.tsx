@@ -1,5 +1,5 @@
 import { Button, Cascader, Col, Input, notification, Radio, Row, Switch } from "antd";
-import { useState } from "react";
+import { memo, useCallback, useState } from "react";
 import { convertDandanResponse } from "../../common/danmaku";
 import { dandanplaySearch, getComment } from "../../common/dandan-api";
 import { createLogger } from "../../../common/log";
@@ -14,7 +14,7 @@ interface SearchResultType {
   label: string;
   value: string;
 }
-export default function DanDanPlaySetting() {
+const DanDanPlaySetting = () => {
   const { t } = useTranslation();
   const [notify, contextHolder] = notification.useNotification();
   const [danmakuReplace, updateSetting] = useState<{
@@ -36,7 +36,7 @@ export default function DanDanPlaySetting() {
       [key]: value
     }))
   }
-  const doConfirm = async () => {
+  const doConfirm = useCallback(async () => {
     log.info('selectOptions', danmakuReplace.selectOptions)
     const data: {
       dandanplayWithRelated: boolean
@@ -73,9 +73,9 @@ export default function DanDanPlaySetting() {
         description: `${err}`
       })
     }
-  }
+  }, [danmakuReplace.selectOptions, danmakuReplace.dandanplayWithRelated, danmakuReplace.damakuMode, notify, t])
 
-  const doSearch = async (keyword: string) => {
+  const doSearch = useCallback(async (keyword: string) => {
     const result = await dandanplaySearch(keyword)
     const bangumiList: SearchResultType[] = []
     log.info('dandanplay result: ', result)
@@ -94,7 +94,7 @@ export default function DanDanPlaySetting() {
       })
     }
     updateSettingValue('searchResult', bangumiList || [])
-  }
+  }, [])
   return (
     <>
       {contextHolder}
@@ -149,3 +149,4 @@ export default function DanDanPlaySetting() {
     </>
   )
 }
+export default memo(DanDanPlaySetting)

@@ -18,32 +18,32 @@ export default function Setting() {
     {
       key: '1',
       label: t('漫游设置'),
-      children: RoamingSetting(),
+      children: RoamingSetting({}),
     },
     {
       key: '2',
       label: t('B站弹幕'),
-      children: BiliDanmakuReplaceSetting(),
+      children: BiliDanmakuReplaceSetting({}),
     },
     {
       key: '3',
       label: t('弹弹Play'),
-      children: DanDanPlayReplaceSetting(),
+      children: DanDanPlayReplaceSetting({}),
     },
     {
       key: '4',
       label: t('弹幕设定'),
-      children: DanmakuSetting(),
+      children: DanmakuSetting({}),
     },
     {
       key: '5',
       label: t('播放设定'),
-      children: PlaySetting(),
+      children: PlaySetting({}),
     },
     {
       key: '6',
       label: t('其它设定'),
-      children: OtherSetting(),
+      children: OtherSetting({}),
     },
   ]} onChange={onChange} />
     </>

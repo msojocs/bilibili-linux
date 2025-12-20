@@ -1,5 +1,5 @@
 import { Button, Cascader, Col, Input, notification, Row } from "antd";
-import { useState } from "react";
+import { memo, useCallback, useState } from "react";
 import { BiliBiliApi } from "../../common/bilibili-api";
 import { UTILS } from "../../common/utils";
 import { GET } from "../../common/http";
@@ -15,7 +15,7 @@ interface SearchResultType {
   label: string;
   value: string;
 }
-export default function BiliDanmakuReplaceSetting() {
+const BiliDanmakuReplaceSetting = () => {
   const { t } = useTranslation();
   const [notify, contextHolder] = notification.useNotification();
   const [danmakuReplace, updateSetting] = useState<{
@@ -34,7 +34,7 @@ export default function BiliDanmakuReplaceSetting() {
     }))
   }
 
-  const getBilibiliEpDetails = (seasonId: string, epId: string) => {
+  const getBilibiliEpDetails = useCallback((seasonId: string, epId: string) => {
     const api = new BiliBiliApi()
     return api.getSeasonInfoPgcByEpId(seasonId || "", epId || "", UTILS.getAccessToken())
       .then(seasonInfo => {
@@ -45,8 +45,8 @@ export default function BiliDanmakuReplaceSetting() {
         if (ep.length === 0) return Promise.reject(`剧集查找失败, target:${epId}`)
         return Promise.resolve(ep[0])
       })
-  }
-  const doConfirm = async () => {
+  }, [])
+  const doConfirm = useCallback(async () => {
     try {
       log.info('selectOptions', danmakuReplace.selectOptions)
       // const data: Record<string, string> = {}
@@ -74,9 +74,9 @@ export default function BiliDanmakuReplaceSetting() {
         description: `${err}`
       })
     }
-  }
+  }, [danmakuReplace.selectOptions, getBilibiliEpDetails, notify, t])
 
-  const doSearch = async (keyword: string) => {
+  const doSearch = useCallback(async (keyword: string) => {
     log.info('bili search:', keyword)
     const url = `https://api.bilibili.com/x/web-interface/search/type?__refresh__=true&_extra=&context=&page=1&page_size=12&order=&duration=&from_source=&from_spmid=333.337&platform=pc&device=win&highlight=1&single_column=0&keyword=${keyword}&search_type=media_bangumi`
     const res = await GET(url)
@@ -103,7 +103,7 @@ export default function BiliDanmakuReplaceSetting() {
       })
     }
     updateSettingValue('searchResult', bangumiList || [])
-  }
+  }, [])
   return (
     <>
       {contextHolder}
@@ -136,3 +136,5 @@ export default function BiliDanmakuReplaceSetting() {
     </>
   )
 }
+
+export default memo(BiliDanmakuReplaceSetting)

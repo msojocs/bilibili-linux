@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux"
 import { createLogger } from "../../../common/log"
 import type { RootState } from "../store"
-import { useRef, useState } from "react"
+import { memo, useRef, useState } from "react"
 import AnalysisStep from "./AnalysisStep"
 import { useTranslation } from "react-i18next"
 const log = createLogger('AutoAnalysis')
@@ -16,7 +16,7 @@ document.addEventListener("sponsorblock.showAiAnalysis", function (event: Custom
   isShowAiPanel = !!event.detail
   changeAiPanel?.(!!event.detail)
 })
-export default function AutoAnalysis() {
+const AutoAnalysis = () => {
   const { t } = useTranslation()
   log.info('AutoAnalysis')
   const child = useRef<{
@@ -128,3 +128,4 @@ export default function AutoAnalysis() {
     </>
   )
 }
+export default memo(AutoAnalysis)

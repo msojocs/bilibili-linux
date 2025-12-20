@@ -3,8 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../store";
 import { switchRelatedAutoPlay } from "../store/play";
 import { useTranslation } from "react-i18next";
+import { memo } from "react";
 
-export default function PlaySetting() {
+const PlaySetting = () => {
   const { t } = useTranslation();
   const [notify, contextHolder] = notification.useNotification();
   const dispatcher = useDispatch();
@@ -31,3 +32,4 @@ export default function PlaySetting() {
     </>
   )
 }
+export default memo(PlaySetting);

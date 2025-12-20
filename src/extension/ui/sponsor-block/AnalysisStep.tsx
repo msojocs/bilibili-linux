@@ -1,5 +1,5 @@
 import { Steps, type StepProps } from "antd";
-import { useEffect, useImperativeHandle, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useImperativeHandle, useMemo, useState } from "react";
 import { createLogger } from "../../../common/log";
 import { GET } from "../../common/http";
 import { bigModelDetect } from "../../common/sponsor-block/sponsor-detect";
@@ -27,7 +27,7 @@ interface Props {
 }
 
 const log = createLogger('AnalysisStep')
-export default function AnalysisStep({ ref }: Props) {
+const AnalysisStep = ({ ref }: Props) => {
   const { t } = useTranslation();
   const [hasSubtitle] = useState(() => window.danmakuManage.rootStore.subtitleStore.state.languageList && window.danmakuManage.rootStore.subtitleStore.state.languageList.length > 0);
   const [curStep, setCurStep] = useState(0);
@@ -35,7 +35,7 @@ export default function AnalysisStep({ ref }: Props) {
   const [curStatus, setCurStatus] = useState<"wait" | "process" | "finish" | "error" | undefined>('process');
   const whisperProxy = useSelector<RootState, string>(state => state.sponsor.whisperProxy)
   const libPath = useSelector<RootState, string>(state => state.sponsor.libPath)
-  const task = async () => {
+  const task = useCallback(async () => {
     log.info('execute task...')
     setErrorMsg('')
     setCurStatus('process')
@@ -109,7 +109,7 @@ export default function AnalysisStep({ ref }: Props) {
       setErrorMsg(e.message)
       setCurStatus('error')
     }
-  }
+  }, [hasSubtitle, libPath, t, whisperProxy])
   useImperativeHandle(ref, () => {
     return {
       // ... your methods ...
@@ -151,7 +151,7 @@ export default function AnalysisStep({ ref }: Props) {
         result[i].icon = <StopOutlined />
     }
     return result
-  }, [hasSubtitle, curStep, curStatus, errorMsg])
+  }, [t, hasSubtitle, curStep, curStatus, errorMsg])
   return (
     <>
       <Steps
@@ -164,3 +164,4 @@ export default function AnalysisStep({ ref }: Props) {
     </>
   )
 }
+export default memo(AnalysisStep);

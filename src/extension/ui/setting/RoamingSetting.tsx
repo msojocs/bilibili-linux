@@ -4,10 +4,10 @@ import { useDispatch, useSelector } from "react-redux"
 import type { RootState } from "../store"
 import { saveUposConfig, saveServerConfig, resetServerConfig, type UposConfig, type ServerConfig } from "../store/roaming"
 import HDLogin from "./roaming/HDLogin"
-import { useEffect, useState } from "react"
+import { memo, useCallback, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 
-export default function RoamingSetting() {
+const RoamingSetting = () => {
   const log = createLogger('RoamingSetting')
   const [notify, contextHolder] = notification.useNotification();
   const dispatcher = useDispatch();
@@ -15,8 +15,10 @@ export default function RoamingSetting() {
   
   const uposConfig = useSelector<RootState, UposConfig>(store => store.roaming.uposConfig);
   const storeServerConfig = useSelector<RootState, ServerConfig>(store => store.roaming.serverConfig);
-
-  const uposItemList = [
+  const [serverConfig, updateServer] = useState(storeServerConfig)
+  const [upos, updateUpos] = useState(uposConfig)
+  const [form] = Form.useForm();
+  const [uposItemList] = useState([
     {
       value: 'none',
       label: t('不替换')
@@ -101,8 +103,8 @@ export default function RoamingSetting() {
       value: "hk_bcache",
       label: "hk_bcache（Bilibili海外）",
     },
-  ]
-  const [upos, updateUpos] = useState(uposConfig)
+  ])
+
   const updateUposValue = (key: string, value: string | boolean) => {
     updateUpos(pre => ({
       ...pre,
@@ -120,7 +122,6 @@ export default function RoamingSetting() {
       description: t("成功"),
     });
   }
-  const [serverConfig, updateServer] = useState(storeServerConfig)
   const updateServerValue = (key: string, value: string) => {
     updateServer(pre => ({
       ...pre,
@@ -130,8 +131,7 @@ export default function RoamingSetting() {
   useEffect(() => {
     updateServer(storeServerConfig)
   }, [storeServerConfig])
-  const [form] = Form.useForm();
-  const saveServer = async () => {
+  const saveServer = useCallback(async () => {
     log.info('saveServer: ', form)
     const valid = await form.validateFields()
 
@@ -145,7 +145,7 @@ export default function RoamingSetting() {
       log.info('error submit!')
       return false
     }
-  }
+  }, [dispatcher, form, log, notify, serverConfig, t])
   
   const resetForm = function () {
     dispatcher(resetServerConfig());
@@ -261,3 +261,4 @@ export default function RoamingSetting() {
     </>
   )
 }
+export default memo(RoamingSetting);

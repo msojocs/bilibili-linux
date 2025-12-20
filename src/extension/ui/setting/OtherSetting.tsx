@@ -1,7 +1,8 @@
+import { memo } from "react";
 import LanguageSetting from "./other/Language";
 import SponsorBlock from "./other/SponsorBlock";
 
-export default function OtherSetting() {
+const OtherSetting = () => {
   return (
     <>
       <LanguageSetting />
@@ -10,3 +11,4 @@ export default function OtherSetting() {
     </>
   )
 }
+export default memo(OtherSetting);

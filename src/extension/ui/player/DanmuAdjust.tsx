@@ -1,10 +1,10 @@
 import { Button, Col, Drawer, InputNumber, Row } from "antd"
-import { useState } from "react"
+import { memo, useCallback, useState } from "react"
 import { createLogger } from "../../../common/log"
 import { useTranslation } from "react-i18next"
 
 const log = createLogger('DanmuAdjust')
-export default function DanmuAdjust() {
+const DanmuAdjust = () => {
   const { t } = useTranslation()
   const [showPanel, setShowPanel] = useState(false)
   const [moveFactor, setMoveFactor] = useState(0)
@@ -18,7 +18,7 @@ export default function DanmuAdjust() {
    * 
    * @param {Number} time 
    */
-  const dmTimelineMove = (time: number) => {
+  const dmTimelineMove = useCallback((time: number) => {
     setMoveFactor(moveFactor + time)
     log.info('dmTimelineMove: ', time, moveFactor)
     const list = window.danmakuManage.danmaku.manager.dataBase.timeLine.list
@@ -29,7 +29,7 @@ export default function DanmuAdjust() {
     list.forEach(dm => {
       dm.stime += time
     });
-  }
+  }, [moveFactor])
   return (
     <>
       <span
@@ -72,3 +72,4 @@ export default function DanmuAdjust() {
     </>
   )
 }
+export default memo(DanmuAdjust)
