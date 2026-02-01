@@ -32,7 +32,7 @@ declare global {
   var runtimeConf: {
     exWebPreferences: Record<string, unknown>
   }
-  var bootstrapApp: () => void
+  var bootstrapBiliApp: () => void
   var biliApp = {
     configService: {
       openMainWindowPage$: {

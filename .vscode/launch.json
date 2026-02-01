@@ -10,8 +10,17 @@
           "env": {
             // "ELECTRON_FORCE_IS_PACKAGED": "true"
           },
-          "args": ["app/app", "--disable-gpu"],
+          "args": ["app/app", "--disable-gpu", "--enable-source-maps"],
           // "program": "${workspaceRoot}/app/app/index.js",
+          "outFiles": [
+            "${workspaceFolder}/app/app/**/*.(m|c|)js",
+            "!**/node_modules/**"
+          ],
+          "sourceMapPathOverrides": {
+            "meteor://💻app/*": "${workspaceFolder}/*",
+            "webpack:///./~/*": "${workspaceFolder}/node_modules/*",
+            "webpack://?:*/*": "${workspaceFolder}/*"
+          },
           "outputCapture": "std"
           
       }

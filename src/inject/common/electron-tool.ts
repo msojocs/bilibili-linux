@@ -332,16 +332,36 @@ export const electronOverwriteAfterReady = () => {
 };
 export const registerIpcHandle = () => {
   // 处理启动缓慢的问题
+  /**
+   * 获取方式：
+   * 在preload.js中拦截ipcRenderer.sendSync，把log输出到文件中。
+   * 
+   * 如何找到哪里调用？
+   * 返回一些不能处理的数据，让逻辑层报错，比如处理object的返回undefined，就会在调用处报错。
+   */
   ipcMain.on("app/getTheme", (event) => {
     // 在这里处理数据，然后通过 event.returnValue 发送返回值
-    log.info("app/getTheme");
-    event.returnValue = "simple";
+    event.returnValue = "bili_light";
   });
   ipcMain.on("app/mainProcessReady", (event) => {
     // 在这里处理数据，然后通过 event.returnValue 发送返回值
-    log.info("app/mainProcessReady");
     event.returnValue = true;
   });
+  ipcMain.on('app/getInitInfo', (event) => {
+    log.info('emit app/getInitInfo')
+    event.returnValue = {
+      IS_MAC: false,
+      IS_WIN: false,
+      IS_LINUX: true,
+      IS_DEV: false,
+      IS_RELEASE: true,
+      APP_VERSION: '1.17.5.4665',
+      IS_DEV_M: false,
+      JSB_PRELOAD_URL: 'bili-preload.js',
+      appId: '',
+      platform: 'linux'
+    }
+  })
   ipcMain.handle("sponsor/downloadAudio", async (_, url) => {
     log.info("sponsor/downloadAudio:", url);
     // 1. 下载文件
@@ -492,6 +512,7 @@ export const registerIpcHandle = () => {
       return DynDetailReply.toJson(result.response, { enumAsInteger: false, useProtoFieldName: true });
     }
   );
+
 };
 
 export const registerExtension = () => {

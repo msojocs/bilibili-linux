@@ -19,6 +19,7 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": false,
     "noFallthroughCasesInSwitch": true,
+    "sourceMap": true,
     "noUncheckedSideEffectImports": true
   },
   "include": ["vite.config.ts"]

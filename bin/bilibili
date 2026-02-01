@@ -12,7 +12,7 @@ export APPIMAGE=1
 sed -i 's#http://localhost:22331##' ~/.config/bilibili/.runtime
 if [ "$DEBUG" == '1' ]; then
   echo "Debug Mode"
-  ELECTRON_FORCE_IS_PACKAGED=true "$root_dir/electron/electron" "$root_dir/tmp/bili/resources/app" --no-sandbox "$@"
+  ELECTRON_FORCE_IS_PACKAGED=true NODE_OPTIONS=--enable-source-maps "$root_dir/electron/electron" "$root_dir/tmp/bili/resources/app" --no-sandbox "$@"
 elif [ "$DEBUG" == '2' ]; then
   echo "Debug Mode"
   if [ ! -d "$root_dir/app/app" ];then

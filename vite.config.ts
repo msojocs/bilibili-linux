@@ -8,6 +8,7 @@ const watch = process.argv.includes('--watch') ? {} : false
 // https://vite.dev/config/
 export default defineConfig({
   build: {
+    sourcemap: 'inline',
     lib: {
       entry: resolve(__dirname, 'src/extension/content.ts'),
       fileName: (_format, entryName) => `extension/${entryName}.js`,
@@ -47,6 +48,7 @@ libraries.forEach(async (libItem) => {
   await build({
     configFile: false,
     build: {
+      sourcemap: 'inline',
       lib: libItem,
       emptyOutDir: false,
       rollupOptions: {
@@ -77,6 +79,7 @@ libraries.forEach(async (libItem) => {
   await build({
     configFile: false,
     build: {
+      sourcemap: 'inline',
       lib: libItem,
       emptyOutDir: false,
       rollupOptions: {

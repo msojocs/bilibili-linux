@@ -20,7 +20,7 @@ import { createLogger, Logger } from "../common/log";
     registerProtocol()
     registerExtension()
     electronOverwriteAfterReady()
-    global.bootstrapApp();
+    global.bootstrapBiliApp();
   });
   // https://github.com/msojocs/bilibili-linux/issues/147
   process.on("uncaughtException", (err) => {
