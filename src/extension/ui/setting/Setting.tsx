@@ -15,37 +15,37 @@ export default function Setting() {
   return (
     <>
       <Tabs defaultActiveKey="1" items={[
-    {
-      key: '1',
-      label: t('漫游设置'),
-      children: RoamingSetting({}),
-    },
-    {
-      key: '2',
-      label: t('B站弹幕'),
-      children: BiliDanmakuReplaceSetting({}),
-    },
-    {
-      key: '3',
-      label: t('弹弹Play'),
-      children: DanDanPlayReplaceSetting({}),
-    },
-    {
-      key: '4',
-      label: t('弹幕设定'),
-      children: DanmakuSetting({}),
-    },
-    {
-      key: '5',
-      label: t('播放设定'),
-      children: PlaySetting({}),
-    },
-    {
-      key: '6',
-      label: t('其它设定'),
-      children: OtherSetting({}),
-    },
-  ]} onChange={onChange} />
+        {
+          key: '1',
+          label: t('漫游设置'),
+          children: <RoamingSetting />,
+        },
+        {
+          key: '2',
+          label: t('B站弹幕'),
+          children: <BiliDanmakuReplaceSetting />,
+        },
+        {
+          key: '3',
+          label: t('弹弹Play'),
+          children: <DanDanPlayReplaceSetting />,
+        },
+        {
+          key: '4',
+          label: t('弹幕设定'),
+          children: <DanmakuSetting />,
+        },
+        {
+          key: '5',
+          label: t('播放设定'),
+          children: <PlaySetting />,
+        },
+        {
+          key: '6',
+          label: t('其它设定'),
+          children: <OtherSetting />,
+        },
+      ]} onChange={onChange} />
     </>
   )
 }
