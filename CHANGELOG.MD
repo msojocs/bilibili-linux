@@ -1,3 +1,7 @@
+# 🌈 v1.17.5-2 / 2026-02-08
+## 🐛 修复
+- fix: fix additional functions call error in runtime
+
 # 🌈 v1.17.5-1 / 2026-02-01
 ## 🚀 功能
 - bilibili: update to v1.17.5.4665
