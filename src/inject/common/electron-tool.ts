@@ -121,24 +121,6 @@ export const replaceBrowserWindow = () => {
               log.error("====set error", err);
               event.returnValue = "error";
             });
-        } else if (args[0] === "config/dataSync") {
-          // get all window and send ChangeLanguage event
-          log.info("receive config/dataSync:", ...args);
-          const windows = BrowserWindow.getAllWindows();
-          for (const win of windows) {
-            if (win.id === instance.id) continue;
-            log.info("notify dataSync to window:", win.id, args[1]);
-            win.webContents
-              .executeJavaScript(`window.dataSync('${args[1]}')`)
-              .then((res) => {
-                log.info("dataSync result:", res);
-              })
-              .catch((err) => {
-                log.error("dataSync error:", err);
-              });
-          }
-          log.info("dataSync end.");
-          event.returnValue = "ok";
         }
       });
       // DevTools切换
@@ -361,6 +343,20 @@ export const registerIpcHandle = () => {
       appId: '',
       platform: 'linux'
     }
+  })
+  ipcMain.on('config/dataSync', (event, data) => {
+    log.info('receive config/dataSync:', data);
+    const windows = BrowserWindow.getAllWindows();
+    for (const win of windows) {
+      log.info('notify dataSync to window:', win.id, data);
+      win.webContents.executeJavaScript(`window.dataSync('${data}')`).then(res => {
+        log.info('dataSync result:', res);
+      }).catch(err => {
+        log.error('dataSync error:', err);
+      })
+    }
+    log.info('dataSync end.');
+    event.returnValue = "ok";
   })
   ipcMain.handle("sponsor/downloadAudio", async (_, url) => {
     log.info("sponsor/downloadAudio:", url);
