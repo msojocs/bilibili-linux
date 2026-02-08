@@ -345,10 +345,11 @@ export const registerIpcHandle = () => {
     }
   })
   ipcMain.on('config/dataSync', (event, data) => {
-    log.info('receive config/dataSync:', data);
+    log.info('receive config/dataSync from:', event.sender.id, event.sender.getTitle(), data);
     const windows = BrowserWindow.getAllWindows();
     for (const win of windows) {
-      log.info('notify dataSync to window:', win.id, data);
+      if (win.webContents.id === event.sender.id) continue;
+      log.info('notify dataSync to window:', win.id);
       win.webContents.executeJavaScript(`window.dataSync('${data}')`).then(res => {
         log.info('dataSync result:', res);
       }).catch(err => {

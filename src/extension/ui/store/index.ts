@@ -44,15 +44,6 @@ export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch
 
 const log = createLogger('Store')
-store.subscribe(() => {
-  // 防止循环同步：如果正在同步中，不触发数据发送
-  if (isSyncing) return;
-
-  // 数据同步，数据有更新，发送给mian process
-  const state = store.getState()
-  // log.info('state change result:', state)
-  window.biliBridge.callNativeSync('config/dataSync', JSON.stringify(state))
-})
 
 // 初始化时获取存储的语言设置，并同步到 Redux
 requestContent<string>('getStorage', { key: 'lang' })
@@ -61,6 +52,16 @@ requestContent<string>('getStorage', { key: 'lang' })
     log.info('Initial language from storage:', lang)
     
     store.dispatch(changeLanguage(lang))
+    // 获取语言后，订阅 store 的变化，进行数据同步
+    store.subscribe(() => {
+      // 防止循环同步：如果正在同步中，不触发数据发送
+      if (isSyncing) return;
+
+      // 数据同步，数据有更新，发送给mian process
+      const state = store.getState()
+      log.info('state change result:', state)
+      window.biliBridge.callNativeSync('config/dataSync', JSON.stringify(state))
+    })
   })
 
 // 多窗口数据同步
