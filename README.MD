@@ -59,7 +59,7 @@ https://github.com/msojocs/bilibili-linux/releases/tag/continuous
    ```
 2. 安装
    ```
-   tools/setup-bilibili
+   tools/setup-bilibili.sh
    ```
 3. 启动
    ```

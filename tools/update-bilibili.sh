@@ -18,6 +18,11 @@ fail() {
     echo -e "\033[41;37m 失败 \033[0m $1"
 }
 
+if [[ "$1" == "-f" ]];then
+    notice "强制更新，删除缓存文件"
+    rm -rf "$root_dir/cache/bili_win-install.exe"
+fi
+
 download_url="https://dl.hdslb.com/mobile/fixed/bili_win/bili_win-install.exe"
 mkdir -p "$root_dir/cache"
 if [[ ! -f "$root_dir/cache/bili_win-install.exe" ]];then

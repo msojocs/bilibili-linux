@@ -65,7 +65,7 @@ jobs:
           BUILD_ARCH: ${{ matrix.ARCH }}
         run: |
           ls -l
-          tools/update-bilibili
+          tools/update-bilibili.sh
           tools/fix-other.sh
           tools/extension.sh
           mv tmp/bili/resources/* app

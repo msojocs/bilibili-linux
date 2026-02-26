@@ -19,8 +19,8 @@ res_dir="$root_dir/tmp/bili/resources"
 cd $root_dir
 pnpm install
 
-"$root_dir/tools/update-electron"
-"$root_dir/tools/update-bilibili"
+"$root_dir/tools/update-electron.sh"
+"$root_dir/tools/update-bilibili.sh" $@
 "$root_dir/tools/fix-other.sh"
 "$root_dir/tools/extension.sh"
 
