@@ -151,7 +151,7 @@ jobs:
           BUILD_ARCH: ${{ matrix.ARCH }}
         run: |
           ls -l
-          tools/update-electron
+          tools/update-electron.sh
   
       - name: Compress Resources
         run: |
@@ -368,7 +368,7 @@ jobs:
           if [ "${{ matrix.ARCH }}" == "arm64" ];then
             export LD_LIBRARY_PATH="/usr/aarch64-linux-gnu/lib"
           fi
-          tools/update-electron
+          tools/update-electron.sh
           if [ "$BUILD_ARCH" == "x64" ];then
             export BUILD_ARCH="amd64"
           fi
