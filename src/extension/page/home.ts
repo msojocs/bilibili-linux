@@ -12,6 +12,9 @@ export const initHomePage = () => {
   window.addEventListener('load', async () => {
     while(true) {
       const buttonArea = document.querySelector("#app > div > div.app_layout.ov_hidden.flex_start.bg_bg1.gpu-enabled > div.app_layout--content.flex_col > div > div.fixed_buttons > div > div")
+        || document.querySelector("#app .fixed_buttons > div > div")
+        || document.querySelector(".fixed_buttons > div > div")
+        || document.querySelector(".fixed_buttons")
       if (!buttonArea) {
         log.error('area not found!')
         await sleep(1000)
@@ -19,7 +22,8 @@ export const initHomePage = () => {
       }
       const root = document.createElement('div')
       root.classList.add('custom-setting')
-      buttonArea.prepend(root)
+      root.style.marginLeft = '8px'
+      buttonArea.append(root)
       createRoot(root).render(SettingEntry())
       break
     }
