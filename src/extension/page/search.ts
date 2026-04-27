@@ -15,6 +15,9 @@ export const initSearchPage = () => {
   window.addEventListener('load', async () => {
     while(true) {
       const buttonArea = document.querySelector("#app > div > div.search_layout.i_page_wrapper > div.fixed_buttons > div > div")
+        || document.querySelector("#app .fixed_buttons > div > div")
+        || document.querySelector(".fixed_buttons > div > div")
+        || document.querySelector(".fixed_buttons")
       if (!buttonArea) {
         log.error('area not found!')
         await sleep(1000)
@@ -22,7 +25,8 @@ export const initSearchPage = () => {
       }
       const root = document.createElement('div')
       root.classList.add('custom-setting')
-      buttonArea.prepend(root)
+      root.style.marginLeft = '8px'
+      buttonArea.append(root)
       createRoot(root).render(SettingEntry())
       break
     }
