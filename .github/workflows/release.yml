@@ -57,8 +57,8 @@ jobs:
             name='${{ github.ref_name }}'
           fi
           echo "tag result: $tag - $name"
-          echo "::set-output name=tag::$tag"
-          echo "::set-output name=name::$name"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "name=$name" >> "$GITHUB_OUTPUT"
          
       - name: Build
         env:
@@ -143,8 +143,8 @@ jobs:
             name='${{ github.ref_name }}'
           fi
           echo "tag result: $tag - $name"
-          echo "::set-output name=tag::$tag"
-          echo "::set-output name=name::$name"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "name=$name" >> "$GITHUB_OUTPUT"
          
       - name: Build
         env:
@@ -204,8 +204,7 @@ jobs:
           sudo npm install asar -g
           npm install -g corepack@latest
           corepack enable pnpm
-          corepack use pnpm@latest
-          pnpm install
+          pnpm install --frozen-lockfile
           echo "$UID, $GID"
 
       - name: Generate TAG
@@ -218,8 +217,8 @@ jobs:
             name='${{ github.ref_name }}'
           fi
           echo "tag result: $tag - $name"
-          echo "::set-output name=tag::$tag"
-          echo "::set-output name=name::$name"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "name=$name" >> "$GITHUB_OUTPUT"
          
       - name: Build
         env:
@@ -289,8 +288,8 @@ jobs:
             name='${{ github.ref_name }}'
           fi
           echo "tag result: $tag - $name"
-          echo "::set-output name=tag::$tag"
-          echo "::set-output name=name::$name"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "name=$name" >> "$GITHUB_OUTPUT"
          
       - name: Build
         env:
@@ -351,8 +350,8 @@ jobs:
             tag="v${BILIBILI_VERSION}-${tag}"
           fi
           echo "tag result: $tag - $name"
-          echo "::set-output name=tag::$tag"
-          echo "::set-output name=name::$name"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "name=$name" >> "$GITHUB_OUTPUT"
       # https://stackoverflow.com/questions/61096521/how-to-use-gpg-key-in-github-actions
 
       - name: Build Deb Package
@@ -436,8 +435,8 @@ jobs:
   #           name='${{ github.ref_name }}'
   #         fi
   #         echo "tag result: $tag - $name"
-  #         echo "::set-output name=tag::$tag"
-  #         echo "::set-output name=name::$name"
+  #         echo "tag=$tag" >> "$GITHUB_OUTPUT"
+  #         echo "name=$name" >> "$GITHUB_OUTPUT"
          
   #     - name: Build ArchLinux Package
   #       uses: countstarlight/arch-makepkg-action@master
@@ -542,8 +541,8 @@ jobs:
             name='${{ github.ref_name }}'
           fi
           echo "tag result: $tag - $name"
-          echo "::set-output name=tag::$tag"
-          echo "::set-output name=name::$name"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "name=$name" >> "$GITHUB_OUTPUT"
 
       - name: Create release and upload artifacts
         if: startsWith(github.ref, 'refs/heads/')
