@@ -12,7 +12,7 @@ body[lang="en"] {
     content: 'Collapse';
     width: 70px;
   }
-  // 播放设置
+  // Playback settings
   .bpx-player-control-bottom-right {
     .bpx-player-ctrl-setting {
       &.bpx-state-show {
@@ -59,6 +59,113 @@ body[lang="en"] {
   }
   .media-session-help {
     width: 418px;
+  }
+}
+html.bili_dark {
+  &,
+  body:not(.b_ft_none),
+  body:not(.b_ft_none) #app {
+    background-color: #000 !important;
+  }
+
+  #bili-splash,
+  #bili-skeleton,
+  #bili-skeleton .skeleton-sidebar,
+  #bili-skeleton .skeleton-header,
+  .universal_content,
+  .login-content,
+  .login-webview,
+  .bili-mini-mask,
+  .bili-mini-content-wp,
+  #skeleton-index,
+  #skeleton-index .head,
+  #skeleton-index .side-bar,
+  #skeleton-index .main-warp,
+  #skeleton-index .content-warp,
+  #skeleton-index #skeleton-content,
+  #skeleton-index .block {
+    background-color: #000 !important;
+    border-color: #000 !important;
+  }
+
+  #skeleton-index *,
+  #skeleton-index *::before,
+  #skeleton-index *::after {
+    background-color: #000 !important;
+    background-image: none !important;
+    border-color: #000 !important;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .upload-v2-container,
+  .upload-v2-body,
+  .upload-container,
+  .upload-content,
+  .upload-page,
+  .header,
+  .ai-tool-capsule,
+  .line-divid,
+  #cc-nav_wrap,
+  .nav-cut-off-line,
+  micro-app-body#video-up,
+  #video-up-app,
+  .video-up-app,
+  .video-basic,
+  .task-list,
+  .form,
+  .task-list-content-btn,
+  .entrance-card,
+  .enter-btn,
+  .select-controller,
+  .submit-draft,
+  .file-item-content-progress,
+  .feedback-container,
+  .utils-box,
+  #video-up-app .setting-card.video-setting-card {
+    background: #000 !important;
+    background-color: #000 !important;
+    border-color: #000 !important;
+  }
+
+  .header,
+  .header *,
+  #cc-nav_wrap,
+  #cc-nav_wrap *,
+  micro-app-body#video-up,
+  micro-app-body#video-up *,
+  #video-up-app,
+  #video-up-app * {
+    color: #fff !important;
+  }
+
+  #video-up-app .file-item-content-status-text-fail,
+  #video-up-app .file-item-content-status-text-fail .fail {
+    /* Failed upload rows stay on a light surface in the upstream page. */
+    color: #000 !important;
+  }
+
+  #video-up-app .upload-header-top-btn .bcc-button,
+  #video-up-app .upload-header-top-btn .bcc-button *,
+  #video-up-app .creation-statement-container .bcc-select-list-wrap,
+  #video-up-app .creation-statement-container .bcc-select-list-wrap *,
+  #video-up-app .tag-wrp .hot-tag-container,
+  #video-up-app .tag-wrp .hot-tag-container *,
+  #video-up-app .video-human-type .human-type-list,
+  #video-up-app .video-human-type .human-type-list *,
+  #video-up-app .setting-card.video-setting-card .bcc-button--blueLine,
+  #video-up-app .setting-card.video-setting-card .bcc-button--blueLine *,
+  #video-up-app .video-complete .left-wrapper .bcc-button,
+  #video-up-app .video-complete .left-wrapper .bcc-button * {
+    color: #000 !important;
+  }
+
+  #video-up-app input,
+  #video-up-app textarea,
+  #video-up-app .input-instance,
+  #video-up-app .textarea-container {
+    background-color: #111 !important;
+    color: #fff !important;
   }
 }
 @media (max-width: 1040px) {

@@ -6,6 +6,7 @@ import { initHomePage } from "./page/home"
 import { initLoginPage } from "./page/login"
 import { initPlayerPage } from "./page/player"
 import { initSearchPage } from "./page/search"
+import { initTheme } from "./page/theme"
 import { initTranslation } from "./page/translation"
 
 (() => {
@@ -14,6 +15,7 @@ import { initTranslation } from "./page/translation"
   const pt = getPageType()
   log.info('page:', pt)
   registerMessagePage()
+  initTheme()
   initTranslation()
   if (!window.biliBridge?.callNative) {
     window.biliBridge = parent?.window?.biliBridge
