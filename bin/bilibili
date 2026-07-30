@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
@@ -9,6 +9,7 @@ done
 root_dir="$( cd -P "$( dirname "$SOURCE" )"/.. >/dev/null 2>&1 && pwd )"
 # 启用检查更新 for electron-updater
 export APPIMAGE=1
+unset ELECTRON_RUN_AS_NODE
 sed -i 's#http://localhost:22331##' ~/.config/bilibili/.runtime
 if [ "$DEBUG" == '1' ]; then
   echo "Debug Mode"
@@ -17,7 +18,7 @@ elif [ "$DEBUG" == '2' ]; then
   echo "Debug Mode"
   if [ ! -d "$root_dir/app/app" ];then
     cd "$root_dir/app"
-    asar e app.asar app
+    pnpm exec asar e "$root_dir/app/app.asar" "$root_dir/app/app"
     cd "$root_dir/app/extensions"
     rm -rf bilibili
     ln -s ../../dist/extension bilibili

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 root_dir=$(cd `dirname $0`/.. && pwd -P)
 
 set -ex
@@ -19,7 +19,7 @@ fail() {
 }
 res_dir="$root_dir/tmp/bili/resources"
 cd "$res_dir"
-asar e app.asar app
+pnpm exec asar e "$res_dir/app.asar" "$res_dir/app"
 
 notice "解密"
 "$root_dir/tools/app-decrypt.js" "$res_dir/app/main/.biliapp" "$res_dir/app/main/app.orgi.js"
@@ -29,13 +29,7 @@ notice "解密"
 notice "====app.js===="
 
 notice "屏蔽检测"
-# grep -lr 'if (!dj' --exclude="app.asar" .
-# sed -i 's#if (!dj#if(false\&\&!dj#g' "app/main/app.js"
-# ==='win';if(! 警告11
-grep -lr 'if (!k4' --exclude="app.asar" .
-sed -i 's#if (!k4#if(false\&\&!k4#' "app/main/app.js"
-# if (!jT
-sed -i 's#if (!jT#if (false\&\&!jT#' "app/main/app.js"
+node "$root_dir/tools/patch-app.js" "$res_dir/app/main/app.js"
 
 # notice "路由"
 # cat "$root_dir/res/scripts/inject-biliapp.js" >> app/render/assets/biliapp.*.js
@@ -64,7 +58,7 @@ cat "app/main/assets/bili-preload.js" >> "app/main/assets/temp.js"
 rm "app/main/assets/bili-preload.js"
 mv "app/main/assets/temp.js" "app/main/assets/bili-preload.js"
 
-asar p app app.asar
+pnpm exec asar p "$res_dir/app" "$res_dir/app.asar"
 rm -rf app
 
 notice "Download cursor-tool"

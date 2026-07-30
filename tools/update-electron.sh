@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
@@ -26,22 +26,34 @@ elif [ "$BUILD_ARCH" == "amd64" ];then
 elif [ "$BUILD_ARCH" == "arm64" ];then
   BUILD_ARCH="arm64"
 fi
-download_url="https://npmmirror.com/mirrors/electron/${electron_version}/electron-v${electron_version}-linux-${BUILD_ARCH}.zip"
-download_url="https://github.com/electron/electron/releases/download/v${electron_version}/electron-v${electron_version}-linux-${BUILD_ARCH}.zip"
+download_urls=(
+  "https://npmmirror.com/mirrors/electron/${electron_version}/electron-v${electron_version}-linux-${BUILD_ARCH}.zip"
+  "https://github.com/electron/electron/releases/download/v${electron_version}/electron-v${electron_version}-linux-${BUILD_ARCH}.zip"
+)
 if [ "$BUILD_ARCH" == "loong64" ];then
   # 新世界
   electron_version="22.3.27"
-  download_url="https://github.com/msojocs/electron-loongarch/releases/download/v${electron_version}/electron-v${electron_version}-linux-loong64.zip"
+  download_urls=("https://github.com/msojocs/electron-loongarch/releases/download/v${electron_version}/electron-v${electron_version}-linux-loong64.zip")
 elif [ "$BUILD_ARCH" == "loongarch64" ];then
   # 旧世界
   electron_version="22.3.27"
   # download_url="http://ftp.loongnix.cn/electron/LoongArch/v22.3.27/electron-v22.3.27-linux-loong64.zip"
-  download_url="https://github.com/msojocs/electron-loongarch/releases/download/v${electron_version}/electron-v${electron_version}-linux-loongarch64.zip"
+  download_urls=("https://github.com/msojocs/electron-loongarch/releases/download/v${electron_version}/electron-v${electron_version}-linux-loongarch64.zip")
 fi
 
 mkdir -p "$root_dir/cache" "$root_dir/tmp"
 if [[ ! -f "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.zip" ]];then
-  wget -c "$download_url" -O "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.zip.tmp"
+  download_succeeded=false
+  for download_url in "${download_urls[@]}"; do
+    if wget -c "$download_url" -O "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.zip.tmp"; then
+      download_succeeded=true
+      break
+    fi
+  done
+  if [[ "$download_succeeded" != true ]]; then
+    echo "Unable to download Electron from any configured source." >&2
+    exit 1
+  fi
   mv "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.zip.tmp" "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.zip"
 fi
 rm -rf "$root_dir/electron"

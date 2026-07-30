@@ -41,6 +41,50 @@ This project is completely open source, with no code encryption. If you have any
 6. Search in other regions
 7. [Danmaku Sharing](docs/help/弹幕共享.MD) (Content in Chinese)
 
+## Technology Stack
+
+- TypeScript in strict mode, bundled with Vite
+- React 19, Redux Toolkit, Ant Design, and Sass for the injected settings UI
+- Electron 43 and electron-builder for the desktop client and packages
+- pnpm 10 for dependency management
+- A browser-side extension for page injection, request interception, and local storage, plus Electron-side integration patches
+
+## Developer Guide
+
+### Prerequisites
+
+Install a current Node.js LTS release and pnpm 10. `corepack enable` is a convenient way to make pnpm available, then install dependencies:
+
+```bash
+pnpm install
+```
+
+NixOS users can enter the repository-provided development environment instead:
+
+```bash
+nix develop
+```
+
+Prepare the upstream client and its resources once:
+
+```bash
+tools/setup-bilibili.sh
+```
+
+The script downloads and unpacks the upstream client, builds the extension, and creates the runtime files under `app/`.
+
+### Common Commands
+
+```bash
+pnpm dev       # Watch and rebuild the extension and injection bundles
+pnpm build     # Type-check and create a production bundle
+pnpm lint      # Run ESLint
+bin/bilibili   # Launch the prepared client
+pnpm pkg-linux # Build Linux packages
+```
+
+Most source work lives in `src/extension/` (page injection and settings UI) and `src/inject/` (Electron-side patches). Edit source files in `src/`, `res/`, `tools/`, or `conf/`; do not hand-edit generated `app/`, `dist/`, `tmp/`, or `cache/` content. Before submitting a change, run `pnpm build`, `pnpm lint`, and `git diff --check` when applicable. See [AGENTS.md](AGENTS.md) for the full contributor guidance.
+
 ## How to Use
 
 ### Automated Builds
@@ -79,6 +123,10 @@ Emerge from [gentoo-zh overlay](https://github.com/microcai/gentoo-zh/tree/maste
 ### Additional Notes
 
 If you don't want to install another Electron on your computer, you can extract `app.asar` from the release version and run it with your already installed Electron. The recommended Electron version is: `43.1.1` (`VaapiOnNvidiaGPUs` requires Electron 43+ / Chromium 130+).
+
+### Local History Backup
+
+History is stored as readable JSON at `history-backup.json` inside Electron's `app.getPath("userData")` directory. With the standard Linux profile, the exact file is `~/.config/bilibili/history-backup.json`. Entries are separated by account and ordered from newest to oldest. The file stores the original history objects directly; pagination keys and timestamps are derived when read rather than duplicated in every entry. Refreshing the first History page starts a throttled background scan of the remaining server pages; foreground scrolling always takes priority and receives the original server response. After a complete scan, `serverOldest` records the oldest server entry: local entries newer than that boundary are replaced by the current server snapshot, while older local entries are preserved unchanged. Those preserved entries continue after the live server history in the normal History page.
 
 ## GPU Acceleration Configuration
 

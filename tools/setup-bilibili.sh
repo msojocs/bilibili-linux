@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
@@ -19,9 +19,9 @@ res_dir="$root_dir/tmp/bili/resources"
 cd $root_dir
 pnpm install
 
-"$root_dir/tools/update-electron.sh"
-"$root_dir/tools/update-bilibili.sh" $@
-"$root_dir/tools/fix-other.sh"
-"$root_dir/tools/extension.sh"
+bash "$root_dir/tools/update-electron.sh"
+bash "$root_dir/tools/update-bilibili.sh" "$@"
+bash "$root_dir/tools/fix-other.sh"
+bash "$root_dir/tools/extension.sh"
 
 mv "$res_dir/"* "$root_dir/app"

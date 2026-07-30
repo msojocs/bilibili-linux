@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # 用于github actions构建
 # 解压初步构建后的文件
@@ -31,4 +31,3 @@ store_dir="$tmp_dir/build"
 mkdir -p $store_dir
 rm -rf app electron
 tar -zxf tmp/src/bilibili-asar-*.tar.gz -C .
- 
