@@ -13,23 +13,54 @@ const trnaslationData: Record<string, {
 }
 
 const log = createLogger('Translation')
+// Content scripts can run before body exists, so wait before binding translation observers.
+const waitForBody = () => new Promise<HTMLElement>((resolve) => {
+	if (document.body) {
+		resolve(document.body)
+		return
+	}
+	const observer = new MutationObserver(() => {
+		if (!document.body) return
+		observer.disconnect()
+		resolve(document.body)
+	})
+	observer.observe(document.documentElement, {
+		childList: true,
+		subtree: true,
+	})
+})
 const containsFullChinese = (str: string) => {
-  // 匹配大多数汉字、繁体中文和部分中文标点
+  // Match most CJK ideographs and common Chinese punctuation.
   const fullChineseRegex = /[\u4e00-\u9FFF\u3002\uff1b\uff0c\uff1a\u201c\u201d\uff08\uff09\u3001\uff1f\u300a\u300b\uff01\u3010\u3011\uffe5]/;
   return fullChineseRegex.test(str);
+}
+const isTranslatableValueNode = (node: HTMLElement | Node): node is HTMLInputElement => {
+	// Bilibili select controls render the selected label as an input value.
+	return node instanceof HTMLInputElement && node.classList.contains('bcc-select-input-inner')
+}
+const getTranslateContent = (node: HTMLElement | Node) => {
+	if (isTranslatableValueNode(node)) return node.value
+	return node.textContent
+}
+const setTranslateContent = (node: HTMLElement | Node, value: string) => {
+	if (isTranslatableValueNode(node)) {
+		node.value = value
+		return
+	}
+	node.textContent = value
 }
 const registerLanguageHandle = async () => {
   log.info('-------Translation----------')
 
-  // 用于切换语言时更新
+  // Keep original text so language switches can retranslate nodes.
   const node2keyword = new Map<HTMLElement | Node, string>()
   let lang = await requestContent<string, {key: string}>('getStorage', { key: 'lang' }) || 'zhCn'
   let currentDict = trnaslationData[lang]
-  document.body.setAttribute('lang', lang)
+  const body = await waitForBody()
+  body.setAttribute('lang', lang)
   
   {
-    // 用于动态的“展开/收起”
-    // 这些元素直接更新nodeValue，不会触发Observer
+    // Handle dynamic Expand/Collapse labels that update nodeValue without triggering the observer.
     document.createTextNode = (data?: string) => {
       return new (class extends Text{
         constructor(data?: string) {
@@ -56,26 +87,26 @@ const registerLanguageHandle = async () => {
       if (ele.hasChildNodes()) {
         for (let i = 0; i < ele.childNodes.length; i++) {
           const child = ele.childNodes[i];
-          // 忽略image
+          // Ignore images.
           if (child.nodeName === "IMG") continue;
-          // 忽略path
+          // Ignore SVG paths.
           if (child.nodeName === "path") continue;
-          // 忽略svg
+          // Ignore SVG nodes.
           if (child.nodeName === "svg") continue;
-          // 忽略br
+          // Ignore line breaks.
           if (child.nodeName === "BR") continue;
-          // 忽略source
+          // Ignore media sources.
           if (child.nodeName === "SOURCE") continue;
-          // 忽略rect
+          // Ignore SVG rectangles.
           if (child.nodeName === "rect") continue;
-          // 忽略circle
+          // Ignore SVG circles.
           if (child.nodeName === "circle") continue;
-          // 忽略script
+          // Ignore scripts.
           if (child.nodeName === "SCRIPT") continue;
           if (
             child.nodeType === Node.ELEMENT_NODE && child instanceof HTMLElement &&
-            (child.className.includes("bili-video-card__image") || // 视频
-              child.className.includes("bui-progress-val") || // 百分比
+            (child.className.includes("bili-video-card__image") || // Video thumbnail.
+              child.className.includes("bui-progress-val") || // Percentage.
               child.className.includes("bpx-player-ctrl-time-seek") ||
               child.className.includes("bpx-player-dm-mask-wrap") ||
               child.className.includes("bili-bangumi-card__image") ||
@@ -89,11 +120,11 @@ const registerLanguageHandle = async () => {
               child.className.includes("dynamic_rich_text--content") ||
               child.className.includes("desc-info desc-v2") ||
               child.className.includes("home_live--users-wrap") ||
-              child.className.includes("im-li-info") || // 消息
-              child.className.includes("picture-ad-card") || // 广告
+              child.className.includes("im-li-info") || // Message metadata.
+              child.className.includes("picture-ad-card") || // Advertisement card.
               (child.className.includes("up_list--item--title") && child.textContent !== '全部动态') ||
               child.className.includes("up-name ") ||
-              child.className.includes("video-title") ||
+              (child.className.includes("video-title") && !child.closest("#video-up-app")) ||
               child.className === "info"
             )
           )
@@ -106,22 +137,29 @@ const registerLanguageHandle = async () => {
               || /^\d+ \/ \d+$/.test(child.textContent)
               || /^(\d+)$/.test(child.textContent)
             )
-          ) continue
-          eles.push(child);
-          if (child instanceof HTMLElement) {
-            const title = child.attributes.getNamedItem("title");
-            if (title && title.textContent && title.textContent.length > 0) {
-              result.push(title);
-            }
-            const placeholder = child.attributes.getNamedItem("placeholder");
-            if (placeholder && placeholder.textContent && placeholder.textContent.length > 0) {
-              result.push(placeholder);
-            }
-          }
-        }
-        continue;
-      }
-      // 单元素节点
+	          ) continue
+	          eles.push(child);
+	          if (child instanceof HTMLElement) {
+	            if (isTranslatableValueNode(child) && child.value.length > 0) {
+	              result.push(child);
+	            }
+	            const title = child.attributes.getNamedItem("title");
+	            if (title && title.textContent && title.textContent.length > 0) {
+	              result.push(title);
+	            }
+	            const placeholder = child.attributes.getNamedItem("placeholder");
+	            if (placeholder && placeholder.textContent && placeholder.textContent.length > 0) {
+	              result.push(placeholder);
+	            }
+	            const dataPlaceholder = child.attributes.getNamedItem("data-placeholder");
+	            if (dataPlaceholder && dataPlaceholder.textContent && dataPlaceholder.textContent.length > 0) {
+	              result.push(dataPlaceholder);
+	            }
+	          }
+	        }
+	        continue;
+	      }
+      // Single text node.
       if (!ele.textContent || ele.textContent.length === 0) continue;
   
       if (!isNaN(Number(ele.textContent))) continue
@@ -131,16 +169,17 @@ const registerLanguageHandle = async () => {
     return result;
   };
   const translate = (node: HTMLElement | Node) => {
-    if (!node.textContent) return false
+    const nodeContent = getTranslateContent(node)
+    if (!nodeContent) return false
     // log.info('translate:', node.textContent);
     if (!currentDict) return false
-    const key = node.textContent.trim()
+    const key = nodeContent.trim()
     const langText = currentDict.simple[key]
     if (!langText) {
       for (const [reg, text] of Object.entries(currentDict.regexp)) {
         const regExp = new RegExp(reg, 'g')
-        if (regExp.test(node.textContent)) {
-          node.textContent = node.textContent.replace(regExp, (_ss, ...args) => {
+        if (regExp.test(nodeContent)) {
+          const translatedContent = nodeContent.replace(regExp, (_ss, ...args) => {
             let t = text
             for (let i = 0; i < args.length; i++) {
               t = t.replace(`{${i}}`, args[i])
@@ -148,26 +187,37 @@ const registerLanguageHandle = async () => {
             // log.info('reg translation:', t)
             return t
           })
+          setTranslateContent(node, translatedContent)
           // log.info('reg trnslation result:', node.textContent)
           return true
         }
       }
       return false
     }
-    // 使用replace，因为trim会把换行空格移除掉
-    node.textContent = node.textContent.replace(key, langText)
+    // Use replace because trim would remove newlines and spaces.
+    setTranslateContent(node, nodeContent.replace(key, langText))
+    return true
+  }
+  const rememberOriginal = (node: HTMLElement | Node) => {
+    const nodeContent = getTranslateContent(node)
+    if (!nodeContent) return false
+    if (!node2keyword.has(node)) {
+      node2keyword.set(node, nodeContent);
+    } else if (containsFullChinese(nodeContent) && node2keyword.get(node) !== nodeContent) {
+      node2keyword.set(node, nodeContent);
+    }
     return true
   }
   const switchLanguage = (newLang: string) => {
     if (newLang === lang) return
-    document.body.setAttribute('lang', newLang)
+    body.setAttribute('lang', newLang)
     log.info('switchLanguage', newLang)
     currentDict = trnaslationData[newLang]
     lang = newLang
     for (const [node, keyword] of node2keyword.entries()) {
       const r = translate(node)
       if (!r) {
-        node.textContent = keyword
+        setTranslateContent(node, keyword)
       }
     }
   }
@@ -187,27 +237,17 @@ const registerLanguageHandle = async () => {
           const list = getSingleNode(node)
           // log.info('list:', list)
           for (const item of list) {
-            if (!item.textContent) continue
-            if (!node2keyword.has(item)) {
-              node2keyword.set(item, item.textContent);
-            } else if (containsFullChinese(item.textContent) && node2keyword.get(item) !== item.textContent) {
-              node2keyword.set(item, item.textContent);
-            }
+            if (!rememberOriginal(item)) continue
             translate(item as HTMLElement);
           }
         } else if (node.nodeType === Node.DOCUMENT_FRAGMENT_NODE && node instanceof ShadowRoot) {
           const list = getSingleNode(node)
           // log.info('list:', list)
           for (const item of list) {
-            if (!item.textContent) continue
-            if (!node2keyword.has(item)) {
-              node2keyword.set(item, item.textContent);
-            } else if (containsFullChinese(item.textContent) && node2keyword.get(item) !== item.textContent) {
-              node2keyword.set(item, item.textContent);
-            }
+            if (!rememberOriginal(item)) continue
             translate(item as HTMLElement);
           }
-          // 设置part，使css生效
+          // Set part so CSS can apply to shadow children.
           for (let i=0; i < node.childNodes.length; i++) {
             const child = node.childNodes[i]
             if (!child) continue
@@ -215,36 +255,68 @@ const registerLanguageHandle = async () => {
               child.setAttribute('part', child.id)
             }
           }
-          // 每层都设置part导出
+          // Export parts on each shadow layer.
           node.host?.setAttribute('exportparts', 'options')
         } else if (node.nodeType === Node.TEXT_NODE) {
           translate(node as Node);
         }
       } else if (mutation.type === 'characterData') {
         const {target} = mutation
-        if (!node2keyword.has(target)) return
-        if (target.nodeValue === '展开'
-           || target.nodeValue === '收起'
-           || target.nodeValue === '小黄脸'
-           || target.nodeValue === '颜文字'
-           || target.nodeValue === 'tv_小电视'
-          ) {
-          translate(target);
+        const targetContent = getTranslateContent(target)
+        if (!targetContent) return
+        if (!containsFullChinese(targetContent) && !node2keyword.has(target)) return
+        if (containsFullChinese(targetContent) && node2keyword.get(target) !== targetContent) {
+          // React can replace translated text nodes with fresh Chinese content.
+          node2keyword.set(target, targetContent)
         }
+        translate(target)
       } else if (mutation.type === 'attributes') {
-        const {target} = mutation
-        if (!node2keyword.has(target)) return
-        translate(target);
+        const {target, attributeName} = mutation
+        if (!(target instanceof HTMLElement) || !attributeName) return
+        const attribute = target.attributes.getNamedItem(attributeName)
+        if (!attribute?.textContent) return
+        if (containsFullChinese(attribute.textContent) && node2keyword.get(attribute) !== attribute.textContent) {
+          // React can rewrite placeholders after the initial page translation.
+          node2keyword.set(attribute, attribute.textContent)
+        }
+        if (node2keyword.has(attribute)) {
+          translate(attribute)
+        }
       }
     });
   });
-  if (!document.body) return
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true,
-    attributes: true,
-  });
-  {
+	  observer.observe(body, {
+	    childList: true,
+	    subtree: true,
+	    attributes: true,
+	    characterData: true,
+	  });
+	  const title = document.querySelector('title')
+	  if (title) {
+	    observer.observe(title, {
+	      childList: true,
+	      subtree: true,
+	      characterData: true,
+	    })
+	  }
+	  for (const item of getSingleNode(body)) {
+	    if (!rememberOriginal(item)) continue
+	    translate(item as HTMLElement);
+	  }
+	  if (title) {
+	    for (const item of getSingleNode(title)) {
+	      if (!rememberOriginal(item)) continue
+	      translate(item as HTMLElement);
+	    }
+	  }
+	  const translateValueTarget = (target: EventTarget | null) => {
+	    if (!(target instanceof HTMLElement) || !isTranslatableValueNode(target)) return
+	    if (!rememberOriginal(target)) return
+	    translate(target)
+	  }
+	  body.addEventListener('input', (event) => translateValueTarget(event.target), true)
+	  body.addEventListener('change', (event) => translateValueTarget(event.target), true)
+	  {
     const shadow = Element.prototype.attachShadow
     Element.prototype.attachShadow = function (...args) {
       const shadowRoot = shadow.apply(this, args)
