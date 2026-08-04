@@ -9,6 +9,7 @@ import type { BiliResponseData, BiliResponseResult, BiliSeasonInfoType } from ".
 import { UTILS } from "../common/utils";
 import type { FetchReplaceType } from "./types";
 import type { CustomXMLHttpRequest } from "./xml-http-request";
+import { publishSvpStream } from "../common/svp";
 const log = createLogger('Replace')
 
 
@@ -434,6 +435,7 @@ export const ResponseReplaceXMLHttpRequest = {
           log.info('playURL:', playURL)
           // 从cache的区域中取到了播放链接
           req.responseText = UTILS.replaceUpos(JSON.stringify(playURL), uposMap[upos], isReplaceAkamai, AREA_MARK_CACHE[params.ep_id])
+          publishSvpStream(JSON.parse(req.responseText), req.requestId)
           return;
         }
       }
@@ -463,6 +465,7 @@ export const ResponseReplaceXMLHttpRequest = {
         break
       }
     }
+    try { publishSvpStream(JSON.parse(req.responseText), req.requestId) } catch (_error) { publishSvpStream(resp, req.requestId) }
   },
 
   /**
@@ -470,9 +473,10 @@ export const ResponseReplaceXMLHttpRequest = {
    * @param {XMLHttpRequest} req 原请求结果
    * @returns {Promise<void>}
    */
-  "//api.bilibili.com/x/player/playurl": async (_req: CustomXMLHttpRequest) => {
+  "//api.bilibili.com/x/player/playurl": async (req: CustomXMLHttpRequest) => {
     // 默认pc，要referer
     UTILS.enableReferer()
+    try { publishSvpStream(JSON.parse(req.responseText), req.requestId) } catch (_error) { /* malformed response */ }
   },
 
   /**
@@ -489,6 +493,7 @@ export const ResponseReplaceXMLHttpRequest = {
       // 应用到所有视频
       req.responseText = UTILS.replaceUpos(req.responseText, uposMap[upos], isReplaceAkamai, undefined)
     }
+    try { publishSvpStream(JSON.parse(req.responseText), req.requestId) } catch (_error) { /* malformed response */ }
   },
 
   /**
@@ -715,6 +720,21 @@ export const ResponseReplaceXMLHttpRequest = {
 }
 
 export const ResponseReplaceFetch: Record<string, (data: FetchReplaceType) => Promise<Response>> = {
+
+  "https://api.bilibili.com/pgc/player/web/v2/playurl": async (data: FetchReplaceType) => {
+    try { publishSvpStream(await data.res.clone().json(), data.requestId) } catch (_error) { /* malformed response */ }
+    return data.res
+  },
+
+  "https://api.bilibili.com/x/player/playurl": async (data: FetchReplaceType) => {
+    try { publishSvpStream(await data.res.clone().json(), data.requestId) } catch (_error) { /* malformed response */ }
+    return data.res
+  },
+
+  "https://api.bilibili.com/x/player/wbi/playurl": async (data: FetchReplaceType) => {
+    try { publishSvpStream(await data.res.clone().json(), data.requestId) } catch (_error) { /* malformed response */ }
+    return data.res
+  },
 
   /**
    * 搜索

@@ -1,4 +1,4 @@
-import { createRoot } from "react-dom/client"
+import { createRoot, type Root } from "react-dom/client"
 import { createLogger, Logger } from "../../common/log"
 import { sleep } from "../../common/utils"
 import { replaceFetch, replaceXMLHttpRequest } from "../document/replace"
@@ -6,6 +6,13 @@ import SettingEntry from "../ui/main"
 import { getPageType } from "../common/page"
 import { Page } from "../common/types"
 import { registerSponsorBlock } from "../document/sponsor-block"
+import SvpControl from "../ui/player/SvpControl"
+import store from "../ui/store"
+import { Provider } from "react-redux"
+import { createElement as reactCreateElement } from "react"
+
+let svpControlElement: HTMLElement | undefined
+let svpControlRoot: Root | undefined
 
 export const initPlayerPage = () => {
   Logger.moduleName = 'Player'
@@ -45,6 +52,53 @@ export const initPlayerPage = () => {
       log.info('找到弹幕管理器', danmakuManage)
       
       registerSponsorBlock()
+      const unmountSvpControl = () => {
+        svpControlRoot?.unmount()
+        svpControlRoot = undefined
+        svpControlElement?.remove()
+        svpControlElement = undefined
+      }
+      const mountSvpControl = () => {
+        try {
+          const controlBars = Array.from(document.querySelectorAll<HTMLElement>('.bpx-player-control-bottom-right'))
+          const fallbackBar = danmakuManage.nodes.controlBottomRight as HTMLElement | undefined
+          if (fallbackBar && !controlBars.includes(fallbackBar)) controlBars.push(fallbackBar)
+          const visibleBars = controlBars.filter(controlBar => {
+            const rect = controlBar.getBoundingClientRect()
+            const style = getComputedStyle(controlBar)
+            return rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden'
+          })
+          const fullscreenScope = document.fullscreenElement
+            || document.querySelector('.bpx-state-fullscreen, .bpx-player-container[data-screen="full"]')
+          const visibleBar = visibleBars.find(controlBar => fullscreenScope?.contains(controlBar)) || visibleBars[0]
+          const quality = visibleBar?.querySelector('.bpx-player-ctrl-quality')
+          if (!quality) return false
+          if (!svpControlElement) {
+            svpControlElement = document.createElement('div')
+            svpControlElement.className = 'bpx-player-ctrl-btn bili-svp-root'
+            quality.before(svpControlElement)
+            svpControlRoot = createRoot(svpControlElement)
+            svpControlRoot.render(reactCreateElement(Provider, { store, children: reactCreateElement(SvpControl) }))
+          } else if (svpControlElement.parentElement !== visibleBar || svpControlElement.nextElementSibling !== quality) {
+            quality.before(svpControlElement)
+          }
+          return true
+        } catch (error) {
+          log.error('挂载补帧控件失败', error)
+          return false
+        }
+      }
+      mountSvpControl()
+      const controlObserver = new MutationObserver(() => {
+        mountSvpControl()
+      })
+      controlObserver.observe(document.body, { childList: true, subtree: true })
+      const controlPoller = window.setInterval(mountSvpControl, 1000)
+      window.addEventListener('beforeunload', () => {
+        controlObserver.disconnect()
+        window.clearInterval(controlPoller)
+        unmountSvpControl()
+      }, { once: true })
       {
         const createElement = (apeedRate: number) => {
           const rate = document.createElement('li')

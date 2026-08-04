@@ -6,11 +6,14 @@
 // 导入 EventEmitter 类型
 import { EventEmitter } from 'events';
 import https from "https";
+import type { SvpStream } from "./extension/common/svp";
 
 // 正确定义 NodeJS 全局变量
 declare global {
   // 保持 Window 接口的定义
   interface Window {
+    __biliSvpLatestStream?: SvpStream
+    __biliSvpStreamsByQuality?: Record<number, SvpStream>
     __segment_base_map__: Record<string, [string, string]>
     biliBridge: {
       callNative: <T>(action: string, ...args: unknown[]) => Promise<T>
