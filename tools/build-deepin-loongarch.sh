@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 root_dir=$(cd `dirname $0`/.. && pwd -P)
 
@@ -49,4 +49,3 @@ cat /etc/passwd
 user=$(getent passwd $DOCKER_UID | cut -d: -f1)
 su - $user -c "BUILD_ARCH=$BUILD_ARCH /workspace/tools/build-deepin.sh $BUILD_TAG"
 EOF
-

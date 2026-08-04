@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 root_dir=$(cd `dirname $0`/.. && pwd -P)
 
@@ -20,6 +20,6 @@ fail() {
 }
 
 cd $root_dir/app
-asar e app.asar app
+pnpm exec asar e "$root_dir/app/app.asar" "$root_dir/app/app"
 rm -rf extensions
 ln -s ../extensions extensions

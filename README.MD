@@ -38,6 +38,50 @@
 6. 外区搜索
 7. [弹幕共享](docs/help/弹幕共享.MD)
 
+## 技术栈
+
+- TypeScript（严格模式）与 Vite 构建
+- React 19、Redux Toolkit、Ant Design 和 Sass 构建注入式设置界面
+- Electron 43 与 electron-builder 打包桌面客户端
+- pnpm 10 管理依赖
+- 浏览器端扩展负责页面注入、请求拦截和本地存储；Electron 侧补丁负责客户端集成
+
+## 开发指南
+
+### 环境准备
+
+需要当前 Node.js LTS 和 pnpm 10。可使用 `corepack enable` 提供 pnpm，然后安装依赖：
+
+```bash
+pnpm install
+```
+
+NixOS 用户可直接使用仓库提供的开发环境：
+
+```bash
+nix develop
+```
+
+首次准备客户端源码和资源时运行：
+
+```bash
+tools/setup-bilibili.sh
+```
+
+该脚本会下载并解包上游客户端，构建扩展，并生成 `app/` 下的运行文件。
+
+### 常用命令
+
+```bash
+pnpm dev       # 监听并重建注入脚本和扩展
+pnpm build     # TypeScript 检查并生成生产构建
+pnpm lint      # 运行 ESLint
+bin/bilibili   # 启动已准备好的客户端
+pnpm pkg-linux # 构建 Linux 安装包
+```
+
+源码主要位于 `src/extension/`（页面注入和设置 UI）与 `src/inject/`（Electron 侧补丁）。请修改 `src/`、`res/`、`tools/` 或 `conf/` 中的源文件，不要手动修改生成的 `app/`、`dist/`、`tmp/` 和 `cache/` 内容。提交前建议运行 `pnpm build`、`pnpm lint` 和 `git diff --check`。更完整的协作约定见 [AGENTS.md](AGENTS.md)。
+
 ## 使用方法
 
 ### 自动化构建
@@ -76,6 +120,10 @@ Emerge from [gentoo-zh overlay](https://github.com/microcai/gentoo-zh/tree/maste
 ### 额外补充
 
 如果阁下不喜欢电脑多装一个 Electron，可以自行提取发布版的 `app.asar` 并使用已安装 Electron 启动，建议的 Electron 版本是：`43.1.1`（`VaapiOnNvidiaGPUs` 需要 Electron 43+ / Chromium 130+）
+
+### 本地历史记录备份
+
+历史记录以可直接阅读的 JSON 保存为 Electron `app.getPath("userData")` 目录中的 `history-backup.json`。使用默认 Linux 配置时，文件的确切位置为 `~/.config/bilibili/history-backup.json`；内容按账号隔离，并从新到旧排序。文件直接保存服务器返回的原始历史对象，分页键和时间戳在读取时推导，不会在每个条目中重复保存。刷新历史记录第一页后，会在后台限速扫描其余服务器页面；前台滚动请求始终优先，并直接使用原始服务器响应。完整扫描结束后，`serverOldest` 会记录服务器最旧条目：比该边界新的本地内容会由当前服务器快照替换，而更旧的本地内容保持不变。这些保留条目会在实时服务器历史记录之后继续显示在正常历史页面中。
 
 ## GPU 加速配置
 

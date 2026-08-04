@@ -2,6 +2,7 @@ import { app } from "electron";
 import { createBilibiliServer } from "./common/bilibili";
 import { electronOverwrite, electronOverwriteAfterReady, hookIsPackaged, initializeGlobalData, nodeJsOverWrite, parseElectronFlag, registerExtension, registerIpcHandle, registerProtocol, replaceBrowserWindow } from "./common/electron-tool";
 import { createLogger, Logger } from "../common/log";
+import { registerHistoryStoreIpc } from "./common/history-store";
 (() => {
   const log = createLogger('Index')
   Logger.moduleName = 'Index'
@@ -13,6 +14,7 @@ import { createLogger, Logger } from "../common/log";
   electronOverwrite()
   nodeJsOverWrite()
   registerIpcHandle()
+  registerHistoryStoreIpc()
   // 加载主代码
   module.require("./main/app.js")
   // 启动app

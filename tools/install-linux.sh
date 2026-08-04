@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 
 APPDIR=$(cd `dirname $0`/.. && pwd -P)

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 root_dir=$(cd `dirname $0`/.. && pwd -P)
 
@@ -20,6 +20,13 @@ fail() {
 }
 
 res_dir="$root_dir/tmp/bili/resources"
+if [ ! -f "$res_dir/app.asar" ]; then
+  res_dir="$root_dir/app"
+fi
+if [ ! -f "$res_dir/app.asar" ]; then
+  fail "未找到 app.asar；请先运行 tools/setup-bilibili.sh"
+  exit 1
+fi
 mkdir -p "$root_dir/app"
 
 notice "构建拓展"
@@ -34,6 +41,7 @@ cp -r "$root_dir/dist/extension" "$root_dir/app/extensions/bilibili"
 notice "复制AI脚本"
 cp "$root_dir/res/scripts/transcribe.py" "$root_dir/app"
 cd "$res_dir"
-asar e app.asar app
-cp "$root_dir/dist/inject/index.js" "app/index.js"
-asar p app app.asar
+rm -rf "$res_dir/app"
+pnpm exec asar e "$res_dir/app.asar" "$res_dir/app"
+cp "$root_dir/dist/inject/index.js" "$res_dir/app/index.js"
+pnpm exec asar p "$res_dir/app" "$res_dir/app.asar"

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 root_dir=$(cd `dirname $0`/.. && pwd -P)
 
 mv $root_dir/app/app/main/assets/bili-inject.js $root_dir/app/app/main/assets/bili-inject.original.js

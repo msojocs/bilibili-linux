@@ -2,6 +2,12 @@
 import { BiliBiliApi, type AreaType } from "../common/bilibili-api";
 import { ChineseConversionAPI } from "../common/chinese-conversion";
 import { CustomIndexedDB } from "../common/db";
+import {
+  archiveServerHistoryPage,
+  markForegroundHistoryRequest,
+  mergeLocalHistoryWhenServerEmpty,
+  type HistoryResponse,
+} from "../common/history-archive";
 import type { BiliPlayUrlResult } from "../common/interface/bili-playurl/playurl.type";
 import { createLogger } from "../../common/log";
 import { getSegments } from "../common/sponsor-block";
@@ -10,6 +16,40 @@ import { UTILS } from "../common/utils";
 import type { FetchReplaceType } from "./types";
 import type { CustomXMLHttpRequest } from "./xml-http-request";
 const log = createLogger('Replace')
+const nativeFetch = window.fetch.bind(window)
+const handledHistoryRequests = new WeakMap<CustomXMLHttpRequest, Promise<void>>()
+
+const handleHistoryResponse = (req: CustomXMLHttpRequest) => {
+  const handled = handledHistoryRequests.get(req)
+  if (handled) return handled
+
+  markForegroundHistoryRequest()
+  const task = (async () => {
+    const response = (req.responseType === 'json' && req.response
+      ? req.response
+      : JSON.parse(req.responseText || '{}')) as HistoryResponse
+    const list = response.data?.list
+
+    if (Array.isArray(list) && list.length > 0) {
+      void archiveServerHistoryPage(
+        req.responseURL || 'https://api.bilibili.com/x/web-interface/history/cursor',
+        req._params,
+        response,
+        nativeFetch,
+      ).catch(error => log.error('历史记录 JSON 备份失败：', error))
+      return
+    }
+
+    const merged = await mergeLocalHistoryWhenServerEmpty(req._params, response)
+    if ((merged.data?.list?.length || 0) === 0) return
+    req.responseText = JSON.stringify(merged)
+    if (req.responseType === 'json') req.response = merged
+  })().catch(error => {
+    log.error('历史记录本地读取失败：', error)
+  })
+  handledHistoryRequests.set(req, task)
+  return task
+}
 
 
 const space_account_info_map: Record<string, any> = {
@@ -222,6 +262,9 @@ const uposMap: Record<string, string> = {
 const AREA_MARK_CACHE: Record<string, AreaType> = {}
 
 export const ResponseReplaceXMLHttpRequest = {
+
+  "https://api.bilibili.com/x/web-interface/history/cursor": handleHistoryResponse,
+  "//api.bilibili.com/x/web-interface/history/cursor": handleHistoryResponse,
 
   /**
    * 番剧信息
@@ -715,6 +758,33 @@ export const ResponseReplaceXMLHttpRequest = {
 }
 
 export const ResponseReplaceFetch: Record<string, (data: FetchReplaceType) => Promise<Response>> = {
+
+  "https://api.bilibili.com/x/web-interface/history/cursor": async (data: FetchReplaceType) => {
+    markForegroundHistoryRequest()
+    const response = await data.res.clone().json() as HistoryResponse
+    const list = response.data?.list
+
+    if (Array.isArray(list) && list.length > 0) {
+      void archiveServerHistoryPage(
+        data.urlInfo.path,
+        data.urlInfo.params,
+        response,
+        nativeFetch,
+      ).catch(error => log.error('历史记录 JSON 备份失败：', error))
+      return data.res
+    }
+
+    const merged = await mergeLocalHistoryWhenServerEmpty(data.urlInfo.params, response)
+    if ((merged.data?.list?.length || 0) === 0) return data.res
+
+    const headers = new Headers(data.res.headers)
+    headers.set('content-type', 'application/json')
+    return new Response(JSON.stringify(merged), {
+      status: data.res.status,
+      statusText: data.res.statusText,
+      headers,
+    })
+  },
 
   /**
    * 搜索
