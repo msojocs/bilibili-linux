@@ -1,7 +1,9 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
-import type { SvpSettings } from '../../common/svp'
+import type { SvpSettings, SvpTargetFpsProfiles } from '../../common/svp'
+import { defaultSvpTargetFpsProfiles, SVP_MAX_TARGET_FPS } from '../../common/svp'
 
 const defaults: SvpSettings = {
+  autoTargetFps: false,
   artifactMasking: 0,
   bufferSeconds: 4,
   coarseWidth: 530,
@@ -18,7 +20,7 @@ const defaults: SvpSettings = {
   motionRefine: false,
   nvofGrid: 24,
   nvofQuality: 2,
-  osd: true,
+  osd: false,
   rawRenderer: 'auto',
   refineThreshold: 250,
   rifeGpu: 0,
@@ -33,6 +35,7 @@ const defaults: SvpSettings = {
   shader: 13,
   sourceDecoder: 'auto',
   targetFps: 120,
+  targetFpsProfiles: defaultSvpTargetFpsProfiles,
   transport: 'auto',
   useGpu: false,
   wideSearch: 0,
@@ -47,6 +50,13 @@ const loadSettings = (): SvpSettings => {
     if (!saved.sourceDecoder) saved.sourceDecoder = saved.useHardwareDecode === false ? 'software' : 'auto'
     if ((saved.sourceDecoder as string) === 'qsv') saved.sourceDecoder = 'qsv-copy'
     if (!Number.isInteger(saved.rifeModel) || Number(saved.rifeModel) < 0 || Number(saved.rifeModel) > 9) saved.rifeModel = 9
+    const savedProfiles = saved.targetFpsProfiles as Partial<SvpTargetFpsProfiles> | undefined
+    saved.targetFpsProfiles = Object.fromEntries(
+      (Object.keys(defaultSvpTargetFpsProfiles) as Array<keyof SvpTargetFpsProfiles>).map(key => {
+        const value = Number(savedProfiles?.[key])
+        return [key, Number.isFinite(value) ? Math.min(SVP_MAX_TARGET_FPS, Math.max(0, Math.round(value))) : defaultSvpTargetFpsProfiles[key]]
+      }),
+    ) as unknown as SvpTargetFpsProfiles
     const settings = Object.fromEntries(
       (Object.keys(defaults) as Array<keyof SvpSettings>)
         .map(key => [key, saved[key] ?? defaults[key]]),
@@ -67,12 +77,17 @@ export const svpSlice = createSlice({
       return action.payload
     },
     updateSvpTargetFps: (state, action: PayloadAction<number>) => {
-      state.targetFps = Math.min(240, Math.max(30, Math.round(action.payload)))
+      state.targetFps = Math.min(SVP_MAX_TARGET_FPS, Math.max(30, Math.round(action.payload)))
+      state.autoTargetFps = false
+      localStorage.setItem('svp_setting', JSON.stringify(state))
+    },
+    updateSvpAutoTargetFps: (state, action: PayloadAction<boolean>) => {
+      state.autoTargetFps = action.payload
       localStorage.setItem('svp_setting', JSON.stringify(state))
     },
     svpSyncState: (state, action: PayloadAction<unknown>) => ({ ...state, ...(action.payload as Partial<SvpSettings>) }),
   },
 })
 
-export const { saveSvpSetting, updateSvpTargetFps, svpSyncState } = svpSlice.actions
+export const { saveSvpSetting, updateSvpAutoTargetFps, updateSvpTargetFps, svpSyncState } = svpSlice.actions
 export default svpSlice.reducer

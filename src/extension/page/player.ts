@@ -10,6 +10,7 @@ import SvpControl from "../ui/player/SvpControl"
 import store from "../ui/store"
 import { Provider } from "react-redux"
 import { createElement as reactCreateElement } from "react"
+import { installSvpCodecProbe } from "../common/svp"
 
 let svpControlElement: HTMLElement | undefined
 let svpControlRoot: Root | undefined
@@ -17,6 +18,7 @@ let svpControlRoot: Root | undefined
 export const initPlayerPage = () => {
   Logger.moduleName = 'Player'
   const log = createLogger('Entry')
+  installSvpCodecProbe()
   log.info('replace XMLHttpRequest...')
   replaceXMLHttpRequest()
   log.info('replace fetch...')

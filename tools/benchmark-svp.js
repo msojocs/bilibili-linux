@@ -178,6 +178,7 @@ const numericSample = sample => {
   const load = rowText(sample, '负载')
   const memory = rowText(sample, '内存')
   const dropped = rowText(sample, '丢帧')
+  const debug = rowText(sample, '调试')
   const flow = rowText(sample, '流程')
   return {
     actualMiBs: metric(transfer, '实测', '\\s+MiB/s'),
@@ -198,6 +199,7 @@ const numericSample = sample => {
     pipelineBacklogMiB: metric(transfer, '管线积压', '\\s+MiB'),
     presentedFps: metric(fps, '呈现'),
     productionPeriodMs: metric(stages, '产出周期', 'ms'),
+    queueWaits: metric(debug, '队列等待'),
     receivedFps: metric(fps, '接收'),
     rendererCpu: metric(load, 'Renderer', '%'),
     rendererFrameMs: metric(stages, '主线程', 'ms'),
@@ -233,6 +235,7 @@ const summarize = samples => {
   summary.maxAvSyncSeconds = Math.max(...numeric.map(sample => Math.abs(sample.avSyncSeconds)).filter(Number.isFinite), 0)
   summary.maxDroppedFrames = Math.max(...numeric.map(sample => sample.droppedFrames).filter(Number.isFinite), 0)
   summary.maxPipelineBacklogMiB = Math.max(...numeric.map(sample => sample.pipelineBacklogMiB).filter(Number.isFinite), 0)
+  summary.maxQueueWaits = Math.max(...numeric.map(sample => sample.queueWaits).filter(Number.isFinite), 0)
   return summary
 }
 
@@ -313,12 +316,12 @@ const markdown = report => {
     '',
     `Source: ${report.source.width}x${report.source.height} @ ${report.source.playbackRate.toFixed(2)}x`,
     '',
-    '| Profile | FPS | Renderer | Status | Generated | Received | Presented | MiB/s | Main median/p95 | Draw median/p95 | Dropped | A/V max | mpv CPU | Renderer CPU | GPU |',
-    '| --- | ---: | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |',
+    '| Profile | FPS | Renderer | Status | Generated | Received | Presented | MiB/s | Main median/p95 | Draw median/p95 | Dropped | Queue waits | A/V max | mpv CPU | Renderer CPU | GPU |',
+    '| --- | ---: | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |',
   ]
   for (const result of report.results) {
     const value = result.summary || {}
-    lines.push(`| ${result.profile} | ${result.targetFps} | ${value.rendererBackend ?? '--'} | ${result.error ? `FAIL: ${result.error.replaceAll('|', '/')}` : 'OK'} | ${value.generatedFps?.toFixed(1) ?? '--'} | ${value.receivedFps?.toFixed(1) ?? '--'} | ${value.presentedFps?.toFixed(1) ?? '--'} | ${value.actualMiBs?.toFixed(1) ?? '--'} | ${value.rendererFrameMs?.toFixed(2) ?? '--'}/${value.rendererFrameP95Ms?.toFixed(2) ?? '--'} ms | ${value.drawMs?.toFixed(2) ?? '--'}/${value.drawP95Ms?.toFixed(2) ?? '--'} ms | ${value.maxDroppedFrames?.toFixed(0) ?? '--'} | ${value.maxAvSyncSeconds?.toFixed(3) ?? '--'}s | ${value.mpvCpu?.toFixed(0) ?? '--'}% | ${value.rendererCpu?.toFixed(0) ?? '--'}% | ${value.gpuUtilization?.toFixed(0) ?? '--'}% |`)
+    lines.push(`| ${result.profile} | ${result.targetFps} | ${value.rendererBackend ?? '--'} | ${result.error ? `FAIL: ${result.error.replaceAll('|', '/')}` : 'OK'} | ${value.generatedFps?.toFixed(1) ?? '--'} | ${value.receivedFps?.toFixed(1) ?? '--'} | ${value.presentedFps?.toFixed(1) ?? '--'} | ${value.actualMiBs?.toFixed(1) ?? '--'} | ${value.rendererFrameMs?.toFixed(2) ?? '--'}/${value.rendererFrameP95Ms?.toFixed(2) ?? '--'} ms | ${value.drawMs?.toFixed(2) ?? '--'}/${value.drawP95Ms?.toFixed(2) ?? '--'} ms | ${value.maxDroppedFrames?.toFixed(0) ?? '--'} | ${value.maxQueueWaits?.toFixed(0) ?? '--'} | ${value.maxAvSyncSeconds?.toFixed(3) ?? '--'}s | ${value.mpvCpu?.toFixed(0) ?? '--'}% | ${value.rendererCpu?.toFixed(0) ?? '--'}% | ${value.gpuUtilization?.toFixed(0) ?? '--'}% |`)
   }
   lines.push('')
   return `${lines.join('\n')}\n`

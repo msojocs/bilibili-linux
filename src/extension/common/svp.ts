@@ -8,10 +8,50 @@ export type SvpWideSearch = 0 | 1 | 2 | 3
 export type SvpEngine = 'svpflow' | 'nvof' | 'rife'
 export type SvpEncoderBackend = 'auto' | 'nvenc' | 'qsv' | 'amf' | 'x264' | `vaapi:${string}`
 export type SvpSourceDecoder = 'auto' | 'software' | 'vulkan-copy' | 'nvdec-copy' | 'vaapi-copy' | 'qsv-copy' | 'd3d11va-copy' | 'dxva2-copy'
-export type SvpTransport = 'auto' | 'raw' | 'h264'
+export type SvpTransport = 'auto' | 'shm' | 'raw' | 'h264'
+
+export const SVP_MAX_TARGET_FPS = 600
+
+export const resolveSvpSceneMode = (
+  requestedMode: SvpSceneMode,
+  sourceFps?: number,
+  targetFps?: number,
+): SvpSceneMode => {
+  const source = Number(sourceFps)
+  const target = Number(targetFps)
+  if (!Number.isFinite(source) || source <= 0 || !Number.isFinite(target) || target <= 0) return requestedMode
+
+  // SVPFlow rejects mode 2 below 2x interpolation and mode 1 when the output
+  // rate is below the source rate. Playback speed can temporarily create both
+  // combinations even when the configured display target is much higher.
+  if (requestedMode === 2 && target + 0.001 < source * 2) {
+    return target + 0.001 >= source ? 1 : 3
+  }
+  if (requestedMode === 1 && target + 0.001 < source) return 3
+  return requestedMode
+}
+
+export interface SvpTargetFpsProfiles {
+  fhd120: number
+  fhd30: number
+  fhd60: number
+  hd120: number
+  hd30: number
+  hd60: number
+  low120: number
+  low30: number
+  low60: number
+  sd120: number
+  sd30: number
+  sd60: number
+  uhd120: number
+  uhd30: number
+  uhd60: number
+}
 
 export interface SvpSettings {
   artifactMasking: number
+  autoTargetFps: boolean
   bufferSeconds: number
   coarseWidth: number
   debug: boolean
@@ -42,6 +82,7 @@ export interface SvpSettings {
   shader: SvpShader
   sourceDecoder: SvpSourceDecoder
   targetFps: number
+  targetFpsProfiles: SvpTargetFpsProfiles
   transport: SvpTransport
   useGpu: boolean
   wideSearch: SvpWideSearch
@@ -61,10 +102,100 @@ export interface SvpStream {
   width?: number
 }
 
+export const defaultSvpTargetFpsProfiles: SvpTargetFpsProfiles = {
+  fhd120: 120,
+  fhd30: 120,
+  fhd60: 120,
+  hd120: 120,
+  hd30: 120,
+  hd60: 120,
+  low120: 120,
+  low30: 120,
+  low60: 120,
+  sd120: 120,
+  sd30: 120,
+  sd60: 120,
+  uhd120: 0,
+  uhd30: 60,
+  uhd60: 0,
+}
+
+export const getSvpResolutionProfile = (stream?: Pick<SvpStream, 'height' | 'width'>) => {
+  const edges = [Number(stream?.width), Number(stream?.height)].filter(value => Number.isFinite(value) && value > 0)
+  const shortEdge = edges.length > 1 ? Math.min(...edges) : edges[0] || 0
+  if (shortEdge >= 1800) return 'uhd'
+  if (shortEdge >= 1000 && shortEdge <= 1200) return 'fhd'
+  if (shortEdge >= 650 && shortEdge <= 800) return 'hd'
+  if (shortEdge >= 430 && shortEdge <= 550) return 'sd'
+  if (shortEdge >= 300 && shortEdge <= 400) return 'low'
+  return undefined
+}
+
+export const resolveSvpTargetFps = (settings: SvpSettings, stream?: SvpStream) => {
+  const fallback = Math.min(SVP_MAX_TARGET_FPS, Math.max(30, Math.round(Number(settings.targetFps) || 120)))
+  if (!settings.autoTargetFps || !stream?.height || !stream.frameRate) return fallback
+  const resolution = getSvpResolutionProfile(stream)
+  if (!resolution) return fallback
+  const cadence = stream.frameRate <= 45 ? '30' : stream.frameRate <= 90 ? '60' : '120'
+  const key = `${resolution}${cadence}` as keyof SvpTargetFpsProfiles
+  const configured = Number(settings.targetFpsProfiles?.[key])
+  return Number.isFinite(configured) ? Math.min(SVP_MAX_TARGET_FPS, Math.max(0, Math.round(configured))) : fallback
+}
+
+export const shouldInterpolateSvpStream = (targetFps: number, stream?: SvpStream) => (
+  targetFps > 0 && (!stream?.frameRate || targetFps > stream.frameRate + 0.5)
+)
+
 const streamEvent = 'bili-svp-stream'
 let requestSequence = 0
 let latestPlayurlRequest = 0
 const requestPages = new Map<number, string>()
+
+const codecFamily = (codec?: string) => {
+  const normalized = (codec || '').trim().toLowerCase()
+  if (/^(?:avc|avc1|avc3)(?:\.|$)/.test(normalized)) return 'avc'
+  if (/^(?:hevc|hev1|hvc1)(?:\.|$)/.test(normalized)) return 'hevc'
+  if (/^(?:av1|av01)(?:\.|$)/.test(normalized)) return 'av1'
+  return normalized.split('.')[0]
+}
+
+const videoCodecFromMime = (mime: string) => (
+  mime.match(/video\/[^;]+\s*;\s*codecs\s*=\s*["']?([^"',\s]+)/i)?.[1]
+)
+
+export const installSvpCodecProbe = () => {
+  if (window.__biliSvpCodecProbeInstalled || typeof MediaSource !== 'function') return
+  const original = MediaSource.prototype.addSourceBuffer
+  MediaSource.prototype.addSourceBuffer = function addSourceBuffer(mimeType: string) {
+    const codec = videoCodecFromMime(mimeType)
+    if (codec) window.__biliSvpActiveVideoCodec = codec
+    return original.call(this, mimeType)
+  }
+  window.__biliSvpCodecProbeInstalled = true
+}
+
+export const getActiveSvpVideoCodec = () => {
+  if (window.__biliSvpActiveVideoCodec) return window.__biliSvpActiveVideoCodec
+  const containers = Array.from(document.querySelectorAll<HTMLElement>('.bpx-player-info-container'))
+  for (let index = containers.length - 1; index >= 0; index -= 1) {
+    const codec = videoCodecFromMime(containers[index].textContent || '')
+    if (codec) return codec
+  }
+  const explicit = document.querySelector<HTMLInputElement>('.bpx-player-ctrl-setting-codec input:checked')?.value
+  if (explicit === '1') return 'hevc'
+  if (explicit === '2') return 'avc'
+  if (explicit === '3') return 'av1'
+  return undefined
+}
+
+const selectSvpStream = (streams: SvpStream[], preferredCodec?: string) => {
+  if (streams.length === 0) return undefined
+  if (!preferredCodec) return streams[0]
+  const normalized = preferredCodec.toLowerCase()
+  return streams.find(stream => stream.codec?.toLowerCase() === normalized)
+    || streams.find(stream => codecFamily(stream.codec) === codecFamily(preferredCodec))
+    || streams[0]
+}
 
 export const getSvpPageIdentity = () => {
   const params = new URLSearchParams(location.search)
@@ -147,10 +278,8 @@ export const extractSvpStreams = (payload: unknown, requestId?: number): SvpStre
   const videoInfo = firstObject(data?.video_info) || data
   const dash = firstObject(videoInfo?.dash) || firstObject(data?.dash)
   const video = Array.isArray(dash?.video) ? dash.video.map(firstObject).filter(Boolean) as Record<string, unknown>[] : []
-  const qualities = [...new Set(video.map(item => numberValue(item.id)).filter((value): value is number => Boolean(value)))]
-  return qualities.flatMap(quality => {
-    const candidates = video.filter(item => numberValue(item.id) === quality)
-    const videoItem = candidates.find(item => numberValue(item.codecid) === 7 || String(item.codecs || '').startsWith('avc')) || candidates[0]
+  return video.flatMap(videoItem => {
+    const quality = numberValue(videoItem.id)
     const videoUrls = urls(videoItem?.baseUrl, videoItem?.base_url, videoItem?.backupUrl, videoItem?.backup_url)
     const videoUrl = videoUrls[0]
     if (!videoUrl) return []
@@ -169,13 +298,14 @@ export const extractSvpStreams = (payload: unknown, requestId?: number): SvpStre
   })
 }
 
-export const extractSvpStream = (payload: unknown, requestId?: number): SvpStream | undefined => {
+export const extractSvpStream = (payload: unknown, requestId?: number, preferredCodec?: string): SvpStream | undefined => {
   const root = firstObject(payload)
   const data = firstObject(root?.data) || firstObject(root?.result) || root
   const videoInfo = firstObject(data?.video_info) || data
   const quality = numberValue(videoInfo?.quality) || numberValue(data?.quality)
   const streams = extractSvpStreams(payload, requestId)
-  return streams.find(stream => stream.quality === quality) || streams[0]
+  return selectSvpStream(streams.filter(stream => stream.quality === quality), preferredCodec)
+    || selectSvpStream(streams, preferredCodec)
 }
 
 export const publishSvpStream = (payload: unknown, requestId?: number) => {
@@ -184,22 +314,30 @@ export const publishSvpStream = (payload: unknown, requestId?: number) => {
   const currentRequestId = window.__biliSvpLatestStream?.requestId || 0
   if (requestId && requestId < currentRequestId) return
   const streams = extractSvpStreams(payload, requestId)
-  const stream = extractSvpStream(payload, requestId)
+  const stream = extractSvpStream(payload, requestId, getActiveSvpVideoCodec())
   if (!stream) return
-  window.__biliSvpStreamsByQuality = Object.fromEntries(streams.map(item => [item.quality || 0, item]))
+  window.__biliSvpStreamsByQuality = streams.reduce<Record<number, SvpStream[]>>((grouped, item) => {
+    const quality = item.quality || 0
+    grouped[quality] ||= []
+    grouped[quality].push(item)
+    return grouped
+  }, {})
   window.__biliSvpLatestStream = stream
   window.dispatchEvent(new CustomEvent<SvpStream>(streamEvent, { detail: stream }))
 }
 
-export const getLatestSvpStream = () => window.__biliSvpLatestStream
+export const getLatestSvpStream = () => {
+  const latest = window.__biliSvpLatestStream
+  return getSvpStreamForQuality(latest?.quality) || latest
+}
 
 export const clearSvpStreams = () => {
   window.__biliSvpLatestStream = undefined
   window.__biliSvpStreamsByQuality = {}
 }
 
-export const getSvpStreamForQuality = (quality?: number) => (
-  quality ? window.__biliSvpStreamsByQuality?.[quality] : undefined
+export const getSvpStreamForQuality = (quality?: number, preferredCodec = getActiveSvpVideoCodec()) => (
+  quality ? selectSvpStream(window.__biliSvpStreamsByQuality?.[quality] || [], preferredCodec) : undefined
 )
 
 export const onSvpStream = (listener: (stream: SvpStream) => void) => {
