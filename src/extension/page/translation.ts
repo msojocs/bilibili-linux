@@ -179,12 +179,22 @@ const registerLanguageHandle = async () => {
   
 
   const observer = new MutationObserver((mutations) => {
+    // 中文环境不翻译，直接跳过，避免无意义的全量 DOM 遍历（切集时会导致主线程长时间阻塞）
+    if (!currentDict) return
     // log.info('[MutationObserver]: mutations', mutations);
     mutations.forEach((mutation) => {
       if (mutation.type === 'childList') {
         const node = mutation.target
+        // 只处理新增的节点，避免每次都对 mutation.target 的整棵子树做 O(n²) 遍历
+        // （切集重建 DOM 时会导致渲染主线程长时间阻塞）
+        const list: (HTMLElement | Node)[] = []
+        const seen = new Set<Node>()
+        for (const added of mutation.addedNodes) {
+          if (!added || seen.has(added)) continue
+          seen.add(added)
+          list.push(...getSingleNode(added as HTMLElement))
+        }
         if (node.nodeType === Node.ELEMENT_NODE && node instanceof HTMLElement) {
-          const list = getSingleNode(node)
           // log.info('list:', list)
           for (const item of list) {
             if (!item.textContent) continue
@@ -196,7 +206,6 @@ const registerLanguageHandle = async () => {
             translate(item as HTMLElement);
           }
         } else if (node.nodeType === Node.DOCUMENT_FRAGMENT_NODE && node instanceof ShadowRoot) {
-          const list = getSingleNode(node)
           // log.info('list:', list)
           for (const item of list) {
             if (!item.textContent) continue
