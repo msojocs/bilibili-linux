@@ -7,6 +7,7 @@ import { initLoginPage } from "./page/login"
 import { initPlayerPage } from "./page/player"
 import { initSearchPage } from "./page/search"
 import { initTranslation } from "./page/translation"
+import { initStore } from "./ui/store"
 
 (() => {
   Logger.moduleName = 'Page'
@@ -18,6 +19,7 @@ import { initTranslation } from "./page/translation"
   if (!window.biliBridge?.callNative) {
     window.biliBridge = parent?.window?.biliBridge
   }
+  void initStore()
   switch(pt) {
     case Page.Login:
       initLoginPage()

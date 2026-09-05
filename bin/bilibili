@@ -18,10 +18,10 @@ elif [ "$DEBUG" == '2' ]; then
   if [ ! -d "$root_dir/app/app" ];then
     cd "$root_dir/app"
     asar e app.asar app
-    cd "$root_dir/app/extensions"
-    rm -rf bilibili
-    ln -s ../../dist/extension bilibili
   fi
+  cd "$root_dir/app/extensions"
+  rm -rf bilibili
+  ln -s ../../dist/extension bilibili
   cd "$root_dir"
   ELECTRON_FORCE_IS_PACKAGED=true "$root_dir/electron/electron" "$root_dir/app/app" --no-sandbox "$@"
 else

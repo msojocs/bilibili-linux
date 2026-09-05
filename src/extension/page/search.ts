@@ -21,6 +21,7 @@ export const initSearchPage = () => {
         continue
       }
       const root = document.createElement('div')
+      root.dataset.biliI18nSkip = ''
       root.classList.add('custom-setting')
       buttonArea.prepend(root)
       createRoot(root).render(SettingEntry())

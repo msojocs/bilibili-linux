@@ -29,6 +29,7 @@ export const initPlayerPage = () => {
     }
 
     const root = document.createElement('div')
+    root.dataset.biliI18nSkip = ''
     const type = getPageType()
     if (type === Page.Home)
       headerLeft.prepend(root)

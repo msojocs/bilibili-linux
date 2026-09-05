@@ -25,7 +25,7 @@ export default function LanguageSetting() {
           onChange={updateLanguage}
           options={[
             {
-              value: 'zhCn',
+              value: 'zh-CN',
               label: '中文'
             },
             {

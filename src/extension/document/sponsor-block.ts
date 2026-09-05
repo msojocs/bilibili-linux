@@ -4,6 +4,7 @@ import SkipNoticeWrap from "../ui/sponsor-block/SkipNoticeWrap";
 export const registerSponsorBlock = () => {
   const rootStore = window.danmakuManage.rootStore
   const noticePanel = document.createElement('div')
+  noticePanel.dataset.biliI18nSkip = ''
   noticePanel.classList.add('bpx-player-sponsor-panel-wrap')
   createRoot(noticePanel).render(SkipNoticeWrap())
   rootStore.nodes.videoArea.appendChild(noticePanel)

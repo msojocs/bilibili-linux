@@ -1,46 +1,27 @@
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
+import { defaultLanguage, normalizeLanguage, type Language } from '../../common/translation/language'
 
-import { createSlice } from '@reduxjs/toolkit';
-import { requestContent } from '../../document/communication';
-import { createLogger } from '../../../common/log';
-
-
-const log = createLogger('storage')
-
-export interface CounterState {
-  lang: string
+export interface StorageState {
+  lang: Language
 }
-const initialState: CounterState = {
-  lang: 'zhCn'
-};
-// 创建一个 Slice 
+
+const initialState: StorageState = { lang: defaultLanguage }
+
 export const storageSlice = createSlice({
   name: 'storage',
   initialState,
-  // 定义 reducers 并生成关联的操作
   reducers: {
-    changeLanguage: (state, action) => {
-      state.lang = action.payload;
-      requestContent<string>('setStorage', { key: 'lang', value: state.lang });
-      const targetDocument = parent === window ? document : parent.document
-      targetDocument.dispatchEvent(new CustomEvent('changeLanguage', { detail: state.lang }))
+    changeLanguage(state, action: PayloadAction<string>) {
+      state.lang = normalizeLanguage(action.payload)
     },
-    // 数据同步方法
-    storageSync: (state, action) => {
-      // 合并同步的状态数据
-      log.info('check lang', state.lang, action.payload.lang)
-      if (state.lang !== action.payload.lang) {
-        const targetDocument = parent === window ? document : parent.document
-        targetDocument.dispatchEvent(new CustomEvent('changeLanguage', { detail: action.payload.lang }))
-      }
-      return {
-        ...state,
-        ...action.payload
-      };
+    languageReceived(state, action: PayloadAction<string>) {
+      state.lang = normalizeLanguage(action.payload)
+    },
+    storageSync(state, action: PayloadAction<{ lang?: string }>) {
+      if (action.payload.lang !== undefined) state.lang = normalizeLanguage(action.payload.lang)
     },
   },
-});
-export const { storageSync, changeLanguage } = storageSlice.actions;
+})
 
-// 默认导出
-export default storageSlice.reducer;
-
+export const { changeLanguage, languageReceived, storageSync } = storageSlice.actions
+export default storageSlice.reducer
