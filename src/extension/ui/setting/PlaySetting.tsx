@@ -4,6 +4,7 @@ import type { RootState } from "../store";
 import { switchRelatedAutoPlay } from "../store/play";
 import { useTranslation } from "react-i18next";
 import { memo } from "react";
+import SvpSetting from './SvpSetting';
 
 const PlaySetting = () => {
   const { t } = useTranslation();
@@ -28,6 +29,9 @@ const PlaySetting = () => {
           checked={isRelatedAutoPlay}
           onChange={updateRelatedAutoPlay}
         />
+      </div>
+      <div style={{ marginTop: 20 }}>
+        <SvpSetting />
       </div>
     </>
   )

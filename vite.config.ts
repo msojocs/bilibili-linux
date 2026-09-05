@@ -1,9 +1,19 @@
 import { build, defineConfig, type LibraryOptions } from 'vite'
+import { copyFile, mkdir } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import react from '@vitejs/plugin-react-swc'
 import { fileURLToPath } from 'node:url'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const watch = process.argv.includes('--watch') ? {} : false
+
+const copyExtensionOutputs = async (files: string[]) => {
+  const targetDirectory = resolve(__dirname, 'app/extensions/bilibili')
+  await mkdir(targetDirectory, { recursive: true })
+  await Promise.all(files.map(file => copyFile(
+    resolve(__dirname, 'dist/extension', file),
+    resolve(targetDirectory, file),
+  )))
+}
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -21,7 +31,15 @@ export default defineConfig({
   define: {
     'process.env.NODE_ENV': '"production"'
   },
-  plugins: [react()],
+  plugins: [
+    react(),
+    {
+      name: 'copy-content-extension-output',
+      async closeBundle() {
+        await copyExtensionOutputs(['content.js', 'manifest.json'])
+      },
+    },
+  ],
 })
 
 /**
@@ -61,6 +79,12 @@ libraries.forEach(async (libItem) => {
     },
     plugins: [
       react(),
+      {
+        name: 'copy-page-extension-output',
+        async closeBundle() {
+          await copyExtensionOutputs(['page.js', 'bilibili.css'])
+        },
+      },
     ],
   });
 });

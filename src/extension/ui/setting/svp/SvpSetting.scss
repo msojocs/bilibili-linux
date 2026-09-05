@@ -1,0 +1,89 @@
+.bili-svp-settings {
+  max-width: 760px;
+  width: 100%;
+}
+
+.bili-svp-settings .ant-tabs-nav {
+  margin-bottom: 18px;
+}
+
+.bili-svp-setting-section {
+  display: grid;
+  gap: 14px;
+}
+
+.bili-svp-setting-row {
+  align-items: center;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(150px, 210px) minmax(0, 1fr);
+  margin: 0;
+}
+
+.bili-svp-setting-label {
+  color: var(--text1, #18191c);
+  line-height: 1.4;
+}
+
+.bili-svp-setting-control {
+  align-items: center;
+  display: flex;
+  min-width: 0;
+}
+
+.bili-svp-fps-profile-grid {
+  display: grid;
+  gap: 8px 10px;
+  grid-template-columns: minmax(68px, 0.8fr) repeat(3, minmax(104px, 1fr));
+  max-width: 650px;
+  width: 100%;
+}
+
+.bili-svp-fps-profile-row {
+  align-items: center;
+  display: contents;
+}
+
+.bili-svp-fps-profile-heading,
+.bili-svp-fps-profile-label {
+  line-height: 32px;
+}
+
+.bili-svp-fps-profile-heading {
+  color: var(--text2, #61666d);
+  font-size: 12px;
+  text-align: center;
+}
+
+.bili-svp-fps-profile-label {
+  color: var(--text1, #18191c);
+}
+
+.bili-svp-fps-profile-note {
+  color: var(--text3, #9499a0);
+  font-size: 12px;
+  grid-column: 1 / -1;
+}
+
+.bili-svp-fps-profile-grid .ant-input-number {
+  width: 100%;
+}
+
+.bili-svp-fps-profile-cell {
+  align-items: center;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(70px, 1fr) auto;
+}
+
+@media (max-width: 680px) {
+  .bili-svp-setting-row {
+    align-items: start;
+    gap: 7px;
+    grid-template-columns: 1fr;
+  }
+
+  .bili-svp-fps-profile-grid {
+    grid-template-columns: minmax(64px, 0.8fr) repeat(3, minmax(100px, 1fr));
+  }
+}

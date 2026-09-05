@@ -18,6 +18,7 @@ import { DynamicClient } from "./dynamic.client";
 import { GrpcTransport } from "@protobuf-ts/grpc-transport";
 import type { RpcMetadata } from "@protobuf-ts/runtime-rpc";
 import { Device, DynDetailReply, Metadata } from "./dynamic";
+import { configureSvpChromiumDecoder, notifySvpMainProcessReady, registerSvpIpc, watchSvpBrowserWindow } from "../svp/service";
 
 const log = createLogger("electron-tool");
 export const parseElectronFlag = () => {
@@ -45,6 +46,7 @@ export const parseElectronFlag = () => {
   } catch (error) {
     log.error("flag 解析失败", error);
   }
+  configureSvpChromiumDecoder();
   //#endregion flags 解析
 };
 
@@ -98,6 +100,7 @@ export const replaceBrowserWindow = () => {
       }
       // 使用修改后的选项调用原始构造函数
       const instance: BrowserWindow = new OriginalBrowserWindow(options);
+      watchSvpBrowserWindow(instance);
       instance.webContents.on("ipc-message-sync", (event, ...args) => {
         if (args[0] === "config/roamingPAC") {
           log.info("receive config/roamingPAC: ", ...args);
@@ -313,6 +316,7 @@ export const electronOverwriteAfterReady = () => {
   }
 };
 export const registerIpcHandle = () => {
+  registerSvpIpc();
   // 处理启动缓慢的问题
   /**
    * 获取方式：
@@ -328,6 +332,7 @@ export const registerIpcHandle = () => {
   ipcMain.on("app/mainProcessReady", (event) => {
     // 在这里处理数据，然后通过 event.returnValue 发送返回值
     event.returnValue = true;
+    notifySvpMainProcessReady(event.sender);
   });
   ipcMain.on('app/getInitInfo', (event) => {
     log.info('emit app/getInitInfo')
@@ -350,7 +355,7 @@ export const registerIpcHandle = () => {
     for (const win of windows) {
       if (win.webContents.id === event.sender.id) continue;
       log.info('notify dataSync to window:', win.id);
-      win.webContents.executeJavaScript(`window.dataSync('${data}')`).then(res => {
+      win.webContents.executeJavaScript(`window.dataSync(${JSON.stringify(data)})`).then(res => {
         log.info('dataSync result:', res);
       }).catch(err => {
         log.error('dataSync error:', err);
@@ -390,6 +395,7 @@ export const registerIpcHandle = () => {
     });
     return tempfile;
   });
+
   ipcMain.handle(
     "sponsor/transcribeAudio",
     (_, options) =>

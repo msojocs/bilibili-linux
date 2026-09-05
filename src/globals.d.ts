@@ -6,15 +6,58 @@
 // 导入 EventEmitter 类型
 import { EventEmitter } from 'events';
 import https from "https";
+import type { SvpStream } from "./extension/common/svp";
 
 // 正确定义 NodeJS 全局变量
 declare global {
   // 保持 Window 接口的定义
   interface Window {
+    __biliSvpActiveVideoCodec?: string
+    __biliSvpBenchmarkRequestId?: string
+    __biliSvpCodecProbeInstalled?: boolean
+    __biliSvpLatestStream?: SvpStream
+    __biliSvpStreamsByQuality?: Record<number, SvpStream[]>
     __segment_base_map__: Record<string, [string, string]>
     biliBridge: {
       callNative: <T>(action: string, ...args: unknown[]) => Promise<T>
       callNativeSync: (action: string, ...args: unknown[]) => unknown
+      svpShmAvailable: () => boolean
+      svpShmSeek: (startTime: number, baseIndex: number) => boolean
+      svpShmStart: (options: {
+        baseIndex?: number
+        canvasId: string
+        capacity: number
+        frameBytes: number
+        height: number
+        name: string
+        pixelFormat: 'I420' | 'I420P10LE'
+        sourceToken: string
+        startTime: number
+        targetFps: number
+        width: number
+      }) => Promise<{ backend?: string; error?: string; ok: boolean; startTime?: number }>
+      svpShmStatus: () => {
+        available: boolean
+        backend?: string
+        capacity?: number
+        closed?: boolean
+        copies?: number
+        copyMs?: number
+        drawMs?: number
+        drawn?: number
+        error?: string
+        firstFrameMs?: number
+        frameBytes?: number
+        lastDrawnIndex?: number
+        queued?: number
+        readSequence?: number
+        running: boolean
+        startTime?: number
+        skippedFrames?: number
+        stalls?: number
+        writeSequence?: number
+      }
+      svpShmStop: () => void
     }
     biliBridgePc: {
       callNative: (action: string, ...args: unknown[]) => Promise<unknown>
@@ -199,7 +242,17 @@ interface BiliPlayer {
    * @returns 
    */
   addViewPoints: (data: string) => void
+  getQuality?: () => number | {
+    newQ?: number
+    nowQ?: number
+    realQ?: number
+  }
   on: (event: string, callback: (...args: unknown[]) => void) => this
+  pause: () => void
+  play: () => Promise<void> | void
+  recreateVideoBuffer?: () => Promise<void> | void
+  removeVideoBuffer?: () => Promise<void> | void
+  requestQuality?: (quality: number) => unknown
   seek: (time: number, cfg?: {initiator: string}) => Promise<void>
 }
 interface ParsedFragmentVideoInfo {

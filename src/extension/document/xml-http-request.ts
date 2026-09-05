@@ -1,9 +1,11 @@
 import { createLogger, Logger } from "../../common/log";
 import { ResponseReplaceXMLHttpRequest } from "./response-replace";
+import { nextSvpRequestId } from "../common/svp";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export class CustomXMLHttpRequest extends window.XMLHttpRequest {
   private _url: string;
   _params: string;
+  requestId: number;
   private _status: number;
   _response: null;
   private _responseText: string;
@@ -18,6 +20,7 @@ export class CustomXMLHttpRequest extends window.XMLHttpRequest {
     super();
     this._url = "";
     this._params = "";
+    this.requestId = 0;
     this._status = 200
     this._responseText = ''
     this._response = null
@@ -140,6 +143,7 @@ export class CustomXMLHttpRequest extends window.XMLHttpRequest {
     // log.log('request for: ', ...arr)
     const url = args[1]
     if (typeof url == 'string') {
+      this.requestId = nextSvpRequestId(url);
       const [path, params] = url.split(/\?/);
       this._url = path;
       this._params = params;
