@@ -34,6 +34,6 @@ cp -r "$root_dir/dist/extension" "$root_dir/app/extensions/bilibili"
 notice "复制AI脚本"
 cp "$root_dir/res/scripts/transcribe.py" "$root_dir/app"
 cd "$res_dir"
-asar e app.asar app
+npx -y asar e app.asar app
 cp "$root_dir/dist/inject/index.js" "app/index.js"
-asar p app app.asar
+npx -y asar p app app.asar

@@ -19,7 +19,7 @@ fail() {
 }
 res_dir="$root_dir/tmp/bili/resources"
 cd "$res_dir"
-asar e app.asar app
+npx -y asar e app.asar app
 
 notice "解密"
 "$root_dir/tools/app-decrypt.js" "$res_dir/app/main/.biliapp" "$res_dir/app/main/app.orgi.js"
@@ -64,7 +64,7 @@ cat "app/main/assets/bili-preload.js" >> "app/main/assets/temp.js"
 rm "app/main/assets/bili-preload.js"
 mv "app/main/assets/temp.js" "app/main/assets/bili-preload.js"
 
-asar p app app.asar
+npx -y asar p app app.asar
 rm -rf app
 
 notice "Download cursor-tool"
