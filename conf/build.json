@@ -61,6 +61,12 @@
     "description": "BiliBili client for Linux with roaming.",
     "category": "AudioVideo"
   },
+  "rpm": {
+    "afterRemove": "res/linux/after-remove.sh"
+  },
+  "deb": {
+    "afterRemove": "res/linux/after-remove.sh"
+  },
   "appImage": {
     "artifactName": "${productName}-${version}-${arch}.${ext}"
   }
