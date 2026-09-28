@@ -29,6 +29,9 @@
   ],
   "electronVersion": "43.1.1",
   "appId": "com.bilibili.app",
+  "toolsets": {
+    "appimage": "1.0.3"
+  },
   "mac": {
     "target": [
       "dmg",

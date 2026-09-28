@@ -67,6 +67,12 @@ mv "app/main/assets/temp.js" "app/main/assets/bili-preload.js"
 npx -y asar p app app.asar
 rm -rf app
 
-notice "Download cursor-tool"
-wget -c https://github.com/msojocs/bilibili-linux/releases/download/tools/cursor-tool -Ocursor-tool
+notice "cursor-tool"
+# 使用旧 glibc 环境重新编译，避免预编译版本要求 GLIBC_2.34（见 tools/build-cursor-tool.sh）
+if command -v docker >/dev/null 2>&1 && "$root_dir/tools/build-cursor-tool.sh" "$res_dir/cursor-tool"; then
+    notice "cursor-tool 编译完成（旧 glibc）"
+else
+    notice "回退到预编译 cursor-tool"
+    wget -c https://github.com/msojocs/bilibili-linux/releases/download/tools/cursor-tool -Ocursor-tool
+fi
 chmod +x cursor-tool

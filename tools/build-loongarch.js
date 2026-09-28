@@ -1,32 +1,43 @@
 "use strict"
 require('./fix-build-loongarch')
 const path = require('path')
-process.env.USE_SYSTEM_APP_BUILDER = 'true'
-process.env['PATH'] = `${path.resolve(__dirname, '../node_modules/app-builder-bin/linux/x64')}:${process.env['PATH']}`
 
 const builder = require("electron-builder")
-const { execSync, exec } = require('child_process')
-const { homedir } = require('os')
-const { fstat, existsSync, mkdirSync } = require('fs')
+const { execSync } = require('child_process')
+const { existsSync, mkdirSync, rmSync } = require('fs')
 const Platform = builder.Platform
 
-const home = homedir()
-const file = path.resolve(home, './.cache/electron-builder/appimage/appimage-13.0.0/runtime-loong64')
-if (!existsSync(file)) {
-  const p = path.resolve(home, './.cache/electron-builder/appimage/appimage-13.0.0')
-  mkdirSync(p, { recursive: true })
-  execSync('wget https://github.com/electron-userland/electron-builder-binaries/releases/download/appimage-13.0.0/appimage-13.0.0.7z -O ~/.cache/electron-builder/appimage/appimage-13.0.0/appimage-13.0.0.7z', {
+const rootDir = path.resolve(__dirname, '..')
+const appimageToolVersion = '1.0.3'
+const appimageToolsDir = path.resolve(rootDir, 'tmp/appimage-tools-loong64')
+
+// electron-builder >= 26 在 JS 里构建 AppImage，并从 APPIMAGE_TOOLS_PATH 读取 mksquashfs 与 runtime。
+// 官方静态 toolset 不含 loong64，且会把 loong64 映射成 runtime-x64，
+// 所以这里准备一份本地 toolset：直接复用官方静态 toolset，只把 runtime-x64 换成 loong64 的静态 runtime。
+const prepareAppImageTools = () => {
+  const marker = path.resolve(appimageToolsDir, '.loong64-ready')
+  if (existsSync(marker)) {
+    return
+  }
+  mkdirSync(appimageToolsDir, { recursive: true })
+  const archive = path.resolve(appimageToolsDir, 'appimage-tools.tar.gz')
+  execSync(`wget -c "https://github.com/electron-userland/electron-builder-binaries/releases/download/appimage%40${appimageToolVersion}/appimage-tools-runtime-20251108.tar.gz" -O "${archive}"`, {
     stdio: 'inherit'
   })
-  execSync('7z x appimage-13.0.0.7z -o. -aoa', {
-    stdio: 'inherit',
-    cwd: p
-  })
-  // https://github.com/electron-userland/electron-builder-binaries/releases/download/appimage-13.0.0/appimage-13.0.0.7z
-  execSync('wget https://github.com/msojocs/type2-runtime-loongarch/releases/download/continuous/runtime-loong64 -O ~/.cache/electron-builder/appimage/appimage-13.0.0/runtime-loong64', {
+  execSync(`tar -xzf "${archive}" -C "${appimageToolsDir}"`, { stdio: 'inherit' })
+  // electron-builder 会把 loong64 映射到 runtime-x64，因此用 loong64 runtime 覆盖它
+  execSync(`wget "https://github.com/msojocs/type2-runtime-loongarch/releases/download/continuous/runtime-loong64" -O "${path.resolve(appimageToolsDir, 'runtimes/runtime-x64')}"`, {
     stdio: 'inherit'
   })
+  // loong64 不使用 x64 的 appindicator 库，清空后留空目录以满足存在性检查
+  const libDir = path.resolve(appimageToolsDir, 'lib/x64')
+  rmSync(libDir, { recursive: true, force: true })
+  mkdirSync(libDir, { recursive: true })
+  execSync(`touch "${marker}"`)
 }
+
+prepareAppImageTools()
+process.env.APPIMAGE_TOOLS_PATH = appimageToolsDir
 
 // Let's get that intellisense working
 /**
@@ -35,6 +46,9 @@ if (!existsSync(file)) {
 */
 const options = {
   buildVersion: "1",
+  "toolsets": {
+    "appimage": appimageToolVersion
+  },
   directories: {
     "output": "tmp/build",
     "app": "app/app"
