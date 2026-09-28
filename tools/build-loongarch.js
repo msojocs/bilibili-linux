@@ -39,12 +39,38 @@ const prepareAppImageTools = () => {
 prepareAppImageTools()
 process.env.APPIMAGE_TOOLS_PATH = appimageToolsDir
 
+// 龙芯分两个世界，预编译 Electron 的来源与版本都不一样，因此分两次构建：
+//
+// - loong64（新世界）：darkyzhou/electron-loong64 提供 Electron 32+ 的 loong64 预编译包，
+//   这里选 43.x 与其它架构（x64/arm64）保持同一大版本。该仓库带 SHASUMS256.txt，保留校验。
+// - loongarch64（旧世界）：只有 msojocs/electron-loongarch 的 Electron 22.3.27 可用，
+//   该仓库没有 SHASUMS256.txt，必须关闭校验，否则 @electron/get 会因取不到校验文件而失败。
+const builds = [
+  {
+    arch: "loong64",
+    electronVersion: "43.4.1",
+    electronDownload: {
+      "mirror": "https://github.com/darkyzhou/electron-loong64/releases/download/"
+    },
+    targets: ["AppImage", "rpm", "deb"]
+  },
+  {
+    arch: "loongarch64",
+    electronVersion: "22.3.27",
+    electronDownload: {
+      "mirror": "https://github.com/msojocs/electron-loongarch/releases/download/",
+      "isVerifyChecksum": false
+    },
+    targets: ["rpm", "deb"]
+  }
+]
+
 // Let's get that intellisense working
 /**
 * @type {import('electron-builder').Configuration}
 * @see https://www.electron.build/configuration/configuration
 */
-const options = {
+const createOptions = ({ arch, electronVersion, electronDownload, targets }) => ({
   buildVersion: "1",
   "toolsets": {
     "appimage": appimageToolVersion
@@ -65,7 +91,8 @@ const options = {
     "extensions",
     "app/app-update.yml"
   ],
-  "electronVersion": "22.3.27",
+  "electronVersion": electronVersion,
+  "electronDownload": electronDownload,
   "appId": "com.bilibili.app",
   "mac": {
     "target": [
@@ -88,54 +115,29 @@ const options = {
     "allowToChangeInstallationDirectory": true
   },
   "linux": {
-    target: [
-      {
-        "target": "AppImage",
-        "arch": [
-          "loong64",
-        ]
-      },
-      {
-        "target": "rpm",
-        "arch": [
-          "loong64",
-          "loongarch64",
-        ]
-      },
-      {
-        "target": "deb",
-        "arch": [
-          "loong64",
-          "loongarch64",
-        ]
-      },
-    ],
+    "target": targets.map((target) => ({ target, "arch": [arch] })),
     "maintainer": "msojocs <jiyecafe@gmail.com> (https://www.jysafe.cn)",
     "icon": "res/icons",
     "synopsis": "BiliBili client for Linux.",
     "description": "BiliBili client for Linux with roaming.",
     "category": "AudioVideo"
-  },
-  "electronDownload": {
-    "mirror": "https://github.com/msojocs/electron-loongarch/releases/download/",
-    "customDir": "v22.3.27"
   }
-};
+})
 
 // Promise is returned
 (async () => {
-  
-  await builder.build({
-    targets: Platform.LINUX.createTarget(),
-    config: options,
-    publish: "never"
-  })
-  .then((result) => {
-    console.log(JSON.stringify(result))
-  })
-  .catch((error) => {
-    console.error(error)
-    process.exit(1)
-  })
-  
-})()
+  for (const build of builds) {
+    await builder.build({
+      // 架构与目标列表由 config.linux.target 决定（每个 config 只含一个架构）
+      targets: Platform.LINUX.createTarget(),
+      config: createOptions(build),
+      publish: "never"
+    })
+      .then((result) => {
+        console.log(JSON.stringify(result))
+      })
+  }
+})().catch((error) => {
+  console.error(error)
+  process.exit(1)
+})
