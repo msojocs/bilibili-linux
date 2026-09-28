@@ -168,6 +168,46 @@ export const replaceBrowserWindow = () => {
     }
   };
 };
+/**
+ * 托盘菜单「首页」「设置」的点击需要保证主窗口可用。
+ * 客户端有「节能模式」（App Sleep）：窗口收起一段时间后会把主窗口销毁并把
+ * configService.mainWindow 置空，此时直接触发 openMainWindowPage$ 会对 null
+ * 调用 show() 抛错，而异常会被 uncaughtException 吞掉，表现为点击没有任何反应。
+ * 所以休眠时先唤醒（wakeUpBiliApp$），等主窗口重新就绪（mainWindowReady$）再执行。
+ */
+const runWithMainWindowReady = (action: () => void) => {
+  const configService = global.biliApp?.configService;
+  if (!configService) {
+    action();
+    return;
+  }
+  const mainWindow = configService.mainWindow;
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    // 窗口只是被收起/最小化：恢复后直接执行
+    if (mainWindow.isMinimized()) mainWindow.restore();
+    action();
+    return;
+  }
+  if (!configService.isAppSleeping) {
+    action();
+    return;
+  }
+  let done = false;
+  const finish = () => {
+    if (done) return;
+    done = true;
+    subscription.unsubscribe();
+    clearTimeout(timer);
+    const win = configService.mainWindow;
+    if (win && !win.isDestroyed() && win.isMinimized()) win.restore();
+    action();
+  };
+  const subscription = configService.mainWindowReady$.subscribe(finish);
+  // 兜底：万一 ready 事件丢失，也不至于永远卡住
+  const timer = setTimeout(finish, 10_000);
+  configService.wakeUpBiliApp$.next();
+};
+
 export const electronOverwrite = () => {
   {
     const buildFromTemplate = Menu.buildFromTemplate;
@@ -175,12 +215,21 @@ export const electronOverwrite = () => {
       template: Array<Electron.MenuItemConstructorOptions | Electron.MenuItem>
     ) {
       if (template[0]?.label == "设置") {
+        // 休眠后主窗口已被销毁，直接触发 openMainWindowPage$ 会抛错且无任何反应，
+        // 因此托盘菜单统一改为：先唤醒并等主窗口就绪后再切页
+        const settingsItem = template[0];
+        const settingsClick = settingsItem.click as unknown as
+          | (() => void)
+          | undefined;
+        settingsItem.click = () => runWithMainWindowReady(() => settingsClick?.());
         template.unshift({
           label: "首页",
           click: () =>
-            global.biliApp.configService.openMainWindowPage$.next({
-              page: "RecommendPage",
-            }),
+            runWithMainWindowReady(() =>
+              global.biliApp.configService.openMainWindowPage$.next({
+                page: "RecommendPage",
+              })
+            ),
         });
         log.info("menu list:", template);
       }

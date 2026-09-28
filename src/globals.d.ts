@@ -39,6 +39,18 @@ declare global {
       openMainWindowPage$: {
         next: (_value: unknown) => {},
       },
+      mainWindowReady$: {
+        subscribe: (_next: () => void) => ({ unsubscribe: () => {} }),
+      },
+      wakeUpBiliApp$: {
+        next: () => {},
+      },
+      mainWindow: null as {
+        isDestroyed: () => boolean
+        isMinimized: () => boolean
+        restore: () => void
+      } | null,
+      isAppSleeping: false,
       loginWindow: object,
       loginRiskWindow: object
     }
