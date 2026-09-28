@@ -29,9 +29,9 @@ fi
 download_url="https://npmmirror.com/mirrors/electron/${electron_version}/electron-v${electron_version}-linux-${BUILD_ARCH}.zip"
 download_url="https://github.com/electron/electron/releases/download/v${electron_version}/electron-v${electron_version}-linux-${BUILD_ARCH}.zip"
 if [ "$BUILD_ARCH" == "loong64" ];then
-  # 新世界
-  electron_version="22.3.27"
-  download_url="https://github.com/msojocs/electron-loongarch/releases/download/v${electron_version}/electron-v${electron_version}-linux-loong64.zip"
+  # 新世界，预编译包来自 darkyzhou/electron-loong64，与其它架构统一到 Electron 43.x
+  electron_version="43.4.1"
+  download_url="https://github.com/darkyzhou/electron-loong64/releases/download/v${electron_version}/electron-v${electron_version}-linux-loong64.zip"
 elif [ "$BUILD_ARCH" == "loongarch64" ];then
   # 旧世界
   electron_version="22.3.27"
