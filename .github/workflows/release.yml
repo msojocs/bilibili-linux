@@ -275,7 +275,9 @@ jobs:
           cat /etc/issue
           apt update
           npm install asar -g
-          npm install
+          npm install -g corepack@latest
+          corepack enable pnpm
+          pnpm install --frozen-lockfile
           echo "$UID"
 
       - name: Generate TAG
@@ -303,7 +305,7 @@ jobs:
           mkdir -p tmp/build
           tools/build-prepare.sh
           asar e app/app.asar app/app
-          npm run pkg-win
+          pnpm run pkg-win
           rm -rf tmp/build/*-unpacked
           # tools/build-appimage.sh ${{ steps.tag.outputs.tag }} ${{ matrix.ARCH }}
 
