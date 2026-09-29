@@ -14,36 +14,20 @@ notice() {
   echo -e "\033[36m $1 \033[0m "
 }
 
-# electron 43.1.1 (Chromium 150) for NVIDIA/Wayland GPU accel (rendering + VA-API video decode).
-# #42519 (screen.getCursorScreenPoint Linux regression, still OPEN) is bypassed by cursor-tool
-# (electron-tool.ts electronOverwriteAfterReady) on Wayland, so upgrading is safe for Wayland users.
-# https://github.com/msojocs/bilibili-linux/issues/170, https://github.com/electron/electron/issues/42519
-electron_version="43.1.1"
-if [ "$BUILD_ARCH" == "" ];then
-  BUILD_ARCH="x64"
-elif [ "$BUILD_ARCH" == "amd64" ];then
-  BUILD_ARCH="x64"
-elif [ "$BUILD_ARCH" == "arm64" ];then
-  BUILD_ARCH="arm64"
-fi
-download_url="https://npmmirror.com/mirrors/electron/${electron_version}/electron-v${electron_version}-linux-${BUILD_ARCH}.zip"
-download_url="https://github.com/electron/electron/releases/download/v${electron_version}/electron-v${electron_version}-linux-${BUILD_ARCH}.zip"
-if [ "$BUILD_ARCH" == "loong64" ];then
-  # 新世界，预编译包来自 darkyzhou/electron-loong64，与其它架构统一到 Electron 43.x
-  electron_version="43.4.1"
-  download_url="https://github.com/darkyzhou/electron-loong64/releases/download/v${electron_version}/electron-v${electron_version}-linux-loong64.zip"
-elif [ "$BUILD_ARCH" == "loongarch64" ];then
-  # 旧世界
-  electron_version="22.3.27"
-  # download_url="http://ftp.loongnix.cn/electron/LoongArch/v22.3.27/electron-v22.3.27-linux-loong64.zip"
-  download_url="https://github.com/msojocs/electron-loongarch/releases/download/v${electron_version}/electron-v${electron_version}-linux-loongarch64.zip"
-fi
+# Electron 的版本、下载地址与选型理由全部来自 conf/config.json 的 electron 节点。
+# JSON 不支持注释，所以版本为什么是这几个数写在那个文件的 "//" 字段里。
+# 架构来自 --arch、其次环境变量 BUILD_ARCH、其次本机架构（见 tools/parse-config.js 的说明）。
+electron_url=$(node "$root_dir/tools/parse-config.js" --get-electron-url $@)
+electron_version=$(node "$root_dir/tools/parse-config.js" --get-electron-version $@)
+file_name=$(basename "$electron_url")
+notice "electron v${electron_version}: ${electron_url}"
 
 mkdir -p "$root_dir/cache" "$root_dir/tmp"
-if [[ ! -f "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.zip" ]];then
-  wget -c "$download_url" -O "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.zip.tmp"
-  mv "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.zip.tmp" "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.zip"
+local_path="$root_dir/cache/$file_name"
+if [[ ! -f "$local_path" ]];then
+  wget -c "$electron_url" -O "$local_path.tmp"
+  mv "$local_path.tmp" "$local_path"
 fi
 rm -rf "$root_dir/electron"
 mkdir -p "$root_dir/electron"
-unzip -o -d "$root_dir/electron" "$root_dir/cache/electron-v${electron_version}-linux-${BUILD_ARCH}.zip"
+unzip -q -o "$local_path" -d "$root_dir/electron"
