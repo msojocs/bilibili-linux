@@ -5,6 +5,7 @@ const path = require('path')
 const builder = require("electron-builder")
 const { execSync } = require('child_process')
 const { existsSync, mkdirSync, rmSync } = require('fs')
+const { getElectronEntry } = require('./parse-config')
 const Platform = builder.Platform
 
 const rootDir = path.resolve(__dirname, '..')
@@ -42,28 +43,27 @@ process.env.APPIMAGE_TOOLS_PATH = appimageToolsDir
 // 龙芯分两个世界，预编译 Electron 的来源与版本都不一样，因此分两次构建：
 //
 // - loong64（新世界）：darkyzhou/electron-loong64 提供 Electron 32+ 的 loong64 预编译包，
-//   这里选 43.x 与其它架构（x64/arm64）保持同一大版本。该仓库带 SHASUMS256.txt，保留校验。
+//   与其它架构（x64/arm64）保持同一大版本。该仓库带 SHASUMS256.txt，保留校验。
 // - loongarch64（旧世界）：只有 msojocs/electron-loongarch 的 Electron 22.3.27 可用，
 //   该仓库没有 SHASUMS256.txt，必须关闭校验，否则 @electron/get 会因取不到校验文件而失败。
-const builds = [
-  {
-    arch: "loong64",
-    electronVersion: "43.4.1",
+//
+// 版本、镜像与校验策略都来自 conf/config.json 的 electron 节点（选型理由见该文件的 "//" 字段）。
+const loongTargets = {
+  loong64: ["AppImage", "rpm", "deb"],
+  loongarch64: ["rpm", "deb"]
+}
+const builds = Object.keys(loongTargets).map((arch) => {
+  const { version, mirror, isVerifyChecksum } = getElectronEntry(arch)
+  return {
+    arch,
+    electronVersion: version,
     electronDownload: {
-      "mirror": "https://github.com/darkyzhou/electron-loong64/releases/download/"
+      "mirror": mirror,
+      "isVerifyChecksum": isVerifyChecksum
     },
-    targets: ["AppImage", "rpm", "deb"]
-  },
-  {
-    arch: "loongarch64",
-    electronVersion: "22.3.27",
-    electronDownload: {
-      "mirror": "https://github.com/msojocs/electron-loongarch/releases/download/",
-      "isVerifyChecksum": false
-    },
-    targets: ["rpm", "deb"]
+    targets: loongTargets[arch]
   }
-]
+})
 
 // Let's get that intellisense working
 /**
