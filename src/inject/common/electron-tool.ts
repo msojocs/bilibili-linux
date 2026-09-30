@@ -20,6 +20,27 @@ import type { RpcMetadata } from "@protobuf-ts/runtime-rpc";
 import { Device, DynDetailReply, Metadata } from "./dynamic";
 
 const log = createLogger("electron-tool");
+
+/**
+ * require() 的模块替换表：键为 require 的模块名，值为「拿到原始模块后返回什么」。
+ * 需要在官方主代码 require 某个模块之前登记，见 registerModuleLoadHook。
+ */
+const moduleLoadHooks: Record<string, (m: never) => unknown> = {};
+/**
+ * 登记一个模块替换。用它可以不改动官方主代码就把某个依赖换掉，
+ * 例如 electron-updater 的 autoUpdater（src/inject/common/update.ts）。
+ * 必须在官方主代码 require 该模块前调用。
+ */
+export const registerModuleLoadHook = (
+  name: string,
+  hook: (m: never) => unknown
+) => {
+  if (moduleLoadHooks[name]) {
+    log.warn("module load hook 已存在，将被覆盖:", name);
+  }
+  moduleLoadHooks[name] = hook;
+};
+
 export const parseElectronFlag = () => {
   //#region flags 解析
   try {
@@ -145,14 +166,20 @@ export const replaceBrowserWindow = () => {
   // 使用替换的构造函数
   const HookedBrowserWindow = hookBrowserWindow(originalBrowserWindow);
 
-  const ModuleLoadHook: Record<string, (m: never) => unknown> = {
-    electron: (module: typeof Electron) => {
-      return {
-        ...module,
-        BrowserWindow: HookedBrowserWindow,
-      };
-    },
-  };
+  registerModuleLoadHook("electron", (module: typeof Electron) => {
+    return {
+      ...module,
+      BrowserWindow: HookedBrowserWindow,
+    };
+  });
+  installModuleLoadHook();
+};
+
+/** _load 的包装只装一次，后来的模块替换靠登记表生效 */
+let moduleLoadHookInstalled = false;
+const installModuleLoadHook = () => {
+  if (moduleLoadHookInstalled) return;
+  moduleLoadHookInstalled = true;
   // log.info('Module:', Module)
   const m = Module as unknown as {
     _load: (path: string, ...args: unknown[]) => unknown;
@@ -161,8 +188,9 @@ export const replaceBrowserWindow = () => {
   m._load = (...args) => {
     const loaded_module = original_load(...args);
     // console.log('load', args[0])
-    if (ModuleLoadHook[args[0]]) {
-      return ModuleLoadHook[args[0]](loaded_module as never);
+    const hook = moduleLoadHooks[args[0]];
+    if (hook) {
+      return hook(loaded_module as never);
     } else {
       return loaded_module;
     }

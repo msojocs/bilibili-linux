@@ -1,6 +1,7 @@
 import { app } from "electron";
 import { createBilibiliServer } from "./common/bilibili";
 import { electronOverwrite, electronOverwriteAfterReady, hookIsPackaged, initializeGlobalData, nodeJsOverWrite, parseElectronFlag, registerExtension, registerIpcHandle, registerProtocol, replaceBrowserWindow } from "./common/electron-tool";
+import { registerGithubUpdater } from "./common/update";
 import { createLogger, Logger } from "../common/log";
 (() => {
   const log = createLogger('Index')
@@ -13,6 +14,8 @@ import { createLogger, Logger } from "../common/log";
   electronOverwrite()
   nodeJsOverWrite()
   registerIpcHandle()
+  // 接管检查更新（数据源换成 GitHub Release），必须在官方主代码 require electron-updater 之前
+  registerGithubUpdater()
   // 加载主代码
   module.require("./main/app.js")
   // 启动app

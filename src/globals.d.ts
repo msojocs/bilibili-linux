@@ -34,6 +34,10 @@ declare global {
     exWebPreferences: Record<string, unknown>
   }
   var bootstrapBiliApp: () => void
+  /** 构建时由 vite.config.ts 注入，值为根 package.json 的 version，如 "1.19.0-3" */
+  var __APP_VERSION__: string
+  /** 构建时由 vite.config.ts 注入，值为 "owner/repo"，如 "msojocs/bilibili-linux" */
+  var __UPDATE_REPO__: string
   var biliApp = {
     configService: {
       openMainWindowPage$: {

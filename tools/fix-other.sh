@@ -41,10 +41,9 @@ sed -i 's#if (!jT#if (false\&\&!jT#' "app/main/app.js"
 # cat "$root_dir/res/scripts/inject-biliapp.js" >> app/render/assets/biliapp.*.js
 
 notice "检查更新"
-# 检查更新
-grep -lr "// noinspection SuspiciousTypeOfGuard" --exclude="app.asar" .
-sed -i 's#// noinspection SuspiciousTypeOfGuard#runtimeOptions.platform="win32";// noinspection SuspiciousTypeOfGuard#' app/node_modules/electron-updater/out/providerFactory.js
-sed -i 's#process.resourcesPath#path.dirname(this.app.getAppPath())#' app/node_modules/electron-updater/out/ElectronAppAdapter.js
+# 检查更新已由 src/inject/common/update.ts 接管（数据源改成 GitHub Release），
+# 这里不再需要给 electron-updater 打「强制 win32 平台」之类的补丁：官方 autoUpdater
+# 根本不会被实例化。app-update.yml 仍然照原样打进包里，但已不会被读取。
 
 notice "====Bili Bridge===="
 notice "inject"

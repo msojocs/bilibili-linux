@@ -1,9 +1,28 @@
 import { build, defineConfig, type LibraryOptions } from 'vite'
+import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import react from '@vitejs/plugin-react-swc'
 import { fileURLToPath } from 'node:url'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const watch = process.argv.includes('--watch') ? {} : false
+
+// 注入代码（src/inject）需要的元信息：程序版本与更新检查用的仓库。
+// 版本必须取这里的 package.json 而不是被打包客户端的版本：客户端自报版本是 app/app/package.json
+// 里的 "1.19.0"，丢掉表示第几次重打包的 "-N"，无法与 Release tag 比较（见 src/inject/common/update.ts）。
+const buildMeta = (() => {
+  const pkg = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf8'))
+  // repository.url 形如 git+https://github.com/msojocs/bilibili-linux.git
+  const match = /github\.com[/:]([^/]+)\/([^/]+?)(?:\.git)?$/.exec(pkg.repository?.url ?? '')
+  if (!match) {
+    throw new Error('package.json 的 repository.url 无法解析出 GitHub owner/repo，检查更新功能需要它')
+  }
+  return {
+    appVersion: pkg.version as string,
+    repo: `${match[1]}/${match[2]}`,
+  }
+})()
+// eslint-disable-next-line no-console
+console.info(`build meta: version=${buildMeta.appVersion} repo=${buildMeta.repo}`)
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -110,7 +129,8 @@ libraries.forEach(async (libItem) => {
       watch,
     },
     define: {
-      // 'process.env.NODE_ENV': '"production"'
+      __APP_VERSION__: JSON.stringify(buildMeta.appVersion),
+      __UPDATE_REPO__: JSON.stringify(buildMeta.repo),
     },
     plugins: [
       {
