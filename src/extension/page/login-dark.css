@@ -1,0 +1,53 @@
+html,
+body,
+.bili-mini-mask,
+.bili-mini-content-wp {
+	background-color: #000 !important;
+	background-image: none !important;
+	animation: none !important;
+	transition: none !important;
+}
+
+body,
+body *,
+body *::before,
+body *::after {
+	color: #fff !important;
+	text-shadow: none !important;
+}
+
+html body .login-sms-send.disable {
+	color: #fff !important;
+}
+
+html body .login-sms-wp .form__item {
+	background-color: #333 !important;
+}
+
+html body .login-sms-wp .tab__form,
+html body .login-sms-wp__vertical-line {
+	border: 0 !important;
+}
+
+html body .area-code-select,
+html body .area-code-select *,
+html body .area-code-select *::before,
+html body .area-code-select *::after {
+	color: #000 !important;
+}
+
+input,
+textarea {
+	background-color: #333 !important;
+	box-shadow: 0 0 0 1000px #333 inset !important;
+	caret-color: #fff !important;
+	color: #fff !important;
+	-webkit-box-shadow: 0 0 0 1000px #333 inset !important;
+	-webkit-text-fill-color: #fff !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+	color: #fff !important;
+	opacity: 1 !important;
+}
