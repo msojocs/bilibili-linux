@@ -8,6 +8,7 @@
     "//6": "loongarch64（旧世界）：只有 msojocs/electron-loongarch 的 22.3.27 可用；该仓库无 SHASUMS256.txt，必须关闭校验。",
     "//7": "龙芯新旧世界的 process.arch 都是 loong64，龙芯用户必须显式设置 BUILD_ARCH，否则会解析到新世界那份。",
     "//8": "package.json 的 electron devDependency 已钉到与 x64 相同的版本，让打包兜底版本也一致；它只用于 TS 类型（src/inject/*.ts 的 import），不参与打包版本决策，升级 x64 时记得同步。",
+    "//9": "darwin-x64/darwin-arm64 供 macOS 本地开发（tools/update-electron.sh --arch darwin-*）下载 electron 用；版本与 x64 对齐。打包走 electron-builder 自带的 electron 下载，不依赖这里。",
     "urls": {
       "x64": {
         "version": "43.1.1",
@@ -16,6 +17,14 @@
       "arm64": {
         "version": "43.1.1",
         "template": "https://github.com/electron/electron/releases/download/v${version}/electron-v${version}-linux-arm64.zip"
+      },
+      "darwin-x64": {
+        "version": "43.1.1",
+        "template": "https://github.com/electron/electron/releases/download/v${version}/electron-v${version}-darwin-x64.zip"
+      },
+      "darwin-arm64": {
+        "version": "43.1.1",
+        "template": "https://github.com/electron/electron/releases/download/v${version}/electron-v${version}-darwin-arm64.zip"
       },
       "loong64": {
         "version": "43.4.1",
