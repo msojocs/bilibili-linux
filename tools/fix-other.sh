@@ -18,6 +18,13 @@ fail() {
     echo -e "\033[41;37m 失败 \033[0m $1"
 }
 res_dir="$root_dir/tmp/bili/resources"
+# 目标平台：linux（默认，Windows 安装包也走这条）/ mac。
+# 两个平台的取源脚本不同，但取源之后的补丁流程共用，仅少数步骤按平台分支。
+target_platform="${BILIBILI_TARGET_PLATFORM:-linux}"
+case "$target_platform" in
+    linux|mac) ;;
+    *) fail "未知的 BILIBILI_TARGET_PLATFORM: $target_platform"; exit 1 ;;
+esac
 cd "$res_dir"
 npx -y asar e app.asar app
 
@@ -32,10 +39,18 @@ notice "屏蔽检测"
 # grep -lr 'if (!dj' --exclude="app.asar" .
 # sed -i 's#if (!dj#if(false\&\&!dj#g' "app/main/app.js"
 # ==='win';if(! 警告11
+# k0 是主进程启动处的完整性自检入口（读 .appkey、比对 main/index.js 哈希，
+# 不通过就弹「警告N」并 exit）。两个平台都有这处，置 false 让它短路。
+# 用 -i.bak 而非 -i：BSD sed（macOS 自带）的 -i 必须带后缀参数，
+# GNU sed 下 -i.bak 同样可用，两边行为一致，补丁完删掉 .bak。
 grep -lr 'if (!k0' --exclude="app.asar" .
-sed -i 's#if (!k0#if(false\&\&!k0#' "app/main/app.js"
-# if (!jT
-sed -i 's#if (!jT#if (false\&\&!jT#' "app/main/app.js"
+sed -i.bak 's#if (!k0#if(false\&\&!k0#' "app/main/app.js"
+rm -f "app/main/app.js.bak"
+# jT 只在 Windows 包的反混淆产物里出现，mac 包没有这层壳，跳过。
+if [[ "$target_platform" == "linux" ]];then
+    sed -i.bak 's#if (!jT#if (false\&\&!jT#' "app/main/app.js"
+    rm -f "app/main/app.js.bak"
+fi
 
 # notice "路由"
 # cat "$root_dir/res/scripts/inject-biliapp.js" >> app/render/assets/biliapp.*.js
@@ -66,12 +81,16 @@ mv "app/main/assets/temp.js" "app/main/assets/bili-preload.js"
 npx -y asar p app app.asar
 rm -rf app
 
-notice "cursor-tool"
-# 使用旧 glibc 环境重新编译，避免预编译版本要求 GLIBC_2.34（见 tools/build-cursor-tool.sh）
-if command -v docker >/dev/null 2>&1 && "$root_dir/tools/build-cursor-tool.sh" "$res_dir/cursor-tool"; then
-    notice "cursor-tool 编译完成（旧 glibc）"
-else
-    notice "回退到预编译 cursor-tool"
-    wget -c https://github.com/msojocs/bilibili-linux/releases/download/tools/cursor-tool -Ocursor-tool
+# cursor-tool 只在 Wayland 下用来读鼠标坐标（读 /dev/input），
+# 走的是 Linux 输入子系统，mac 上不存在这个需求，也没有对应的构建产物。
+if [[ "$target_platform" == "linux" ]];then
+    notice "cursor-tool"
+    # 使用旧 glibc 环境重新编译，避免预编译版本要求 GLIBC_2.34（见 tools/build-cursor-tool.sh）
+    if command -v docker >/dev/null 2>&1 && "$root_dir/tools/build-cursor-tool.sh" "$res_dir/cursor-tool"; then
+        notice "cursor-tool 编译完成（旧 glibc）"
+    else
+        notice "回退到预编译 cursor-tool"
+        wget -c https://github.com/msojocs/bilibili-linux/releases/download/tools/cursor-tool -Ocursor-tool
+    fi
+    chmod +x cursor-tool
 fi
-chmod +x cursor-tool
