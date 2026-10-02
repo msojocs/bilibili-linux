@@ -72,6 +72,36 @@ https://github.com/msojocs/bilibili-linux/releases/tag/continuous
 
 請使用 [AppImageLauncher](https://github.com/TheAssassin/AppImageLauncher)
 
+## macOS
+
+macOS 版與 Linux、Windows 版共用同一套補丁與擴充功能。
+
+### 建構
+
+```bash
+pnpm install
+pnpm run build-mac
+```
+
+產物在 `tmp/build/`，含 x64 與 arm64 兩個架構的 dmg 與 zip。
+
+### 手動建構
+
+```
+tools/setup-bilibili-mac.sh
+bin/bilibili-mac
+```
+
+### 安裝
+
+套件未簽名，首次開啟會被 Gatekeeper 阻擋：
+
+```bash
+xattr -dr com.apple.quarantine /Applications/bilibili.app
+```
+
+或在「系統設定 → 隱私權與安全性」中點選「仍要打開」。要分發給他人需用 `MAC_IDENTITY` 指定 Developer ID 憑證；公證未接入建構流程，需自行處理。
+
 ## Gentoo Linux
 
 Emerge from [gentoo-zh overlay](https://github.com/microcai/gentoo-zh/tree/master/media-video/bilibili).

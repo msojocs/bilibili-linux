@@ -72,6 +72,36 @@ https://github.com/msojocs/bilibili-linux/releases/tag/continuous
 
 Please use [AppImageLauncher](https://github.com/TheAssassin/AppImageLauncher)
 
+## macOS
+
+The macOS build shares the same patch flow and extensions as the Linux and Windows builds.
+
+### Build
+
+```bash
+pnpm install
+pnpm run build-mac
+```
+
+The artifacts land in `tmp/build/`, with dmg and zip for both x64 and arm64.
+
+### Manual Build
+
+```
+tools/setup-bilibili-mac.sh
+bin/bilibili-mac
+```
+
+### Installation
+
+The package is unsigned, so Gatekeeper blocks the first launch:
+
+```bash
+xattr -dr com.apple.quarantine /Applications/bilibili.app
+```
+
+Alternatively, click "Open Anyway" under System Settings → Privacy & Security. To distribute it to others, specify a Developer ID certificate with `MAC_IDENTITY`. Notarization is not wired into the build flow and must be handled separately.
+
 ## Gentoo Linux
 
 Emerge from [gentoo-zh overlay](https://github.com/microcai/gentoo-zh/tree/master/media-video/bilibili).
