@@ -102,7 +102,7 @@ xattr -dr com.apple.quarantine /Applications/bilibili.app
 
 ### 已知限制
 
-窗口无标题栏，红绿灯按钮不显示；托盘图标未做 Template 适配；空降助手依赖
+托盘图标未做 Template 适配；空降助手依赖
 `faster_whisper` 与 `torch`，需自行安装。
 
 ## Gentoo Linux
