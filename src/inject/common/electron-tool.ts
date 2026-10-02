@@ -408,17 +408,20 @@ export const registerIpcHandle = () => {
   });
   ipcMain.on('app/getInitInfo', (event) => {
     log.info('emit app/getInitInfo')
+    // 官方主代码按这些标记走平台分支（窗口样式、默认播放器、权限等）。
+    // 仅在 macOS 上分叉，Linux 与 Windows 的取值固定不变。
+    const isMac = process.platform === 'darwin'
     event.returnValue = {
-      IS_MAC: false,
+      IS_MAC: isMac,
       IS_WIN: false,
-      IS_LINUX: true,
+      IS_LINUX: !isMac,
       IS_DEV: false,
       IS_RELEASE: true,
       APP_VERSION: '1.17.5.4665',
       IS_DEV_M: false,
       JSB_PRELOAD_URL: 'bili-preload.js',
       appId: '',
-      platform: 'linux'
+      platform: isMac ? 'darwin' : 'linux'
     }
   })
   ipcMain.on('config/dataSync', (event, data) => {
@@ -476,6 +479,11 @@ export const registerIpcHandle = () => {
         const file = options.file;
         const proxy = options.proxy;
         const libPath = options.libPath;
+        // 动态库搜索路径的变量名按平台不同：Linux/BSD 是 LD_LIBRARY_PATH，
+        // macOS 是 DYLD_LIBRARY_PATH。空降助手要按目标平台传对应的那个，
+        // 否则 mac 上 torch/cudnn 找不到。
+        const libPathVar =
+          process.platform === "darwin" ? "DYLD_LIBRARY_PATH" : "LD_LIBRARY_PATH";
         const task = spawn(
           path.resolve(__dirname, "../transcribe.py"),
           [file],
@@ -483,7 +491,7 @@ export const registerIpcHandle = () => {
             env: {
               HTTPS_PROXY: proxy,
               HTTP_PROXY: proxy,
-              LD_LIBRARY_PATH: `${process.env.LD_LIBRARY_PATH}:${libPath}`,
+              [libPathVar]: `${process.env[libPathVar] ?? ""}:${libPath}`,
             },
           }
         );
@@ -629,6 +637,9 @@ export const registerProtocol = () => {
 };
 
 export const nodeJsOverWrite = () => {
+  // macOS 上 sw_vers 是真实存在的命令，伪造它的返回反而会让按系统版本
+  // 分支的逻辑拿到错值，所以 macOS 上跳过。
+  if (process.platform === "darwin") return;
   {
     const cp = module.require("child_process");
     const originalES = cp.execSync;
