@@ -79,6 +79,4 @@ flowchart TD
 
 ## 已知限制
 
-- 包未签名，首次打开需执行 `xattr -dr com.apple.quarantine`。分发给他人需要 Apple Developer ID 证书并做公证。
-- 托盘图标没有做 macOS 的 Template 命名适配，深色菜单栏下可能看不清。
-- 空降助手依赖 `faster_whisper` 与 `torch`，macOS 上需自行安装。
+- 包未签名，首次打开需执行 `xattr -dr com.apple.quarantine`。分发给他人需要 Apple Developer ID 证书，公证未接入构建流程。

@@ -91,19 +91,13 @@ bin/bilibili-mac
 
 ### 安装
 
-包是未签名，首次打开会被 Gatekeeper 拦：
+包未签名，首次打开会被 Gatekeeper 拦：
 
 ```bash
 xattr -dr com.apple.quarantine /Applications/bilibili.app
 ```
 
-或在「系统设置 → 隐私与安全性」里点「仍要打开」。要分发给他人需用
-`MAC_IDENTITY` 指定 Developer ID 证书并做公证。
-
-### 已知限制
-
-托盘图标未做 Template 适配；空降助手依赖
-`faster_whisper` 与 `torch`，需自行安装。
+或在「系统设置 → 隐私与安全性」里点「仍要打开」。要分发给他人需用 `MAC_IDENTITY` 指定 Developer ID 证书；公证未接入构建流程，需自行处理。
 
 ## Gentoo Linux
 
