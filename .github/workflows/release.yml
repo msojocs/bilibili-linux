@@ -316,6 +316,42 @@ jobs:
           name: bilibili-${{ matrix.ARCH }}-winpkg.build
           path: tmp/build
 
+  # macOS 不能复用 build-app 的产物：那个 job 在 Linux 上从 Windows 安装包取源，
+  # asar 里的原生模块是 PE/ELF，mac 加载不了。必须在本 job 里用官方 dmg 重新取源。
+  # macOS runner 的计费倍率远高于 Linux，且整套取源要下载 dmg 重新打补丁，
+  # 因此只在发版时触发，不挂在 master/dev/ci 的日常构建与 PR 上。
+  build-mac:
+    name: Build macOS
+    runs-on: macos-latest
+    if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Prepare
+        run: |
+          npm install -g corepack@latest
+          corepack enable pnpm
+          pnpm install --frozen-lockfile
+
+      - name: Build
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+        run: |
+          set -x
+          tools/setup-bilibili-mac.sh
+          npx -y asar e app/app.asar app/app
+          pnpm run pkg-mac
+          rm -rf tmp/build/*-unpacked
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bilibili-mac.build
+          path: tmp/build
+
   build-deepin:
     name: Build Deepin Package
     needs:
@@ -519,10 +555,12 @@ jobs:
 
   upload:
     name: Create release and upload artifacts
+    if: ${{ always() && !failure() && !cancelled() }}
     needs:
       - build-linux-simple
       - build-linux-package
       - build-win
+      - build-mac
       - build-deepin
     runs-on: ubuntu-latest
     steps:
@@ -562,3 +600,5 @@ jobs:
             **build/*.deb
             **build/*.exe
             **build/*.rpm
+            **build/bilibili-*.dmg
+            **build/bilibili-*.zip

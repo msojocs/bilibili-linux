@@ -6,8 +6,10 @@
   "main": "index.js",
   "scripts": {
     "pkg-win": "electron-builder --win --x64 --arm64 -c conf/build.json -c.electronVersion=$(node tools/parse-config.js --get-electron-version --arch x64)",
-    "pkg-mac": "electron-builder --mac --x64 -c conf/build.json -c.electronVersion=$(node tools/parse-config.js --get-electron-version --arch x64)",
+    "pkg-mac": "electron-builder --mac --x64 --arm64 -c conf/build.json -c.electronVersion=$(node tools/parse-config.js --get-electron-version --arch x64) -c.mac.identity=${MAC_IDENTITY:-null} --publish never",
     "pkg-linux": "electron-builder --linux --x64 --arm64 -c conf/build.json -c.electronVersion=$(node tools/parse-config.js --get-electron-version --arch x64) --publish never",
+    "setup-mac": "tools/setup-bilibili-mac.sh",
+    "build-mac": "tools/setup-bilibili-mac.sh && npx -y asar e app/app.asar app/app && pnpm run pkg-mac",
     "pkg-loongarch": "node tools/build-loongarch.js",
     "test": "node tools/build-loongarch.js",
     "test:translation": "node tests/translation/run.cjs",

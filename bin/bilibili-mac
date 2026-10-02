@@ -1,0 +1,35 @@
+#!/bin/bash
+# macOS 本地开发启动器。
+#
+# 与 bin/bilibili 的区别：Electron 在 mac 上是 .app bundle，可执行文件在
+# Contents/MacOS 下，不能直接执行 electron/electron。
+#
+# 前置：先跑 tools/setup-bilibili-mac.sh 取源打补丁，
+# 再 tools/update-electron.sh --arch darwin-arm64（或 darwin-x64）下载 electron/。
+
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE is a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+root_dir="$( cd -P "$( dirname "$SOURCE" )"/.. >/dev/null 2>&1 && pwd )"
+
+if [ "$DEBUG" == '1' ]; then
+  echo "Debug Mode"
+  ELECTRON_FORCE_IS_PACKAGED=true NODE_OPTIONS=--enable-source-maps "$root_dir/electron/Electron.app/Contents/MacOS/Electron" "$root_dir/tmp/bili/resources/app" --no-sandbox "$@"
+elif [ "$DEBUG" == '2' ]; then
+  echo "Debug Mode"
+  if [ ! -d "$root_dir/app/app" ];then
+    cd "$root_dir/app"
+    npx -y asar e app.asar app
+  fi
+  cd "$root_dir/app/extensions"
+  rm -rf bilibili
+  ln -s ../../dist/extension bilibili
+  cd "$root_dir"
+  ELECTRON_FORCE_IS_PACKAGED=true "$root_dir/electron/Electron.app/Contents/MacOS/Electron" "$root_dir/app/app" --no-sandbox "$@"
+else
+  echo "Release Mode"
+  ELECTRON_FORCE_IS_PACKAGED=true "$root_dir/electron/Electron.app/Contents/MacOS/Electron" "$root_dir/app/app.asar" --no-sandbox "$@"
+fi

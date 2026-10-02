@@ -36,7 +36,9 @@
       "dmg",
       "zip"
     ],
-    "icon": "res/icons/bilibili.icns"
+    "icon": "res/icons/bilibili.icns",
+    "category": "public.app-category.video",
+    "artifactName": "${productName}-${version}-macos-${arch}.${ext}"
   },
   "win": {
     "target": [
