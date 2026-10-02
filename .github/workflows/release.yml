@@ -555,6 +555,7 @@ jobs:
 
   upload:
     name: Create release and upload artifacts
+    if: ${{ always() && !failure() && !cancelled() }}
     needs:
       - build-linux-simple
       - build-linux-package
