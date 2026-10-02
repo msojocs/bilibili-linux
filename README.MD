@@ -71,9 +71,7 @@ https://github.com/msojocs/bilibili-linux/releases/tag/continuous
 
 ## macOS
 
-macOS 版从官方 dmg 取应用本体，与 Linux/Windows 版共用同一套补丁与扩展。
-两者的差别只在应用来源：官方包的 asar 内置了按平台分发的原生模块，
-mac 需要 Mach-O 那些，Windows 安装包里只有 PE/ELF。
+macOS 版与 Linux、Windows 版共用同一套补丁与扩展。
 
 ### 构建
 
@@ -82,32 +80,30 @@ pnpm install
 pnpm run build-mac
 ```
 
-产物在 `tmp/build/`，含 x64 与 arm64 两个架构的 `dmg` 与 `zip`。
-只需要取源与打补丁（本地调试用）时：
+产物在 `tmp/build/`，含 x64 与 arm64 两个架构的 dmg 与 zip。
 
-```bash
-pnpm run setup-mac
-tools/update-electron.sh --arch darwin-arm64   # 本地调试才需要 electron/
+### 手动构建
+
+```
+tools/setup-bilibili-mac.sh
 bin/bilibili-mac
 ```
 
 ### 安装
 
-包是未签名的。首次打开会被 Gatekeeper 拦，二选一：
+包是未签名，首次打开会被 Gatekeeper 拦：
 
 ```bash
 xattr -dr com.apple.quarantine /Applications/bilibili.app
 ```
 
-或在「系统设置 → 隐私与安全性」里点「仍要打开」。
-要分发给他人需要 Apple Developer ID 证书并做公证，
-构建时设置 `MAC_IDENTITY` 环境变量传入证书名，并配置 notarytool。
+或在「系统设置 → 隐私与安全性」里点「仍要打开」。要分发给他人需用
+`MAC_IDENTITY` 指定 Developer ID 证书并做公证。
 
 ### 已知限制
 
-- 窗口没有标题栏，红绿灯按钮不显示。
-- 托盘图标没有做 macOS 的 Template 适配，深色菜单栏下可能看不清。
-- 空降助手依赖 `faster_whisper` 与 `torch`，需自行安装。
+窗口无标题栏，红绿灯按钮不显示；托盘图标未做 Template 适配；空降助手依赖
+`faster_whisper` 与 `torch`，需自行安装。
 
 ## Gentoo Linux
 
