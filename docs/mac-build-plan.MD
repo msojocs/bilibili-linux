@@ -64,7 +64,7 @@ flowchart TD
 
 `conf/config.json` 增加 `darwin-x64` 与 `darwin-arm64`，供 `tools/update-electron.sh --arch darwin-*` 本地调试下载 electron。打包时 electron 由 electron-builder 自行下载。
 
-`conf/build.json` 的 `mac` 节点补 `category` 与 `artifactName`，后者带架构名，双架构产物才不会同名。
+`conf/build.json` 的 `mac` 节点补 `category` 与 `artifactName`。产物名带上 `macos` 与架构，否则 `bilibili-1.19.0-x64.zip` 与 Linux 的 `bilibili-v1.19.0-4-x64.tar.gz` 从名字上分不出平台，双架构产物也会同名。
 
 `package.json` 新增 `setup-mac` 与 `build-mac`，`pkg-mac` 改出双架构。签名身份通过 `MAC_IDENTITY` 环境变量传入，默认 `null` 出未签名包，有证书时设置该变量即可，无需改配置。
 
