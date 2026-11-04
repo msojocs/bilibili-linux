@@ -30,6 +30,7 @@ declare global {
   // Node.js 全局变量
   var bootstrapEvents: EventEmitter;
   var isFiredByEntry: boolean;
+  var APP_HASH_CODE: string;
   var runtimeConf: {
     exWebPreferences: Record<string, unknown>
   }
