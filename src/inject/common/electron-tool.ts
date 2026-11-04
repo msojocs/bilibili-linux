@@ -9,6 +9,7 @@ import {
 } from "electron";
 import { createLogger } from "../../common/log";
 import fs from "fs";
+import { randomBytes } from "crypto";
 import EventEmitter from "events";
 import Module from "module";
 import path from "path";
@@ -93,6 +94,9 @@ export const hookIsPackaged = () => {
 
 export const initializeGlobalData = () => {
   global.isFiredByEntry = true;
+  // 官方 main/app.js 用它给本地服务的请求签名（如 /player/core.js?token=）。
+  // 未设置时 token=undefined，本地服务校验失败返回 400，下发的实验播放器无法加载，播放器黑屏。
+  global.APP_HASH_CODE = randomBytes(16).toString("hex");
   global.bootstrapEvents = new EventEmitter();
   global.runtimeConf = {
     exWebPreferences: {}
