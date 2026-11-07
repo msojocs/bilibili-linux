@@ -123,6 +123,30 @@ export const replaceBrowserWindow = () => {
       }
       // 使用修改后的选项调用原始构造函数
       const instance: BrowserWindow = new OriginalBrowserWindow(options);
+      // Wayland 的 restore 可能早于内容区恢复，后续布局又不触发窗口 resize。
+      // 跟随实际内容区变化，复用官方布局；旧版 Electron 没有 contentView。
+      const contentView = instance.contentView;
+      if (contentView) {
+        const relayout = () => {
+          if (instance.isDestroyed() || instance.isMinimized()) return;
+          const biliApp = global.biliApp as typeof global.biliApp & {
+            configService: { isSingleWindowMode: boolean };
+            windowService?: {
+              winHostService?: {
+                layoutShownSurface(): void;
+                layoutPlayerFloat(): void;
+              };
+            };
+          };
+          const config = biliApp?.configService;
+          if (config?.mainWindow !== instance || !config.isSingleWindowMode) return;
+          const host = biliApp.windowService?.winHostService;
+          host?.layoutShownSurface?.();
+          host?.layoutPlayerFloat?.();
+        };
+        contentView.on("bounds-changed", relayout);
+        instance.once("closed", () => contentView.off("bounds-changed", relayout));
+      }
       instance.webContents.on("ipc-message-sync", (event, ...args) => {
         if (args[0] === "config/roamingPAC") {
           log.info("receive config/roamingPAC: ", ...args);
