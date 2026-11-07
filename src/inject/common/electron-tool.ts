@@ -129,15 +129,7 @@ export const replaceBrowserWindow = () => {
       if (contentView) {
         const relayout = () => {
           if (instance.isDestroyed() || instance.isMinimized()) return;
-          const biliApp = global.biliApp as typeof global.biliApp & {
-            configService: { isSingleWindowMode: boolean };
-            windowService?: {
-              winHostService?: {
-                layoutShownSurface(): void;
-                layoutPlayerFloat(): void;
-              };
-            };
-          };
+          const biliApp = global.biliApp;
           const config = biliApp?.configService;
           if (config?.mainWindow !== instance || !config.isSingleWindowMode) return;
           const host = biliApp.windowService?.winHostService;

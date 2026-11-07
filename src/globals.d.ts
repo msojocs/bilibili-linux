@@ -55,10 +55,17 @@ declare global {
         isMinimized: () => boolean
         restore: () => void
       } | null,
+      isSingleWindowMode: false,
       isAppSleeping: false,
       loginWindow: object,
       loginRiskWindow: object
-    }
+    },
+    windowService: undefined as {
+      winHostService?: {
+        layoutShownSurface(): void
+        layoutPlayerFloat(): void
+      }
+    } | undefined
   }
   var server: ReturnType<typeof https.createServer>
 }
