@@ -73,6 +73,11 @@ jobs:
           tools/extension.sh
           mv tmp/bili/resources/* app
 
+      - name: Prepare Electron
+        env:
+          BUILD_ARCH: ${{ matrix.ARCH }}
+        run: tools/update-electron.sh
+
       - name: Run Vitest E2E
         run: xvfb-run -a pnpm run test:e2e
 

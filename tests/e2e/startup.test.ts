@@ -65,10 +65,12 @@ const resolveElectronBinary = () => {
     cwd: rootDirectory,
     encoding: 'utf8',
   })
-  if (result.status !== 0) {
+  const npmBinary = result.stdout.trim()
+  // .npmrc 设置了 ELECTRON_SKIP_BINARY_DOWNLOAD，devDependency 只提供路径不提供二进制。
+  if (result.status !== 0 || !npmBinary || !existsSync(npmBinary)) {
     throw new Error('找不到 Electron，请先运行 tools/setup-bilibili.sh，或设置 E2E_ELECTRON_BINARY')
   }
-  return result.stdout.trim()
+  return npmBinary
 }
 
 beforeAll(async () => {
