@@ -259,7 +259,14 @@ jobs:
     needs:
       - build-app
     runs-on: ubuntu-latest
-    container: scottyhardy/docker-wine
+    # ubuntu-26.04 的 Docker 29.4.2 默认 seccomp 禁用了 32 位 socketcall，
+    # 容器内的 wine 会报 "wine: socket : Function not implemented"。
+    # 见 https://github.com/actions/runner-images/issues/14790
+    # 固定到已知可用的 ubuntu-24.04，并放开 seccomp 兜底。
+    runs-on: ubuntu-24.04
+    container:
+      image: scottyhardy/docker-wine
+      options: --security-opt seccomp=unconfined
     strategy:
       matrix:
         node-version: [22.x]

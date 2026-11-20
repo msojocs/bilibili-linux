@@ -1,5 +1,5 @@
 Source: io.github.msojocs.bilibili
-Maintainer: msojocs
+Maintainer: msojocs <jiyecafe@gmail.com>
 Standards-Version: BUILD_VERSION
 Priority: optional
 Section: application
