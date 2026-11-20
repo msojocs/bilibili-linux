@@ -258,7 +258,6 @@ jobs:
     name: Build Windows
     needs:
       - build-app
-    runs-on: ubuntu-latest
     # ubuntu-26.04 的 Docker 29.4.2 默认 seccomp 禁用了 32 位 socketcall，
     # 容器内的 wine 会报 "wine: socket : Function not implemented"。
     # 见 https://github.com/actions/runner-images/issues/14790
