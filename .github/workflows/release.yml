@@ -43,7 +43,7 @@ jobs:
 
       - name: Prepare
         run: |
-          sudo apt install wget exiftool
+          sudo apt install -y wget exiftool xvfb
           sudo npm install asar -g
           corepack enable
           pnpm setup
@@ -72,7 +72,10 @@ jobs:
           tools/fix-other.sh
           tools/extension.sh
           mv tmp/bili/resources/* app
-  
+
+      - name: Run Vitest E2E
+        run: xvfb-run -a pnpm run test:e2e
+
       - name: Compress Resources
         run: |
           ls -l
