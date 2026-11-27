@@ -1,5 +1,6 @@
 # v1.21.0-1 / 2026-11-27
 - bilibili: update to v1.21.0.5258
+- chore: 移除icursor-tool
 
 # 🌈 v1.20.0-3 / 2026-11-20
 ## 🐞 修复

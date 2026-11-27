@@ -75,11 +75,11 @@ Emerge from [gentoo-zh overlay](https://github.com/microcai/gentoo-zh/tree/maste
 
 ### 额外补充
 
-如果阁下不喜欢电脑多装一个 Electron，可以自行提取发布版的 `app.asar` 并使用已安装 Electron 启动，建议的 Electron 版本是：`43.1.1`（`VaapiOnNvidiaGPUs` 需要 Electron 43+ / Chromium 130+）
+如果阁下不喜欢电脑多装一个 Electron，可以自行提取发布版的 `app.asar` 并使用已安装 Electron 启动，建议的 Electron 版本是：`45.5.0`（`VaapiOnNvidiaGPUs` 需要 Electron 43+ / Chromium 130+）
 
 ## GPU 加速配置
 
-Electron 43 (Chromium 150) 支持 Linux 下 VA-API 硬件视频解码。以下为推荐配置：
+Electron 45 (Chromium 156) 支持 Linux 下 VA-API 硬件视频解码。以下为推荐配置：
 
 ### NVIDIA GPU
 
@@ -108,7 +108,7 @@ Electron 43 (Chromium 150) 支持 Linux 下 VA-API 硬件视频解码。以下�
 
    > **说明**：
    > - `VaapiOnNvidiaGPUs` (Chromium 130+) 绕过 vaapi_wrapper 对 NVIDIA 设备的跳过检查
-   > - `AcceleratedVideoDecodeLinuxGL` / `AcceleratedVideoDecodeLinuxZeroCopyGL` 为 Chromium 150 推荐的 GL 零拷贝解码路径
+   > - `AcceleratedVideoDecodeLinuxGL` / `AcceleratedVideoDecodeLinuxZeroCopyGL` 为 Chromium 156 推荐的 GL 零拷贝解码路径
    > - Electron 28 不支持以上 feature，NVIDIA 视频硬解需要 Electron 43+
 
 ### Intel / AMD GPU

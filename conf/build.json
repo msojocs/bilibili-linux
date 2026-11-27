@@ -19,10 +19,6 @@
     },
     "app/app-update.yml",
     {
-      "from": "app/cursor-tool",
-      "to": "cursor-tool"
-    },
-    {
       "from": "app/transcribe.py",
       "to": "transcribe.py"
     }

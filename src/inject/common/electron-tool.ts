@@ -5,7 +5,6 @@ import {
   Menu,
   protocol,
   session,
-  screen,
 } from "electron";
 import { createLogger } from "../../common/log";
 import fs from "fs";
@@ -13,7 +12,7 @@ import { randomBytes } from "crypto";
 import EventEmitter from "events";
 import Module from "module";
 import path from "path";
-import { exec, execSync, spawn } from "child_process";
+import { spawn } from "child_process";
 import { ChannelCredentials } from "@grpc/grpc-js";
 import { DynamicClient } from "./dynamic.client";
 import { GrpcTransport } from "@protobuf-ts/grpc-transport";
@@ -334,81 +333,6 @@ export const electronOverwrite = () => {
     };
   }
 }
-export const electronOverwriteAfterReady = () => {
-  {
-    const cursorTool = () => {
-      return new Promise<string>((resolve, reject) => {
-        try {
-          const info = execSync("cat /proc/bus/input/devices").toString();
-          const devices = info
-            .split("\n")
-            .filter((e) => e.startsWith("H:"))
-            .filter((e) => e.includes("mouse"))
-            .map(
-              (e) =>
-                e
-                  .split("=")[1]
-                  .split(" ")
-                  .filter((e1) => e1.startsWith("event"))[0]
-            )
-            .map((e) => `/dev/input/${e}`)
-            .join(",");
-          exec(
-            `${path.resolve(
-              __dirname,
-              "../cursor-tool"
-            )} --devices "${devices}"`,
-            (ex, out, err) => {
-              if (ex || err) {
-                reject(err);
-              } else {
-                resolve(out);
-              }
-            }
-          );
-        } catch (err) {
-          reject(err);
-        }
-      });
-    };
-    const original = screen.getCursorScreenPoint;
-    let cursorToolError = false;
-    let oldX = 0,
-      oldY = 0;
-    screen.getCursorScreenPoint = function () {
-      if (process.env["XDG_SESSION_TYPE"] == "wayland" && !cursorToolError) {
-        (async () => {
-          try {
-            const point = (await cursorTool()).replace("\n", "");
-            const detail = point.split(",");
-            oldX = parseInt(detail[0]);
-            oldY = parseInt(detail[1]);
-            return {
-              x: oldX,
-              y: oldY,
-            };
-          } catch (err) {
-            cursorToolError = true;
-            const error = err as string;
-            log.error("error:", error.replace("\n", ""));
-            if (error.includes("failed to add device")) {
-              log.info(
-                `\x1B[36mNeed execute: sudo usermod -aG input ${process.env.USERNAME}, then reboot.\x1B[0m`
-              );
-            }
-          }
-        })();
-      }
-      if (!oldX || !oldY) {
-        return original.apply(this, []);
-      }
-      return {
-        x: oldX,
-        y: oldY,
-      };
-    };
-  }
-};
 export const registerIpcHandle = () => {
   // 处理启动缓慢的问题
   /**

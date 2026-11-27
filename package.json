@@ -48,7 +48,7 @@
     "app-builder-lib": "26.15.3",
     "builder-util": "26.15.3",
     "chrome-remote-interface": "^0.33.3",
-    "electron": "43.1.1",
+    "electron": "45.5.0",
     "electron-builder": "^26.15.3",
     "eslint": "^9.33.0",
     "eslint-plugin-perfectionist": "^4.15.0",

@@ -1,6 +1,6 @@
 import { app } from "electron";
 import { createBilibiliServer } from "./common/bilibili";
-import { electronOverwrite, electronOverwriteAfterReady, hookIsPackaged, initializeGlobalData, nodeJsOverWrite, parseElectronFlag, registerExtension, registerIpcHandle, registerProtocol, replaceBrowserWindow } from "./common/electron-tool";
+import { electronOverwrite, hookIsPackaged, initializeGlobalData, nodeJsOverWrite, parseElectronFlag, registerExtension, registerIpcHandle, registerProtocol, replaceBrowserWindow } from "./common/electron-tool";
 import { registerGithubUpdater } from "./common/update";
 import { createLogger, Logger } from "../common/log";
 (() => {
@@ -22,7 +22,6 @@ import { createLogger, Logger } from "../common/log";
   app.whenReady().then(() => {
     registerProtocol()
     registerExtension()
-    electronOverwriteAfterReady()
     global.bootstrapBiliApp();
   });
   // https://github.com/msojocs/bilibili-linux/issues/147

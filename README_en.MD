@@ -78,11 +78,11 @@ Emerge from [gentoo-zh overlay](https://github.com/microcai/gentoo-zh/tree/maste
 
 ### Additional Notes
 
-If you don't want to install another Electron on your computer, you can extract `app.asar` from the release version and run it with your already installed Electron. The recommended Electron version is: `43.1.1` (`VaapiOnNvidiaGPUs` requires Electron 43+ / Chromium 130+).
+If you don't want to install another Electron on your computer, you can extract `app.asar` from the release version and run it with your already installed Electron. The recommended Electron version is: `45.5.0` (`VaapiOnNvidiaGPUs` requires Electron 43+ / Chromium 130+).
 
 ## GPU Acceleration Configuration
 
-Electron 43 (Chromium 150) supports VA-API hardware video decoding on Linux. Below are the recommended configurations:
+Electron 45 (Chromium 156) supports VA-API hardware video decoding on Linux. Below are the recommended configurations:
 
 ### NVIDIA GPU
 
@@ -111,7 +111,7 @@ Electron 43 (Chromium 150) supports VA-API hardware video decoding on Linux. Bel
 
    > **Notes**:
    > - `VaapiOnNvidiaGPUs` (Chromium 130+) bypasses vaapi_wrapper's NVIDIA device skip check
-   > - `AcceleratedVideoDecodeLinuxGL` / `AcceleratedVideoDecodeLinuxZeroCopyGL` are the recommended GL zero-copy decode paths for Chromium 150
+   > - `AcceleratedVideoDecodeLinuxGL` / `AcceleratedVideoDecodeLinuxZeroCopyGL` are the recommended GL zero-copy decode paths for Chromium 156
    > - Electron 28 lacks these features — NVIDIA hardware video decode requires Electron 43+
 
 ### Intel / AMD GPU

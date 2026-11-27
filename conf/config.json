@@ -1,24 +1,24 @@
 {
   "electron": {
     "//": "x64/arm64 必须同版本：pkg-linux/pkg-win 一次调用同时构建 --x64 --arm64，electronVersion 只能是单个标量。",
-    "//2": "43.1.1 (Chromium 150) 用于 NVIDIA/Wayland GPU 加速（渲染 + VA-API 解码）。",
-    "//3": "#42519 (screen.getCursorScreenPoint Linux 回归，仍 OPEN) 由 cursor-tool 绕过，Wayland 用户可安全升级。",
+    "//2": "45.5.0 (Chromium 156) 用于 NVIDIA/Wayland GPU 加速（渲染 + VA-API 解码）；Electron 45 起包含 Chromium 154 对 #42519（getCursorScreenPoint Linux 回归）的修复。",
+    "//3": "#42519 已在 Chromium 154 修复，X11/XWayland 从 Electron 45 起不再需要 cursor-tool；原生 Wayland 按设计无法提供全局指针位置，改用 Chromium 的窗口内近似坐标（见 issue 170），已移除原 cursor-tool 兜底。",
     "//4": "https://github.com/msojocs/bilibili-linux/issues/170  https://github.com/electron/electron/issues/42519",
-    "//5": "loong64（新世界）：darkyzhou/electron-loong64，选 43.x 与其它架构同大版本；该仓库带 SHASUMS256.txt，保留校验。",
+    "//5": "loong64（新世界）：darkyzhou/electron-loong64 最新只有 43.7.7，没有 45.x，故该架构停留在 43.x（不含 #42519 的 X11 修复）；该仓库带 SHASUMS256.txt，保留校验。",
     "//6": "loongarch64（旧世界）：只有 msojocs/electron-loongarch 的 22.3.27 可用；该仓库无 SHASUMS256.txt，必须关闭校验。",
     "//7": "龙芯新旧世界的 process.arch 都是 loong64，龙芯用户必须显式设置 BUILD_ARCH，否则会解析到新世界那份。",
     "//8": "package.json 的 electron devDependency 已钉到与 x64 相同的版本，让打包兜底版本也一致；它只用于 TS 类型（src/inject/*.ts 的 import），不参与打包版本决策，升级 x64 时记得同步。",
     "urls": {
       "x64": {
-        "version": "43.1.1",
+        "version": "45.5.0",
         "template": "https://github.com/electron/electron/releases/download/v${version}/electron-v${version}-linux-x64.zip"
       },
       "arm64": {
-        "version": "43.1.1",
+        "version": "45.5.0",
         "template": "https://github.com/electron/electron/releases/download/v${version}/electron-v${version}-linux-arm64.zip"
       },
       "loong64": {
-        "version": "43.4.1",
+        "version": "43.7.7",
         "template": "https://github.com/darkyzhou/electron-loong64/releases/download/v${version}/electron-v${version}-linux-loong64.zip",
         "mirror": "https://github.com/darkyzhou/electron-loong64/releases/download/",
         "isVerifyChecksum": true
