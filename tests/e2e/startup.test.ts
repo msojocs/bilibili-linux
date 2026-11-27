@@ -1,6 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { _electron, type ElectronApplication } from 'playwright-core'
 import { spawnSync } from 'node:child_process'
+import { createHash } from 'node:crypto'
 import { existsSync, mkdtempSync, rmSync, statSync } from 'node:fs'
 import { createServer } from 'node:http'
 import { tmpdir } from 'node:os'
@@ -161,7 +162,13 @@ describe('bilibili-linux E2E', () => {
       await new Promise<void>(resolve => fixtureServer.listen(0, '127.0.0.1', resolve))
       const address = fixtureServer.address()
       if (!address || typeof address === 'string') throw new Error('无法确定测试服务器端口')
-      const fixture = { id: experimentId, src: `http://127.0.0.1:${address.port}/core.js` }
+      const coreBuffer = Buffer.from(coreSource)
+      const fixture = {
+        id: experimentId,
+        src: `http://127.0.0.1:${address.port}/core.js`,
+        coreSize: coreBuffer.length,
+        coreSha256: createHash('sha256').update(coreBuffer).digest('hex'),
+      }
 
       // 应用启动时会用真实的播放器实验配置下载线上 core.js。先停掉这条链路，
       // 只保留本测试注入的 fixture，否则两者会抢写同一个文件导致断言偶发失败。
@@ -195,16 +202,24 @@ describe('bilibili-linux E2E', () => {
                 playerExpInfo: { id?: number }
                 playerSrc: string
               }
+              isPlayerCacheValid: () => boolean
             }
             reportService: { reportPlayerPatch: () => void }
+            storeService: { getPlayerExpData: () => { exp?: { id?: number, coreSha256?: string } } }
           }
         }
 
         // 不向远端上报测试播放器实验；其余下载、哈希和本地服务流程保持真实实现。
         runtime.biliApp.reportService.reportPlayerPatch = () => undefined
         await runtime.biliApp.playerService.fetchPlayerJs(fixture)
+
+        // v1.21.0 起官方要求播放器实验带 B 站私钥签名才会被 isPlayerCacheValid()
+        // 接受，测试无法伪造签名，这里只跳过签名校验；下载文件的哈希已经由
+        // fetchPlayerJs 校验过，本地服务与 token 校验仍走真实实现。
+        runtime.biliApp.playerService.isPlayerCacheValid = () => true
         return {
           ...runtime.biliApp.playerService.handleGetPlayerInfo(),
+          expData: runtime.biliApp.storeService.getPlayerExpData(),
           configHash: runtime.biliApp.configService.hashCode,
           hash: runtime.APP_HASH_CODE,
         }
@@ -212,6 +227,9 @@ describe('bilibili-linux E2E', () => {
 
       expect(playerInfo.hash).toMatch(/^[0-9a-f]{32}$/)
       expect(playerInfo.configHash).toBe(playerInfo.hash)
+      expect(playerInfo.expData).toMatchObject({
+        exp: { coreSha256: fixture.coreSha256, id: experimentId },
+      })
       expect(playerInfo.playerExpInfo).toMatchObject({ id: experimentId })
 
       const coreUrl = new URL(playerInfo.playerSrc)
